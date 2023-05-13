@@ -16,3 +16,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/in
 # Eigen
 find_package(Eigen3 REQUIRED NO_MODULE)
 target_link_libraries(${PROJECT_NAME} Eigen3::Eigen)
+
+# JSON
+find_package(nlohmann_json 3.2.0 REQUIRED)
+target_link_libraries(${PROJECT_NAME} nlohmann_json::nlohmann_json)

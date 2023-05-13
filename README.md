@@ -11,10 +11,19 @@ The following libraries are required.
 | Library | Version | Link                                                  |
 | ------- | ------- | ----------------------------------------------------- |
 | Eigen   | 3.4.0   | https://eigen.tuxfamily.org/index.php?title=Main_Page |
+| JSON    | 3.11.2  | https://github.com/nlohmann/json/releases/tag/v3.11.2 |
 
 ## 2. Setup
 
-1. Follow the installation steps for "Installing using CMake" described in INSTALL of the downloaded Eigen files
-2. Run `cmake -B build`
+For each library above:
+
+1. Download the required libraries above
+2. For each library, run `cmake -B build`
 3. Change directories to `build`
-4. Run `make`
+4. Run `make install`, this would require elevated permissions
+
+For the project run:
+
+1. Run `cmake -B build`
+2. Change directories to `build`
+3. Run `make`
