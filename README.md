@@ -8,10 +8,11 @@ For the complete technical overview see [link](https://github.com/Keith-Dao/Neur
 
 The following libraries are required.
 
-| Library | Version | Link                                                  |
-| ------- | ------- | ----------------------------------------------------- |
-| Eigen   | 3.4.0   | https://eigen.tuxfamily.org/index.php?title=Main_Page |
-| JSON    | 3.11.2  | https://github.com/nlohmann/json/releases/tag/v3.11.2 |
+| Library  | Version | Link                                                           |
+| -------- | ------- | -------------------------------------------------------------- |
+| Eigen    | 3.4.0   | https://eigen.tuxfamily.org/index.php?title=Main_Page          |
+| JSON     | 3.11.2  | https://github.com/nlohmann/json/releases/tag/v3.11.2          |
+| yaml-cpp | 0.6.3   | https://github.com/jbeder/yaml-cpp/releases/tag/yaml-cpp-0.6.3 |
 
 ## 2. Setup
 
