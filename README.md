@@ -8,12 +8,13 @@ For the complete technical overview see [link](https://github.com/Keith-Dao/Neur
 
 The following libraries are required.
 
-| Library   | Version | Link                                                                 |
-| --------- | ------- | -------------------------------------------------------------------- |
-| Eigen     | 3.4.0   | https://eigen.tuxfamily.org/index.php?title=Main_Page                |
-| JSON      | 3.11.2  | https://github.com/nlohmann/json/releases/tag/v3.11.2                |
-| yaml-cpp  | 0.6.3   | https://github.com/jbeder/yaml-cpp/releases/tag/yaml-cpp-0.6.3       |
-| matplot++ | 1.1.0   | https://github.com/alandefreitas/matplotplusplus/releases/tag/v1.1.0 |
+| Library    | Version | Link                                                                 |
+| ---------- | ------- | -------------------------------------------------------------------- |
+| Eigen      | 3.4.0   | https://eigen.tuxfamily.org/index.php?title=Main_Page                |
+| JSON       | 3.11.2  | https://github.com/nlohmann/json/releases/tag/v3.11.2                |
+| yaml-cpp   | 0.6.3   | https://github.com/jbeder/yaml-cpp/releases/tag/yaml-cpp-0.6.3       |
+| matplot++  | 1.1.0   | https://github.com/alandefreitas/matplotplusplus/releases/tag/v1.1.0 |
+| indicators | 2.3     | https://github.com/p-ranav/indicators/releases/tag/v2.3              |
 
 The following are also required.
 

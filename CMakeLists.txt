@@ -29,3 +29,7 @@ target_link_libraries(${PROJECT_NAME} ${YAML_CPP_LIBRARIES})
 # Matplot++
 find_package(Matplot++ REQUIRED)
 target_link_libraries(${PROJECT_NAME} Matplot++::matplot)
+
+# Indicators
+find_package(indicators REQUIRED)
+target_link_libraries(${PROJECT_NAME} ${INDICATORS_LIBRARIES})
