@@ -25,3 +25,7 @@ target_link_libraries(${PROJECT_NAME} nlohmann_json::nlohmann_json)
 find_package(yaml-cpp REQUIRED)
 include_directories(${YAML_CPP_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} ${YAML_CPP_LIBRARIES})
+
+# Matplot++
+find_package(Matplot++ REQUIRED)
+target_link_libraries(${PROJECT_NAME} Matplot++::matplot)
