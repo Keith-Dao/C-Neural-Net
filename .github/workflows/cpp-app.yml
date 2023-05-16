@@ -19,7 +19,7 @@ jobs:
 
       - name: Cache Dependencies
         id: cache-dependencies
-        uses: action/cache@v3
+        uses: actions/cache@v3
         with:
           path: ${{ github.workspace }}/install/dependencies
           key: dependencies
