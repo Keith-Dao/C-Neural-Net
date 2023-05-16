@@ -7,11 +7,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 project(NerualNetwork VERSION 1.0)
 
 # Files
-file(GLOB_RECURSE SRC_FILES src/*.cpp)
-add_executable(${PROJECT_NAME} main.cpp ${SRC_FILES})
+add_executable(${PROJECT_NAME} main.cpp)
 
-# Headers
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+# Source files
+add_subdirectory(src)
+target_include_directories(${PROJECT_NAME} PRIVATE src)
+target_link_libraries(${PROJECT_NAME} src)
 
 # Eigen
 find_package(Eigen3 REQUIRED NO_MODULE)
