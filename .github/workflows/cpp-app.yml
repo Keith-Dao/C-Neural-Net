@@ -17,12 +17,19 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Cache Dependencies
+        id: cache-dependencies
+        uses: action/cache@v3
+        with:
+          path: ${{ github.workspace }}/install/dependencies
+          key: dependencies
+
       - name: Install Eigen
         run: |
           wget -O eigen.zip "https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.zip" 
           unzip eigen.zip 
           cd eigen-3.4.0 
-          cmake -B build 
+          cmake -B build -DCMAKE_INSTALL_PREFIX:PATH=${{ github.workspace }}/install/dependencies
           cd build 
           sudo make install
 
@@ -31,7 +38,7 @@ jobs:
           wget -O json.zip "https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.zip" 
           unzip json.zip 
           cd json-3.11.2
-          cmake -B build 
+          cmake -B build -DCMAKE_INSTALL_PREFIX:PATH=${{ github.workspace }}/install/dependencies
           cd build 
           sudo make install
 
@@ -40,7 +47,7 @@ jobs:
           wget -O yaml.zip "https://github.com/jbeder/yaml-cpp/archive/refs/tags/yaml-cpp-0.6.3.zip" 
           unzip yaml.zip 
           cd yaml-cpp-yaml-cpp-0.6.3 
-          cmake -B build 
+          cmake -B build -DCMAKE_INSTALL_PREFIX:PATH=${{ github.workspace }}/install/dependencies
           cd build 
           sudo make install
 
@@ -49,7 +56,7 @@ jobs:
           wget -O matplotplusplus.zip "https://github.com/alandefreitas/matplotplusplus/archive/refs/tags/v1.1.0.zip" 
           unzip matplotplusplus.zip 
           cd matplotplusplus-1.1.0
-          cmake -B build 
+          cmake -B build -DCMAKE_INSTALL_PREFIX:PATH=${{ github.workspace }}/install/dependencies
           cd build 
           sudo make install
 
@@ -58,7 +65,7 @@ jobs:
           wget -O indicators.zip "https://github.com/p-ranav/indicators/archive/refs/tags/v2.3.zip" 
           unzip indicators.zip 
           cd indicators-2.3
-          cmake -B build 
+          cmake -B build -DCMAKE_INSTALL_PREFIX:PATH=${{ github.workspace }}/install/dependencies
           cd build 
           sudo make install
 
