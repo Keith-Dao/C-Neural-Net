@@ -25,6 +25,7 @@ jobs:
           key: dependencies
 
       - name: Install Eigen
+        if: steps.cache-dependencies.outputs.cache-hit != 'true'
         run: |
           wget -O eigen.zip "https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.zip" 
           unzip eigen.zip 
@@ -34,6 +35,7 @@ jobs:
           sudo make install
 
       - name: Install JSON
+        if: steps.cache-dependencies.outputs.cache-hit != 'true'
         run: |
           wget -O json.zip "https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.zip" 
           unzip json.zip 
@@ -43,6 +45,7 @@ jobs:
           sudo make install
 
       - name: Install YAML
+        if: steps.cache-dependencies.outputs.cache-hit != 'true'
         run: |
           wget -O yaml.zip "https://github.com/jbeder/yaml-cpp/archive/refs/tags/yaml-cpp-0.6.3.zip" 
           unzip yaml.zip 
@@ -52,6 +55,7 @@ jobs:
           sudo make install
 
       - name: Install Matplot++
+        if: steps.cache-dependencies.outputs.cache-hit != 'true'
         run: |
           wget -O matplotplusplus.zip "https://github.com/alandefreitas/matplotplusplus/archive/refs/tags/v1.1.0.zip" 
           unzip matplotplusplus.zip 
@@ -61,6 +65,7 @@ jobs:
           sudo make install
 
       - name: Install Indicators
+        if: steps.cache-dependencies.outputs.cache-hit != 'true'
         run: |
           wget -O indicators.zip "https://github.com/p-ranav/indicators/archive/refs/tags/v2.3.zip" 
           unzip indicators.zip 
