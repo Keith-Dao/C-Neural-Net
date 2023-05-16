@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.26)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+enable_testing()
 
 # Project
 project(NerualNetwork VERSION 1.0)
@@ -34,3 +35,6 @@ target_link_libraries(${PROJECT_NAME} Matplot++::matplot)
 # Indicators
 find_package(indicators REQUIRED)
 target_link_libraries(${PROJECT_NAME} ${INDICATORS_LIBRARIES})
+
+# Testing
+add_subdirectory(test)
