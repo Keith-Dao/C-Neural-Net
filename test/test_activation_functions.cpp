@@ -5,8 +5,7 @@
 using namespace activation_functions;
 
 #pragma region Fixture
-class FixtureData {
-public:
+struct FixtureData {
   std::shared_ptr<ActivationFunction> function;
   Eigen::MatrixXd X, Y, grad;
 
