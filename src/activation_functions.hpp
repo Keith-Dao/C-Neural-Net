@@ -1,6 +1,5 @@
 #pragma once
 #include <Eigen/Dense>
-#include <any>
 #include <exception>
 
 namespace activation_functions {
