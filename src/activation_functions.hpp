@@ -11,6 +11,10 @@ protected:
 
 public:
   /*
+    Gets the name for the class.
+  */
+  virtual std::string getName() { return "Activation function"; };
+  /*
     Performs the forward pass.
   */
   virtual Eigen::MatrixXd forward(Eigen::MatrixXd &input) = 0;
@@ -37,6 +41,10 @@ public:
 class NoActivation : public ActivationFunction {
 public:
   /*
+    Gets the name for the class.
+  */
+  std::string getName() override { return "No activation function"; };
+  /*
     Performs the forward pass.
   */
   Eigen::MatrixXd forward(Eigen::MatrixXd &input) override;
@@ -44,18 +52,16 @@ public:
     Performs the backward pass.
   */
   Eigen::MatrixXd backward() override;
-
-  // template <typename T> inline bool operator==(const T &other) { return
-  // false; } inline bool operator==(const NoActivation &other) { return true; }
-  // template <typename T> inline bool operator!=(const T &other) {
-  //   return !(this == other);
-  // }
 };
 #pragma endregion NoActivation
 
 #pragma region ReLU
 class ReLU : public ActivationFunction {
 public:
+  /*
+    Gets the name for the class.
+  */
+  std::string getName() override { return "ReLU function"; };
   /*
     Performs the forward pass.
   */
@@ -64,12 +70,6 @@ public:
     Performs the backward pass.
   */
   Eigen::MatrixXd backward() override;
-
-  // template <typename T> inline bool operator==(T &other) { return false; }
-  // inline bool operator==(const ReLU &other) { return true; }
-  // template <typename T> inline bool operator!=(T &other) {
-  //   return !(this == other);
-  // }
 };
 #pragma endregion ReLU
 
