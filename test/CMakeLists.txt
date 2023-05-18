@@ -11,13 +11,17 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
+# Eigen
+find_package(Eigen3 REQUIRED NO_MODULE)
+
 # Tests
 file(GLOB_RECURSE TEST_FILES test_*.cpp)
 add_executable(tests ${TEST_FILES})
 target_link_libraries(
     tests 
-    GTest::gtest_main
     src
+    GTest::gtest_main
+    Eigen3::Eigen
 )
 
 include(GoogleTest)
