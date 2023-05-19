@@ -1,12 +1,13 @@
 #pragma once
 #include <Eigen/Dense>
 #include <exception>
+#include <memory>
 
 namespace activation_functions {
 #pragma region ActivationFunction Abstract class
 class ActivationFunction {
 protected:
-  Eigen::MatrixXd *input = nullptr;
+  std::unique_ptr<Eigen::MatrixXd> input = nullptr;
 
 public:
   /*
@@ -16,7 +17,7 @@ public:
   /*
     Performs the forward pass.
   */
-  virtual Eigen::MatrixXd forward(Eigen::MatrixXd &input) = 0;
+  virtual Eigen::MatrixXd forward(const Eigen::MatrixXd &input) = 0;
   /*
     Performs the backward pass.
   */
@@ -46,7 +47,7 @@ public:
   /*
     Performs the forward pass.
   */
-  Eigen::MatrixXd forward(Eigen::MatrixXd &input) override;
+  Eigen::MatrixXd forward(const Eigen::MatrixXd &input) override;
   /**
     Performs the backward pass.
   */
@@ -64,7 +65,7 @@ public:
   /*
     Performs the forward pass.
   */
-  Eigen::MatrixXd forward(Eigen::MatrixXd &input) override;
+  Eigen::MatrixXd forward(const Eigen::MatrixXd &input) override;
   /*
     Performs the backward pass.
   */

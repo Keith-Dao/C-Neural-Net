@@ -1,6 +1,7 @@
 #include "activation_functions.hpp"
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
+#include <memory>
 
 using namespace activation_functions;
 
@@ -9,8 +10,9 @@ struct FixtureData {
   std::shared_ptr<ActivationFunction> function;
   Eigen::MatrixXd X, Y, grad;
 
-  FixtureData(std::shared_ptr<ActivationFunction> function, Eigen::MatrixXd X,
-              Eigen::MatrixXd Y, Eigen::MatrixXd grad)
+  FixtureData(const std::shared_ptr<ActivationFunction> &function,
+              const Eigen::MatrixXd &X, const Eigen::MatrixXd &Y,
+              const Eigen::MatrixXd &grad)
       : function(function), X(X), Y(Y), grad(grad){};
 };
 // Display a human readable name for the fixture data.
