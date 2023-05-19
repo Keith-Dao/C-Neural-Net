@@ -3,8 +3,8 @@
 using namespace activation_functions;
 
 #pragma region ActivationFunction
-Eigen::MatrixXd ActivationFunction::forward(Eigen::MatrixXd &input) {
-  this->input = &input;
+Eigen::MatrixXd ActivationFunction::forward(const Eigen::MatrixXd &input) {
+  this->input = std::make_unique<Eigen::MatrixXd>(input);
   return input;
 }
 
@@ -17,7 +17,7 @@ Eigen::MatrixXd ActivationFunction::backward() {
 #pragma endregion ActivationFunction
 
 #pragma region NoActivation
-Eigen::MatrixXd NoActivation::forward(Eigen::MatrixXd &input) {
+Eigen::MatrixXd NoActivation::forward(const Eigen::MatrixXd &input) {
   return ActivationFunction::forward(input);
 }
 
@@ -28,7 +28,7 @@ Eigen::MatrixXd NoActivation::backward() {
 #pragma endregion NoActivation
 
 #pragma region ReLU
-Eigen::MatrixXd ReLU::forward(Eigen::MatrixXd &input) {
+Eigen::MatrixXd ReLU::forward(const Eigen::MatrixXd &input) {
   ActivationFunction::forward(input);
   return input.cwiseProduct((input.array() > 0).cast<double>().matrix());
 }
