@@ -21,11 +21,11 @@ std::ostream &operator<<(std::ostream &os, FixtureData const &fixture) {
   return os << fixture.function->getName();
 }
 
-class Functions : public testing::TestWithParam<FixtureData> {};
+class ActivationFunctions : public testing::TestWithParam<FixtureData> {};
 #pragma endregion Fixture
 
 #pragma region Tests
-TEST_P(Functions, Test_Call) {
+TEST_P(ActivationFunctions, Test_Call) {
   auto [function, X, Y, _] = GetParam();
   decltype(X) originalX(X);
   ASSERT_TRUE((*function)(X).isApprox(Y)) << "Operator:\n"
@@ -36,7 +36,7 @@ TEST_P(Functions, Test_Call) {
       << "Operation was done inplace but should not have been.";
 }
 
-TEST_P(Functions, Test_Forward) {
+TEST_P(ActivationFunctions, Test_Forward) {
   auto [function, X, Y, _] = GetParam();
   decltype(X) originalX(X);
   ASSERT_TRUE(function->forward(X).isApprox(Y))
@@ -48,7 +48,7 @@ TEST_P(Functions, Test_Forward) {
       << "Operation was done inplace but should not have been.";
 }
 
-TEST_P(Functions, Test_Backward) {
+TEST_P(ActivationFunctions, Test_Backward) {
   auto [function, X, Y, grad] = GetParam();
   (*function)(X);
   ASSERT_TRUE(function->backward().isApprox(grad))
@@ -58,12 +58,12 @@ TEST_P(Functions, Test_Backward) {
       << grad << "\n";
 }
 
-TEST_P(Functions, Test_Backward_Before_Forward) {
+TEST_P(ActivationFunctions, Test_Backward_Before_Forward) {
   std::shared_ptr<ActivationFunction> function = GetParam().function;
   EXPECT_THROW(function->backward(), BackwardBeforeForwardException);
 }
 
-TEST_P(Functions, Test_Equal) {
+TEST_P(ActivationFunctions, Test_Equal) {
   std::shared_ptr<ActivationFunction> function = GetParam().function;
   ASSERT_EQ(function->getName() == ReLU().getName(), *function == ReLU());
   ASSERT_EQ(function->getName() == NoActivation().getName(),
@@ -92,7 +92,7 @@ FixtureData noActivationData(
                  {1, 1, 1, 1},
              });
 
-INSTANTIATE_TEST_SUITE_P(TestActivationFunctions, Functions,
+INSTANTIATE_TEST_SUITE_P(, ActivationFunctions,
                          ::testing::Values(noActivationData, reluData));
 #pragma endregion Data
 } // namespace test_activation_functions
