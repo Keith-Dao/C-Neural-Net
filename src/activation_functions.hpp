@@ -13,7 +13,7 @@ public:
   /*
     Gets the name for the class.
   */
-  virtual std::string getName() { return "Activation function"; };
+  virtual std::string getName() const { return "Activation function"; };
   /*
     Performs the forward pass.
   */
@@ -43,7 +43,7 @@ public:
   /*
     Gets the name for the class.
   */
-  std::string getName() override { return "No activation function"; };
+  std::string getName() const override { return "No activation function"; };
   /*
     Performs the forward pass.
   */
@@ -61,7 +61,7 @@ public:
   /*
     Gets the name for the class.
   */
-  std::string getName() override { return "ReLU function"; };
+  std::string getName() const override { return "ReLU function"; };
   /*
     Performs the forward pass.
   */
