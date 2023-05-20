@@ -5,6 +5,7 @@
 
 using namespace activation_functions;
 
+namespace test_activation_functions {
 #pragma region Fixture
 struct FixtureData {
   std::shared_ptr<ActivationFunction> function;
@@ -94,3 +95,4 @@ FixtureData noActivationData(
 INSTANTIATE_TEST_SUITE_P(TestActivationFunctions, Functions,
                          ::testing::Values(noActivationData, reluData));
 #pragma endregion Data
+} // namespace test_activation_functions
