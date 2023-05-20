@@ -1,13 +1,12 @@
 #pragma once
 #include "activation_functions.hpp"
 #include <Eigen/Dense>
+#include <exception>
 #include <math.h>
 #include <memory>
 
 namespace linear {
-
 class Linear {
-  int inChannels, outChannels;
   Eigen::MatrixXd weight, bias, *input = nullptr;
   std::shared_ptr<activation_functions::ActivationFunction> activationFunction;
   bool eval = false;
@@ -18,6 +17,7 @@ class Linear {
   };
 
 public:
+  int inChannels, outChannels;
   Linear(int inChannels, int outChannels,
          std::shared_ptr<activation_functions::ActivationFunction>
              activationFunction =
@@ -33,28 +33,29 @@ public:
 #pragma region Properties
 #pragma region Evaluation mode
   // Get the layer's evaluation mode.
-  bool getEval();
+  bool getEval() const;
   // Set the layer's evaluation mode.
   void setEval(bool eval);
 #pragma endregion Evaluation mode
 
 #pragma region Weight
   // Get the layer's weight.
-  Eigen::MatrixXd getWeight();
+  Eigen::MatrixXd getWeight() const;
   // Set the layer's weight.
   void setWeight(Eigen::MatrixXd weight);
 #pragma endregion Weight
 
 #pragma region Bias
   // Get the layer's bias.
-  Eigen::MatrixXd getBias();
+  Eigen::MatrixXd getBias() const;
   // Set the layer's bias.
   void setBias(Eigen::MatrixXd bias);
 #pragma endregion Bias
 
 #pragma region Activation function
   // Get the layer's activation function.
-  std::shared_ptr<activation_functions::ActivationFunction> getActivation();
+  std::shared_ptr<activation_functions::ActivationFunction>
+  getActivation() const;
   // Set the layer's activation function.
   void setActivation(std::string activation_function);
 #pragma endregion Activation function
@@ -69,4 +70,11 @@ public:
 #pragma endregion Save
 };
 
+#pragma region Exceptions
+class InvalidShapeException : public std::exception {
+  virtual const char *what() const throw() {
+    return "An invalid shape was provided.";
+  }
+};
+#pragma endregion Exceptions
 } // namespace linear
