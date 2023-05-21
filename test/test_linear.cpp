@@ -1,7 +1,6 @@
 #include "activation_functions.hpp"
 #include "linear.hpp"
 #include <Eigen/Dense>
-#include <Eigen/src/Core/Matrix.h>
 #include <gtest/gtest.h>
 #include <iostream>
 #include <memory>
@@ -52,6 +51,21 @@ forwardData getLarge(const std::string &activation) {
              {159., 394.}, {177., 439.}};
   return std::make_tuple(input, output);
 }
+forwardData getLargeWithNegative(const std::string &activation) {
+  Eigen::MatrixXd
+      input =
+          Eigen::VectorXd::LinSpaced(30, -10, 19).reshaped(3, 10).transpose(),
+      output = activation == "ReLU"
+                   ? Eigen::MatrixXd{{-51., -131.}, {-33., -86.}, {-15., -41.},
+                                     {3., 4.},      {21., 49.},   {39., 94.},
+                                     {57., 139.},   {75., 184.},  {93., 229.},
+                                     {111., 274.}}
+                   : Eigen::MatrixXd{{0., 0.},    {0., 0.},    {0., 0.},
+                                     {3., 4.},    {21., 49.},  {39., 94.},
+                                     {57., 139.}, {75., 184.}, {93., 229.},
+                                     {111., 274.}};
+  return std::make_tuple(input, output);
+}
 
 forwardData getForwardData(DataSize size, std::string activation) {
   switch (size) {
@@ -60,6 +74,7 @@ forwardData getForwardData(DataSize size, std::string activation) {
   case large:
     return getLarge(activation);
   case largeWithNegative:
+    return getLargeWithNegative(activation);
   default:
     throw "Invalid";
   }
