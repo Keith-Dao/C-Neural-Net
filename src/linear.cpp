@@ -56,7 +56,7 @@ void Linear::setActivation(std::string activation_function) {
 
 #pragma region Forward pass
 Eigen::MatrixXd Linear::forward(const Eigen::MatrixXd &input) {
-  this->input = this->eval ? std::make_shared<Eigen::MatrixXd>(input) : nullptr;
+  this->input = this->eval ? nullptr : std::make_shared<Eigen::MatrixXd>(input);
   Eigen::MatrixXd output = input * this->weight.transpose();
   output.rowwise() += this->bias.transpose();
   return (*this->activationFunction)(output);
