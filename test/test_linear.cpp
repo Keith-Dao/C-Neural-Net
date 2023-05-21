@@ -1,4 +1,5 @@
 #include "activation_functions.hpp"
+#include "exceptions.hpp"
 #include "linear.hpp"
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
@@ -115,6 +116,12 @@ TEST(Linear, Test_Weight) {
   layer.setWeight(weight);
   ASSERT_TRUE(weight.isApprox(layer.getWeight()));
 }
+
+TEST(Linear, Test_Weight_Invalid_Shape) {
+  Linear layer = getLayer();
+  Eigen::MatrixXd weight{{1}};
+  EXPECT_THROW(layer.setWeight(weight), src_exceptions::InvalidShapeException);
+}
 #pragma endregion Weight
 
 #pragma region Bias
@@ -124,6 +131,12 @@ TEST(Linear, Test_Bias) {
   ASSERT_FALSE(bias.isApprox(layer.getBias()));
   layer.setBias(bias);
   ASSERT_TRUE(bias.isApprox(layer.getBias()));
+}
+
+TEST(Linear, Test_Bias_Invalid_Shape) {
+  Linear layer = getLayer();
+  Eigen::MatrixXd bias{{1}};
+  EXPECT_THROW(layer.setBias(bias), src_exceptions::InvalidShapeException);
 }
 #pragma endregion Bias
 
