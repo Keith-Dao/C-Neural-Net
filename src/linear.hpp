@@ -72,8 +72,10 @@ public:
 #pragma endregion Save
 
 #pragma region Forward pass
-  // Perform the forward pass for the layer.
-  Eigen::MatrixXd forward(Eigen::MatrixXd input);
+  /*
+    Perform the forward pass for the layer.
+  */
+  Eigen::MatrixXd forward(const Eigen::MatrixXd &input);
 #pragma endregion Forward pass
 };
 
