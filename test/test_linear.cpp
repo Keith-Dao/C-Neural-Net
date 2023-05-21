@@ -23,6 +23,21 @@ Linear getLayer(std::string activation = "") {
   return layer;
 };
 
+enum DataSize { small, large, largeWithNegative };
+std::string getDataSizeName(DataSize dataSize) {
+  switch (dataSize) {
+  case small:
+    return "small";
+  case large:
+    return "large";
+  case largeWithNegative:
+    return "large with negative";
+  default:
+    throw "Invalid";
+  }
+}
+
+#pragma region Forward data
 typedef std::tuple<Eigen::MatrixXd, Eigen::MatrixXd> forwardData;
 forwardData getSmall(const std::string &activation) {
   Eigen::MatrixXd input = Eigen::VectorXd::LinSpaced(3, 1, 3).transpose(),
@@ -30,16 +45,28 @@ forwardData getSmall(const std::string &activation) {
   return std::make_tuple(input, output);
 }
 
+forwardData getForwardData(DataSize size, std::string activation) {
+  switch (size) {
+  case small:
+    return getSmall(activation);
+  case large:
+  case largeWithNegative:
+  default:
+    throw "Invalid";
+  }
+}
+#pragma endregion Forward data
+
 struct FixtureData {
   Linear layer;
-  forwardData (*forwardDataGetter)(const std::string &);
+  DataSize dataSize;
 
-  FixtureData(std::string activation,
-              forwardData (*forwardDataGetter)(const std::string &))
-      : layer(getLayer(activation)), forwardDataGetter(forwardDataGetter){};
+  FixtureData(std::string activation, DataSize(dataSize))
+      : layer(getLayer(activation)), dataSize(dataSize){};
 };
 std::ostream &operator<<(std::ostream &os, FixtureData const &fixture) {
-  return os << fixture.layer.getActivation()->getName();
+  return os << fixture.layer.getActivation()->getName() + " - " +
+                   getDataSizeName(fixture.dataSize);
 }
 class TestLinear : public testing::TestWithParam<FixtureData> {};
 #pragma endregion Fixture
@@ -94,7 +121,8 @@ TEST(Linear, Test_Activation_Function) {
 #pragma region Forward pass
 TEST_P(TestLinear, Test_Forward) {
   Linear layer = GetParam().layer;
-  auto [X, Y] = GetParam().forwardDataGetter(layer.getActivation()->getName());
+  auto [X, Y] =
+      getForwardData(GetParam().dataSize, layer.getActivation()->getName());
   ASSERT_TRUE(Y.isApprox(layer.forward(X)))
       << "Forward:\n"
       << layer.getActivation()->getName() << "\n"
@@ -106,7 +134,8 @@ TEST_P(TestLinear, Test_Forward) {
 #pragma region Builtins
 TEST_P(TestLinear, Test_Call) {
   Linear layer = GetParam().layer;
-  auto [X, Y] = GetParam().forwardDataGetter(layer.getActivation()->getName());
+  auto [X, Y] =
+      getForwardData(GetParam().dataSize, layer.getActivation()->getName());
   ASSERT_TRUE(Y.isApprox(layer(X))) << "Call:\n"
                                     << layer.getActivation()->getName() << "\n"
                                     << X << "\n"
@@ -116,8 +145,7 @@ TEST_P(TestLinear, Test_Call) {
 #pragma endregion Tests
 
 #pragma region Data
-FixtureData noActivationSmall("NoActivation", getSmall),
-    reluSmall("ReLU", getSmall);
+FixtureData noActivationSmall("NoActivation", small), reluSmall("ReLU", small);
 INSTANTIATE_TEST_SUITE_P(, TestLinear,
                          ::testing::Values(noActivationSmall, reluSmall));
 #pragma endregion Data
