@@ -15,7 +15,7 @@ Linear getLayer(std::string activation = "") {
   Linear layer(3, 2);
   layer.setWeight(
       Eigen::VectorXd::LinSpaced(6, 1, 6).reshaped(3, 2).transpose());
-  layer.setBias(Eigen::VectorXd::LinSpaced(2, 1, 2).transpose());
+  layer.setBias(Eigen::VectorXd::LinSpaced(2, 1, 2));
   if (activation != "") {
     layer.setActivation(activation);
   }
@@ -44,12 +44,21 @@ forwardData getSmall(const std::string &activation) {
                   output{{15, 34}};
   return std::make_tuple(input, output);
 }
+forwardData getLarge(const std::string &activation) {
+  Eigen::MatrixXd
+      input = Eigen::VectorXd::LinSpaced(30, 1, 30).reshaped(3, 10).transpose(),
+      output{{15., 34.},   {33., 79.},   {51., 124.},  {69., 169.},
+             {87., 214.},  {105., 259.}, {123., 304.}, {141., 349.},
+             {159., 394.}, {177., 439.}};
+  return std::make_tuple(input, output);
+}
 
 forwardData getForwardData(DataSize size, std::string activation) {
   switch (size) {
   case small:
     return getSmall(activation);
   case large:
+    return getLarge(activation);
   case largeWithNegative:
   default:
     throw "Invalid";
@@ -96,7 +105,7 @@ TEST(Linear, Test_Weight) {
 #pragma region Bias
 TEST(Linear, Test_Bias) {
   Linear layer = getLayer();
-  Eigen::MatrixXd bias = Eigen::VectorXd::Ones(layer.outChannels).transpose();
+  Eigen::MatrixXd bias = Eigen::VectorXd::Ones(layer.outChannels);
   ASSERT_FALSE(bias.isApprox(layer.getBias()));
   layer.setBias(bias);
   ASSERT_TRUE(bias.isApprox(layer.getBias()));
@@ -145,8 +154,10 @@ TEST_P(TestLinear, Test_Call) {
 #pragma endregion Tests
 
 #pragma region Data
-FixtureData noActivationSmall("NoActivation", small), reluSmall("ReLU", small);
 INSTANTIATE_TEST_SUITE_P(, TestLinear,
-                         ::testing::Values(noActivationSmall, reluSmall));
+                         ::testing::Values(FixtureData("NoActivation", small),
+                                           FixtureData("ReLU", small),
+                                           FixtureData("NoActivation", large),
+                                           FixtureData("ReLU", large)));
 #pragma endregion Data
 } // namespace test_linear

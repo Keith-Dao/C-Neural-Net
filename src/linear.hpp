@@ -8,7 +8,8 @@
 namespace linear {
 class Linear {
   std::shared_ptr<Eigen::MatrixXd> input = nullptr;
-  Eigen::MatrixXd weight, bias;
+  Eigen::MatrixXd weight;
+  Eigen::VectorXd bias;
   std::shared_ptr<activation_functions::ActivationFunction> activationFunction;
   bool eval = false;
 
