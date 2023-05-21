@@ -56,7 +56,7 @@ forwardData getLargeWithNegative(const std::string &activation) {
   Eigen::MatrixXd
       input =
           Eigen::VectorXd::LinSpaced(30, -10, 19).reshaped(3, 10).transpose(),
-      output = activation == "ReLU"
+      output = activation != activation_functions::ReLU().getName()
                    ? Eigen::MatrixXd{{-51., -131.}, {-33., -86.}, {-15., -41.},
                                      {3., 4.},      {21., 49.},   {39., 94.},
                                      {57., 139.},   {75., 184.},  {93., 229.},
@@ -182,10 +182,13 @@ TEST_P(TestLinear, Test_Call) {
 #pragma endregion Tests
 
 #pragma region Data
-INSTANTIATE_TEST_SUITE_P(, TestLinear,
-                         ::testing::Values(FixtureData("NoActivation", small),
-                                           FixtureData("ReLU", small),
-                                           FixtureData("NoActivation", large),
-                                           FixtureData("ReLU", large)));
+INSTANTIATE_TEST_SUITE_P(
+    , TestLinear,
+    ::testing::Values(FixtureData("NoActivation", small),
+                      FixtureData("ReLU", small),
+                      FixtureData("NoActivation", large),
+                      FixtureData("ReLU", large),
+                      FixtureData("NoActivation", largeWithNegative),
+                      FixtureData("ReLU", largeWithNegative)));
 #pragma endregion Data
 } // namespace test_linear
