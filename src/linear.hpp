@@ -12,7 +12,9 @@ class Linear {
   std::shared_ptr<activation_functions::ActivationFunction> activationFunction;
   bool eval = false;
 
-  // Create and set the activation function.
+  /*
+    Create and set the activation function.
+  */
   template <typename T> void setActivation() {
     this->activationFunction = std::make_shared<T>();
   };
@@ -34,31 +36,47 @@ public:
 
 #pragma region Properties
 #pragma region Evaluation mode
-  // Get the layer's evaluation mode.
+  /*
+    Get the layer's evaluation mode.
+  */
   bool getEval() const;
-  // Set the layer's evaluation mode.
+  /*
+    Set the layer's evaluation mode.
+  */
   void setEval(bool eval);
 #pragma endregion Evaluation mode
 
 #pragma region Weight
-  // Get the layer's weight.
+  /*
+    Get the layer's weight.
+  */
   Eigen::MatrixXd getWeight() const;
-  // Set the layer's weight.
+  /*
+    Set the layer's weight.
+  */
   void setWeight(Eigen::MatrixXd weight);
 #pragma endregion Weight
 
 #pragma region Bias
-  // Get the layer's bias.
+  /*
+    Get the layer's bias.
+  */
   Eigen::MatrixXd getBias() const;
-  // Set the layer's bias.
+  /*
+    Set the layer's bias.
+  */
   void setBias(Eigen::MatrixXd bias);
 #pragma endregion Bias
 
 #pragma region Activation function
-  // Get the layer's activation function.
+  /*
+    Get the layer's activation function.
+  */
   std::shared_ptr<activation_functions::ActivationFunction>
   getActivation() const;
-  // Set the layer's activation function.
+  /*
+    Set the layer's activation function.
+  */
   void setActivation(std::string activation_function);
 #pragma endregion Activation function
 #pragma endregion Properties
