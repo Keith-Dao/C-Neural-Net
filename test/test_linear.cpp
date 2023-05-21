@@ -102,6 +102,17 @@ TEST_P(TestLinear, Test_Forward) {
       << Y << "\n";
 }
 #pragma endregion Forward pass
+
+#pragma region Builtins
+TEST_P(TestLinear, Test_Call) {
+  Linear layer = GetParam().layer;
+  auto [X, Y] = GetParam().forwardDataGetter(layer.getActivation()->getName());
+  ASSERT_TRUE(Y.isApprox(layer(X))) << "Call:\n"
+                                    << layer.getActivation()->getName() << "\n"
+                                    << X << "\n"
+                                    << Y << "\n";
+}
+#pragma endregion Builtins
 #pragma endregion Tests
 
 #pragma region Data

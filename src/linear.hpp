@@ -95,6 +95,15 @@ public:
   */
   Eigen::MatrixXd forward(const Eigen::MatrixXd &input);
 #pragma endregion Forward pass
+
+#pragma region Builtins
+  /*
+    Perform the forward pass for the layer.
+  */
+  Eigen::MatrixXd operator()(const Eigen::MatrixXd &input) {
+    return this->forward(input);
+  }
+#pragma endregion Builtins
 };
 
 #pragma region Exceptions
