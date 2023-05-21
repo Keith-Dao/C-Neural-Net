@@ -26,7 +26,7 @@ public:
   /*
     Performs the forward pass.
   */
-  inline Eigen::MatrixXd operator()(Eigen::MatrixXd &input) {
+  Eigen::MatrixXd operator()(Eigen::MatrixXd &input) {
     return this->forward(input);
   };
 
