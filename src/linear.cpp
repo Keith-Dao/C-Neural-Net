@@ -1,4 +1,5 @@
 #include "linear.hpp"
+#include "exceptions.hpp"
 
 using namespace linear;
 
@@ -62,3 +63,25 @@ Eigen::MatrixXd Linear::forward(const Eigen::MatrixXd &input) {
   return (*this->activationFunction)(output);
 }
 #pragma endregion Forward pass
+
+#pragma region Backward pass
+/*
+  Perform the backward pass for the layer.
+*/
+std::tuple<Eigen::MatrixXd, Eigen::MatrixXd, Eigen::MatrixXd>
+Linear::backward(const Eigen::MatrixXd &grad) {
+  if (this->eval) {
+    throw src_exceptions::BackwardCalledInEvalMode();
+  }
+  if (this->input == nullptr) {
+    throw src_exceptions::BackwardCalledWithNoInput();
+  }
+
+  Eigen::MatrixXd totalGrad = grad.array() *
+                              this->activationFunction->backward().array(),
+                  weightGrad = totalGrad.transpose() * *this->input,
+                  biasGrad = totalGrad.colwise().sum(),
+                  inputGrad = totalGrad * this->weight;
+  return std::make_tuple(inputGrad, weightGrad, biasGrad);
+}
+#pragma endregion Backward pass

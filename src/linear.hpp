@@ -98,6 +98,14 @@ public:
   Eigen::MatrixXd forward(const Eigen::MatrixXd &input);
 #pragma endregion Forward pass
 
+#pragma region Backward pass
+  /*
+    Perform the backward pass for the layer.
+  */
+  std::tuple<Eigen::MatrixXd, Eigen::MatrixXd, Eigen::MatrixXd>
+  backward(const Eigen::MatrixXd &grad);
+#pragma endregion Backward pass
+
 #pragma region Builtins
   /*
     Perform the forward pass for the layer.

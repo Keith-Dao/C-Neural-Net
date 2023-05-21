@@ -82,6 +82,69 @@ forwardData getForwardData(DataSize size, std::string activation) {
 }
 #pragma endregion Forward data
 
+#pragma region Grad data
+typedef std::tuple<Eigen::MatrixXd, Eigen::MatrixXd, Eigen::MatrixXd,
+                   Eigen::MatrixXd>
+    gradData;
+/*
+  Gradients with respect the to the output, input, weight and bias respectively.
+*/
+gradData getSmallGrad(const std::string &activation) {
+  Eigen::MatrixXd output = Eigen::MatrixXd::Ones(1, 2), input{{5, 7, 9}},
+                  weight{{1, 2, 3}, {1, 2, 3}}, bias{{1, 1}};
+  return std::make_tuple(output, input, weight, bias);
+}
+/*
+  Gradients with respect the to the output, input, weight and bias respectively.
+*/
+gradData getLargeGrad(const std::string &activation) {
+  Eigen::MatrixXd output = Eigen::MatrixXd::Ones(10, 2),
+                  input{{5., 7., 9.}, {5., 7., 9.}, {5., 7., 9.}, {5., 7., 9.},
+                        {5., 7., 9.}, {5., 7., 9.}, {5., 7., 9.}, {5., 7., 9.},
+                        {5., 7., 9.}, {5., 7., 9.}},
+                  weight{{145., 155., 165.}, {145., 155., 165.}},
+                  bias{{10, 10}};
+  return std::make_tuple(output, input, weight, bias);
+}
+/*
+  Gradients with respect the to the output, input, weight and bias respectively.
+*/
+gradData getLargeWithNegativeGrad(const std::string &activation) {
+  Eigen::MatrixXd output = Eigen::MatrixXd::Ones(10, 2),
+                  input = activation == activation_functions::ReLU().getName()
+                              ? Eigen::MatrixXd{{0., 0., 0.}, {0., 0., 0.},
+                                                {0., 0., 0.}, {5., 7., 9.},
+                                                {5., 7., 9.}, {5., 7., 9.},
+                                                {5., 7., 9.}, {5., 7., 9.},
+                                                {5., 7., 9.}, {5., 7., 9.}}
+                              : Eigen::MatrixXd{{5., 7., 9.}, {5., 7., 9.},
+                                                {5., 7., 9.}, {5., 7., 9.},
+                                                {5., 7., 9.}, {5., 7., 9.},
+                                                {5., 7., 9.}, {5., 7., 9.},
+                                                {5., 7., 9.}, {5., 7., 9.}},
+                  weight =
+                      activation == activation_functions::ReLU().getName()
+                          ? Eigen::MatrixXd{{56., 63., 70.}, {56., 63., 70.}}
+                          : Eigen::MatrixXd{{35., 45., 55.}, {35., 45., 55.}},
+                  bias = activation == activation_functions::ReLU().getName()
+                             ? Eigen::MatrixXd{{7, 7}}
+                             : Eigen::MatrixXd{{10, 10}};
+  return std::make_tuple(output, input, weight, bias);
+}
+
+gradData getGradData(DataSize size, std::string activation) {
+  switch (size) {
+  case small:
+    return getSmallGrad(activation);
+  case large:
+    return getLargeGrad(activation);
+  case largeWithNegative:
+    return getLargeWithNegativeGrad(activation);
+  default:
+    throw "Invalid";
+  }
+}
+#pragma endregion Grad data
 struct FixtureData {
   Linear layer;
   DataSize dataSize;
@@ -167,6 +230,41 @@ TEST_P(TestLinear, Test_Forward) {
       << Y << "\n";
 }
 #pragma endregion Forward pass
+
+#pragma region Backward pass
+TEST_P(TestLinear, Test_Backward) {
+  Linear layer = GetParam().layer;
+  auto [X, _] =
+      getForwardData(GetParam().dataSize, layer.getActivation()->getName());
+  layer(X);
+  auto [grad, trueInputGrad, trueWeightGrad, trueBiasGrad] =
+      getGradData(GetParam().dataSize, layer.getActivation()->getName());
+  auto [inputGrad, weightGrad, biasGrad] = layer.backward(grad);
+  ASSERT_TRUE(trueInputGrad.isApprox(inputGrad));
+  ASSERT_TRUE(trueWeightGrad.isApprox(weightGrad));
+  ASSERT_TRUE(trueBiasGrad.isApprox(biasGrad));
+}
+
+TEST_P(TestLinear, Test_Backward_With_Eval) {
+  Linear layer = GetParam().layer;
+  auto [X, _] =
+      getForwardData(GetParam().dataSize, layer.getActivation()->getName());
+  layer.setEval(true);
+  layer(X);
+  auto [grad, trueInputGrad, trueWeightGrad, trueBiasGrad] =
+      getGradData(GetParam().dataSize, layer.getActivation()->getName());
+  EXPECT_THROW(layer.backward(grad),
+               src_exceptions::BackwardCalledInEvalModeException);
+}
+
+TEST_P(TestLinear, Test_Backward_With_No_Input) {
+  Linear layer = GetParam().layer;
+  auto [grad, trueInputGrad, trueWeightGrad, trueBiasGrad] =
+      getGradData(GetParam().dataSize, layer.getActivation()->getName());
+  EXPECT_THROW(layer.backward(grad),
+               src_exceptions::BackwardCalledWithNoInputException);
+}
+#pragma endregion Backward pass
 
 #pragma region Builtins
 TEST_P(TestLinear, Test_Call) {
