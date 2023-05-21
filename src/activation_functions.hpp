@@ -7,7 +7,7 @@ namespace activation_functions {
 #pragma region ActivationFunction Abstract class
 class ActivationFunction {
 protected:
-  std::unique_ptr<Eigen::MatrixXd> input = nullptr;
+  std::shared_ptr<Eigen::MatrixXd> input = nullptr;
 
 public:
   /*
