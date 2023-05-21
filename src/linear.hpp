@@ -104,6 +104,11 @@ public:
   */
   std::tuple<Eigen::MatrixXd, Eigen::MatrixXd, Eigen::MatrixXd>
   backward(const Eigen::MatrixXd &grad);
+  /*
+    Update the parameters of the layer.
+  */
+  Eigen::MatrixXd update(const Eigen::MatrixXd &grad,
+                         const double learningRate);
 #pragma endregion Backward pass
 
 #pragma region Builtins

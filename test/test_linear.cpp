@@ -2,6 +2,7 @@
 #include "exceptions.hpp"
 #include "linear.hpp"
 #include <Eigen/Dense>
+#include <Eigen/src/Core/Matrix.h>
 #include <gtest/gtest.h>
 #include <iostream>
 #include <memory>
@@ -91,7 +92,7 @@ typedef std::tuple<Eigen::MatrixXd, Eigen::MatrixXd, Eigen::MatrixXd,
 */
 gradData getSmallGrad(const std::string &activation) {
   Eigen::MatrixXd output = Eigen::MatrixXd::Ones(1, 2), input{{5, 7, 9}},
-                  weight{{1, 2, 3}, {1, 2, 3}}, bias{{1, 1}};
+                  weight{{1, 2, 3}, {1, 2, 3}}, bias{{1}, {1}};
   return std::make_tuple(output, input, weight, bias);
 }
 /*
@@ -103,7 +104,7 @@ gradData getLargeGrad(const std::string &activation) {
                         {5., 7., 9.}, {5., 7., 9.}, {5., 7., 9.}, {5., 7., 9.},
                         {5., 7., 9.}, {5., 7., 9.}},
                   weight{{145., 155., 165.}, {145., 155., 165.}},
-                  bias{{10, 10}};
+                  bias{{10}, {10}};
   return std::make_tuple(output, input, weight, bias);
 }
 /*
@@ -127,8 +128,8 @@ gradData getLargeWithNegativeGrad(const std::string &activation) {
                           ? Eigen::MatrixXd{{56., 63., 70.}, {56., 63., 70.}}
                           : Eigen::MatrixXd{{35., 45., 55.}, {35., 45., 55.}},
                   bias = activation == activation_functions::ReLU().getName()
-                             ? Eigen::MatrixXd{{7, 7}}
-                             : Eigen::MatrixXd{{10, 10}};
+                             ? Eigen::MatrixXd{{7}, {7}}
+                             : Eigen::MatrixXd{{10}, {10}};
   return std::make_tuple(output, input, weight, bias);
 }
 
@@ -263,6 +264,29 @@ TEST_P(TestLinear, Test_Backward_With_No_Input) {
       getGradData(GetParam().dataSize, layer.getActivation()->getName());
   EXPECT_THROW(layer.backward(grad),
                src_exceptions::BackwardCalledWithNoInputException);
+}
+
+TEST_P(TestLinear, Test_Update) {
+  Linear layer = GetParam().layer;
+  auto [X, _] =
+      getForwardData(GetParam().dataSize, layer.getActivation()->getName());
+  layer(X);
+  auto [grad, trueInputGrad, trueWeightGrad, trueBiasGrad] =
+      getGradData(GetParam().dataSize, layer.getActivation()->getName());
+  double learningRate = 1e-4;
+  Eigen::MatrixXd trueWeight = Eigen::VectorXd::LinSpaced(6, 1, 6)
+                                   .reshaped(3, 2)
+                                   .transpose(),
+                  trueBias = Eigen::VectorXd::LinSpaced(2, 1, 2);
+  ASSERT_TRUE(trueWeight.isApprox(layer.getWeight()));
+  ASSERT_TRUE(trueBias.isApprox(layer.getBias()));
+
+  Eigen::MatrixXd inputGrad = layer.update(grad, learningRate);
+  ASSERT_TRUE(trueInputGrad.isApprox(inputGrad));
+  trueWeight -= learningRate * trueWeightGrad;
+  trueBias -= learningRate * trueBiasGrad;
+  ASSERT_TRUE(trueWeight.isApprox(layer.getWeight()));
+  ASSERT_TRUE(trueBias.isApprox(layer.getBias()));
 }
 #pragma endregion Backward pass
 

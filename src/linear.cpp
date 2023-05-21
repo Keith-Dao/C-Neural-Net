@@ -71,17 +71,25 @@ Eigen::MatrixXd Linear::forward(const Eigen::MatrixXd &input) {
 std::tuple<Eigen::MatrixXd, Eigen::MatrixXd, Eigen::MatrixXd>
 Linear::backward(const Eigen::MatrixXd &grad) {
   if (this->eval) {
-    throw src_exceptions::BackwardCalledInEvalMode();
+    throw src_exceptions::BackwardCalledInEvalModeException();
   }
   if (this->input == nullptr) {
-    throw src_exceptions::BackwardCalledWithNoInput();
+    throw src_exceptions::BackwardCalledWithNoInputException();
   }
 
   Eigen::MatrixXd totalGrad = grad.array() *
                               this->activationFunction->backward().array(),
                   weightGrad = totalGrad.transpose() * *this->input,
-                  biasGrad = totalGrad.colwise().sum(),
+                  biasGrad = totalGrad.colwise().sum().transpose(),
                   inputGrad = totalGrad * this->weight;
   return std::make_tuple(inputGrad, weightGrad, biasGrad);
+}
+
+Eigen::MatrixXd Linear::update(const Eigen::MatrixXd &grad,
+                               const double learningRate) {
+  auto [inputGrad, weightGrad, biasGrad] = this->backward(grad);
+  this->weight -= learningRate * weightGrad;
+  this->bias -= learningRate * biasGrad;
+  return inputGrad;
 }
 #pragma endregion Backward pass
