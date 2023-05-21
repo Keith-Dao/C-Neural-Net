@@ -1,4 +1,5 @@
 #include "activation_functions.hpp"
+#include "exceptions.hpp"
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
 #include <memory>
@@ -60,7 +61,8 @@ TEST_P(TestActivationFunctions, Test_Backward) {
 
 TEST_P(TestActivationFunctions, Test_Backward_Before_Forward) {
   std::shared_ptr<ActivationFunction> function = GetParam().function;
-  EXPECT_THROW(function->backward(), BackwardBeforeForwardException);
+  EXPECT_THROW(function->backward(),
+               src_exceptions::BackwardBeforeForwardException);
 }
 
 TEST_P(TestActivationFunctions, Test_Equal) {

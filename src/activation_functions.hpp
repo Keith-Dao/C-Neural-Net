@@ -1,6 +1,6 @@
 #pragma once
+#include "exceptions.hpp"
 #include <Eigen/Dense>
-#include <exception>
 #include <memory>
 
 namespace activation_functions {
@@ -72,12 +72,4 @@ public:
   Eigen::MatrixXd backward() override;
 };
 #pragma endregion ReLU
-
-#pragma region Exceptions
-class BackwardBeforeForwardException : public std::exception {
-  virtual const char *what() const throw() {
-    return "backward was called before forward.";
-  }
-};
-#pragma endregion Exceptions
 } // namespace activation_functions

@@ -10,7 +10,7 @@ Eigen::MatrixXd ActivationFunction::forward(const Eigen::MatrixXd &input) {
 
 Eigen::MatrixXd ActivationFunction::backward() {
   if (this->input == nullptr) {
-    throw BackwardBeforeForwardException();
+    throw src_exceptions::BackwardBeforeForwardException();
   }
   return *this->input;
 }

@@ -1,5 +1,4 @@
 #include "linear.hpp"
-#include <iostream>
 
 using namespace linear;
 
@@ -20,7 +19,7 @@ Eigen::MatrixXd Linear::getWeight() const { return this->weight; }
 void Linear::setWeight(Eigen::MatrixXd weight) {
   if (this->weight.rows() != weight.rows() ||
       this->weight.cols() != weight.cols()) {
-    throw InvalidShapeException();
+    throw src_exceptions::InvalidShapeException();
   }
   this->weight = weight;
 }
@@ -31,7 +30,7 @@ Eigen::MatrixXd Linear::getBias() const { return this->bias; };
 
 void Linear::setBias(Eigen::MatrixXd bias) {
   if (this->bias.rows() != bias.rows() || this->bias.cols() != bias.cols()) {
-    throw InvalidShapeException();
+    throw src_exceptions::InvalidShapeException();
   }
   this->bias = bias;
 };

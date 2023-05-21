@@ -1,5 +1,6 @@
 #pragma once
 #include "activation_functions.hpp"
+#include "exceptions.hpp"
 #include <Eigen/Dense>
 #include <exception>
 #include <math.h>
@@ -107,11 +108,4 @@ public:
 #pragma endregion Builtins
 };
 
-#pragma region Exceptions
-class InvalidShapeException : public std::exception {
-  virtual const char *what() const throw() {
-    return "An invalid shape was provided.";
-  }
-};
-#pragma endregion Exceptions
 } // namespace linear
