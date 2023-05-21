@@ -1,9 +1,11 @@
 #include "activation_functions.hpp"
 #include "linear.hpp"
 #include <Eigen/Dense>
+#include <Eigen/src/Core/Matrix.h>
 #include <gtest/gtest.h>
 #include <iostream>
 #include <memory>
+#include <tuple>
 
 using namespace linear;
 
@@ -13,7 +15,7 @@ Linear getLayer(std::string activation = "") {
   Linear layer(3, 2);
   layer.setWeight(
       Eigen::VectorXd::LinSpaced(6, 1, 6).reshaped(3, 2).transpose());
-  layer.setBias(Eigen::VectorXd::LinSpaced(2, 1, 2));
+  layer.setBias(Eigen::VectorXd::LinSpaced(2, 1, 2).transpose());
   if (activation != "") {
     layer.setActivation(activation);
   }
@@ -21,19 +23,25 @@ Linear getLayer(std::string activation = "") {
   return layer;
 };
 
+typedef std::tuple<Eigen::MatrixXd, Eigen::MatrixXd> forwardData;
+forwardData getSmall(const std::string &activation) {
+  Eigen::MatrixXd input = Eigen::VectorXd::LinSpaced(3, 1, 3).transpose(),
+                  output{{15, 34}};
+  return std::make_tuple(input, output);
+}
+
 struct FixtureData {
   Linear layer;
-  Eigen::MatrixXd X, Y, weightGrad, biasGrad;
+  forwardData (*forwardDataGetter)(const std::string &);
 
-  FixtureData(std::string activation, const Eigen::MatrixXd &X,
-              const Eigen::MatrixXd &Y, const Eigen::MatrixXd &weightGrad,
-              const Eigen::MatrixXd &biasGrad)
-      : layer(getLayer(activation)), X(X), Y(Y), weightGrad(weightGrad),
-        biasGrad(biasGrad){};
+  FixtureData(std::string activation,
+              forwardData (*forwardDataGetter)(const std::string &))
+      : layer(getLayer(activation)), forwardDataGetter(forwardDataGetter){};
 };
 std::ostream &operator<<(std::ostream &os, FixtureData const &fixture) {
   return os << fixture.layer.getActivation()->getName();
 }
+class TestLinear : public testing::TestWithParam<FixtureData> {};
 #pragma endregion Fixture
 
 #pragma region Tests
@@ -61,7 +69,7 @@ TEST(Linear, Test_Weight) {
 #pragma region Bias
 TEST(Linear, Test_Bias) {
   Linear layer = getLayer();
-  Eigen::MatrixXd bias = Eigen::VectorXd::Ones(layer.outChannels);
+  Eigen::MatrixXd bias = Eigen::VectorXd::Ones(layer.outChannels).transpose();
   ASSERT_FALSE(bias.isApprox(layer.getBias()));
   layer.setBias(bias);
   ASSERT_TRUE(bias.isApprox(layer.getBias()));
@@ -82,9 +90,24 @@ TEST(Linear, Test_Activation_Function) {
 }
 #pragma endregion Activation function
 #pragma endregion Properties
+
+#pragma region Forward pass
+TEST_P(TestLinear, Test_Forward) {
+  Linear layer = GetParam().layer;
+  auto [X, Y] = GetParam().forwardDataGetter(layer.getActivation()->getName());
+  ASSERT_TRUE(Y.isApprox(layer.forward(X)))
+      << "Forward:\n"
+      << layer.getActivation()->getName() << "\n"
+      << X << "\n"
+      << Y << "\n";
+}
+#pragma endregion Forward pass
 #pragma endregion Tests
 
 #pragma region Data
-
+FixtureData noActivationSmall("NoActivation", getSmall),
+    reluSmall("ReLU", getSmall);
+INSTANTIATE_TEST_SUITE_P(, TestLinear,
+                         ::testing::Values(noActivationSmall, reluSmall));
 #pragma endregion Data
 } // namespace test_linear

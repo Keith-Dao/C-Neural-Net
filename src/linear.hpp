@@ -27,7 +27,8 @@ public:
     double distributionRange = sqrt(1 / (double)inChannels);
     this->weight =
         Eigen::MatrixXd::Random(outChannels, inChannels) * distributionRange;
-    this->bias = Eigen::VectorXd::Random(outChannels) * distributionRange;
+    this->bias =
+        Eigen::VectorXd::Random(outChannels).transpose() * distributionRange;
   }
 
 #pragma region Properties
@@ -68,6 +69,11 @@ public:
 #pragma region Save
 // TODO
 #pragma endregion Save
+
+#pragma region Forward pass
+  // Perform the forward pass for the layer.
+  Eigen::MatrixXd forward(Eigen::MatrixXd input);
+#pragma endregion Forward pass
 };
 
 #pragma region Exceptions
