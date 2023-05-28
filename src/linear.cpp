@@ -93,3 +93,14 @@ Eigen::MatrixXd Linear::update(const Eigen::MatrixXd &grad,
   return inputGrad;
 }
 #pragma endregion Backward pass
+
+#pragma region Builtins
+bool Linear::operator==(const Linear &other) const {
+  return typeid(*this) == typeid(other) &&
+         this->inChannels == other.inChannels &&
+         this->outChannels == other.outChannels &&
+         this->weight.isApprox(other.getWeight()) &&
+         this->bias.isApprox(other.getBias()) &&
+         *this->activationFunction == *other.getActivation();
+}
+#pragma endregion Builtins

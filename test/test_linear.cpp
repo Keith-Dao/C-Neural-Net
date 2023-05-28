@@ -300,6 +300,29 @@ TEST_P(TestLinear, TestCall) {
                                     << X << "\n"
                                     << Y << "\n";
 }
+
+TEST(Linear, TestEqual) {
+  Linear layer = getLayer(), other = getLayer();
+  ASSERT_EQ(layer, other) << "Layers should be the same.\n";
+
+  // Different shape
+  other = Linear(2, 3);
+  ASSERT_NE(layer, other) << "Layers have different shape.\n";
+
+  // Different weight
+  other = getLayer();
+  other.setWeight(Eigen::MatrixXd::Ones(2, 3));
+  ASSERT_NE(layer, other) << "Layers have different weights.\n";
+
+  // Different bias
+  other = getLayer();
+  other.setBias(Eigen::VectorXd::Ones(2));
+  ASSERT_NE(layer, other) << "Layers have different bias.\n";
+
+  // Different activation
+  other = getLayer("ReLU");
+  ASSERT_NE(layer, other) << "Layers have different activation functions.\n";
+}
 #pragma endregion Builtins
 #pragma endregion Tests
 

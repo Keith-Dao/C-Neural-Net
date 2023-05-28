@@ -118,6 +118,8 @@ public:
   Eigen::MatrixXd operator()(const Eigen::MatrixXd &input) {
     return this->forward(input);
   }
+
+  bool operator==(const Linear &other) const;
 #pragma endregion Builtins
 };
 
