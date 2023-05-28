@@ -1,31 +1,26 @@
 #pragma once
 #include <Eigen/Dense>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 namespace utils {
 #pragma region Matrices
 /*
-  Convert a matrix to its stringified form.
+  Convert a matrix to a nested json array.
 */
-template <typename T>
-std::string to_string(const Eigen::MatrixBase<T> &matrix) {
-  std::string result = "[";
+template <typename T> json to_json(const Eigen::MatrixBase<T> &matrix) {
+  json result;
 
   for (int i = 0; i < matrix.rows(); ++i) {
-    if (i != 0) {
-      result += ",";
-    }
-
-    std::string row = "[";
+    json row;
     for (int j = 0; j < matrix.cols(); ++j) {
-      if (j != 0) {
-        row += ",";
-      }
-      row += std::to_string(matrix(i, j));
+      row.push_back(matrix(i, j));
     }
-    result += row + "]";
+    result.push_back(row);
   }
 
-  return result + "]";
+  return result;
 };
 #pragma endregion Matrices
 } // namespace utils
