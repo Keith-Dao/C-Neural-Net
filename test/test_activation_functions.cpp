@@ -3,23 +3,55 @@
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
 #include <memory>
+#include <tuple>
 
 using namespace activation_functions;
 
 namespace test_activation_functions {
 #pragma region Fixture
-struct FixtureData {
-  std::shared_ptr<ActivationFunction> function;
-  Eigen::MatrixXd X, Y, grad;
+std::shared_ptr<ActivationFunction> getActivationFunction(std::string type) {
+  if (type == "ReLU") {
+    return std::make_shared<ReLU>();
+  }
+  if (type == "NoActivation") {
+    return std::make_shared<NoActivation>();
+  }
+  throw "Invalid";
+}
 
-  FixtureData(const std::shared_ptr<ActivationFunction> &function,
-              const Eigen::MatrixXd &X, const Eigen::MatrixXd &Y,
-              const Eigen::MatrixXd &grad)
-      : function(function), X(X), Y(Y), grad(grad){};
+std::tuple<Eigen::MatrixXd, Eigen::MatrixXd, Eigen::MatrixXd>
+getData(std::string type) {
+  if (type != "ReLU" && type != "NoActivation") {
+    throw "Invalid";
+  }
+
+  Eigen::MatrixXd
+      X = Eigen::VectorXd::LinSpaced(20, -10, 9).reshaped(4, 5).transpose(),
+      Y = type == "ReLU" ? Eigen::MatrixXd{{0, 0, 0, 0},
+                                           {0, 0, 0, 0},
+                                           {0, 0, 0, 1},
+                                           {2, 3, 4, 5},
+                                           {6, 7, 8, 9}}
+                         : Eigen::VectorXd::LinSpaced(20, -10, 9)
+                               .reshaped(4, 5)
+                               .transpose(),
+      grad = type == "ReLU" ? Eigen::MatrixXd{{0, 0, 0, 0},
+                                              {0, 0, 0, 0},
+                                              {0, 0, 0, 1},
+                                              {1, 1, 1, 1},
+                                              {1, 1, 1, 1}}
+                            : Eigen::MatrixXd::Ones(5, 4);
+
+  return std::make_tuple(X, Y, grad);
+}
+
+struct FixtureData {
+  std::string type;
+  FixtureData(const std::string &type) : type(type){};
 };
 // Display a human readable name for the fixture data.
 std::ostream &operator<<(std::ostream &os, FixtureData const &fixture) {
-  return os << fixture.function->getName();
+  return os << fixture.type;
 }
 
 class TestActivationFunctions : public testing::TestWithParam<FixtureData> {};
@@ -27,7 +59,9 @@ class TestActivationFunctions : public testing::TestWithParam<FixtureData> {};
 
 #pragma region Tests
 TEST_P(TestActivationFunctions, TestCall) {
-  auto [function, X, Y, _] = GetParam();
+  std::shared_ptr<ActivationFunction> function =
+      getActivationFunction(GetParam().type);
+  auto [X, Y, _] = getData(GetParam().type);
   decltype(X) originalX(X);
   ASSERT_TRUE((*function)(X).isApprox(Y)) << "Operator:\n"
                                           << typeid(function).name() << "\n"
@@ -38,7 +72,9 @@ TEST_P(TestActivationFunctions, TestCall) {
 }
 
 TEST_P(TestActivationFunctions, TestForward) {
-  auto [function, X, Y, _] = GetParam();
+  std::shared_ptr<ActivationFunction> function =
+      getActivationFunction(GetParam().type);
+  auto [X, Y, _] = getData(GetParam().type);
   decltype(X) originalX(X);
   ASSERT_TRUE(function->forward(X).isApprox(Y))
       << "Operator:\n"
@@ -50,7 +86,9 @@ TEST_P(TestActivationFunctions, TestForward) {
 }
 
 TEST_P(TestActivationFunctions, TestBackward) {
-  auto [function, X, Y, grad] = GetParam();
+  std::shared_ptr<ActivationFunction> function =
+      getActivationFunction(GetParam().type);
+  auto [X, _, grad] = getData(GetParam().type);
   (*function)(X);
   ASSERT_TRUE(function->backward().isApprox(grad))
       << "Backward:\n"
@@ -60,13 +98,16 @@ TEST_P(TestActivationFunctions, TestBackward) {
 }
 
 TEST_P(TestActivationFunctions, TestBackwardBeforeForward) {
-  std::shared_ptr<ActivationFunction> function = GetParam().function;
+  std::shared_ptr<ActivationFunction> function =
+      getActivationFunction(GetParam().type);
   EXPECT_THROW(function->backward(),
                src_exceptions::BackwardBeforeForwardException);
 }
 
 TEST_P(TestActivationFunctions, TestEqual) {
-  std::shared_ptr<ActivationFunction> function = GetParam().function;
+  std::shared_ptr<ActivationFunction> function =
+      getActivationFunction(GetParam().type);
+  auto [X, Y, _] = getData(GetParam().type);
   ASSERT_EQ(function->getName() == ReLU().getName(), *function == ReLU());
   ASSERT_EQ(function->getName() == NoActivation().getName(),
             *function == NoActivation());
@@ -74,27 +115,8 @@ TEST_P(TestActivationFunctions, TestEqual) {
 #pragma endregion Tests
 
 #pragma region Data
-FixtureData noActivationData(
-    std::make_shared<NoActivation>(),
-    Eigen::VectorXd::LinSpaced(20, -10, 9).reshaped(4, 5).transpose(),
-    Eigen::VectorXd::LinSpaced(20, -10, 9).reshaped(4, 5).transpose(),
-    Eigen::MatrixXd::Ones(5, 4)),
-    reluData(std::make_shared<ReLU>(),
-             Eigen::VectorXd::LinSpaced(20, -10, 9).reshaped(4, 5).transpose(),
-             Eigen::MatrixXd{{0, 0, 0, 0},
-                             {0, 0, 0, 0},
-                             {0, 0, 0, 1},
-                             {2, 3, 4, 5},
-                             {6, 7, 8, 9}},
-             Eigen::MatrixXd{
-                 {0, 0, 0, 0},
-                 {0, 0, 0, 0},
-                 {0, 0, 0, 1},
-                 {1, 1, 1, 1},
-                 {1, 1, 1, 1},
-             });
-
 INSTANTIATE_TEST_SUITE_P(, TestActivationFunctions,
-                         ::testing::Values(noActivationData, reluData));
+                         ::testing::Values(FixtureData("NoActivation"),
+                                           FixtureData("ReLU")));
 #pragma endregion Data
 } // namespace test_activation_functions
