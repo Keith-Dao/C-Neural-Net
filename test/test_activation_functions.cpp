@@ -26,7 +26,7 @@ class TestActivationFunctions : public testing::TestWithParam<FixtureData> {};
 #pragma endregion Fixture
 
 #pragma region Tests
-TEST_P(TestActivationFunctions, Test_Call) {
+TEST_P(TestActivationFunctions, TestCall) {
   auto [function, X, Y, _] = GetParam();
   decltype(X) originalX(X);
   ASSERT_TRUE((*function)(X).isApprox(Y)) << "Operator:\n"
@@ -37,7 +37,7 @@ TEST_P(TestActivationFunctions, Test_Call) {
       << "Operation was done inplace but should not have been.";
 }
 
-TEST_P(TestActivationFunctions, Test_Forward) {
+TEST_P(TestActivationFunctions, TestForward) {
   auto [function, X, Y, _] = GetParam();
   decltype(X) originalX(X);
   ASSERT_TRUE(function->forward(X).isApprox(Y))
@@ -49,7 +49,7 @@ TEST_P(TestActivationFunctions, Test_Forward) {
       << "Operation was done inplace but should not have been.";
 }
 
-TEST_P(TestActivationFunctions, Test_Backward) {
+TEST_P(TestActivationFunctions, TestBackward) {
   auto [function, X, Y, grad] = GetParam();
   (*function)(X);
   ASSERT_TRUE(function->backward().isApprox(grad))
@@ -59,13 +59,13 @@ TEST_P(TestActivationFunctions, Test_Backward) {
       << grad << "\n";
 }
 
-TEST_P(TestActivationFunctions, Test_Backward_Before_Forward) {
+TEST_P(TestActivationFunctions, TestBackwardBeforeForward) {
   std::shared_ptr<ActivationFunction> function = GetParam().function;
   EXPECT_THROW(function->backward(),
                src_exceptions::BackwardBeforeForwardException);
 }
 
-TEST_P(TestActivationFunctions, Test_Equal) {
+TEST_P(TestActivationFunctions, TestEqual) {
   std::shared_ptr<ActivationFunction> function = GetParam().function;
   ASSERT_EQ(function->getName() == ReLU().getName(), *function == ReLU());
   ASSERT_EQ(function->getName() == NoActivation().getName(),

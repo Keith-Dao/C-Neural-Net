@@ -163,7 +163,7 @@ class TestLinear : public testing::TestWithParam<FixtureData> {};
 #pragma region Tests
 #pragma region Properties
 #pragma region Evaluation mode
-TEST(Linear, Test_Eval) {
+TEST(Linear, TestEval) {
   Linear linear = getLayer();
   ASSERT_FALSE(linear.getEval());
   linear.setEval(true);
@@ -172,7 +172,7 @@ TEST(Linear, Test_Eval) {
 #pragma endregion Evaluation mode
 
 #pragma region Weight
-TEST(Linear, Test_Weight) {
+TEST(Linear, TestWeight) {
   Linear layer = getLayer();
   Eigen::MatrixXd weight =
       Eigen::MatrixXd::Ones(layer.outChannels, layer.inChannels);
@@ -181,7 +181,7 @@ TEST(Linear, Test_Weight) {
   ASSERT_TRUE(weight.isApprox(layer.getWeight()));
 }
 
-TEST(Linear, Test_Weight_Invalid_Shape) {
+TEST(Linear, TestWeight_Invalid_Shape) {
   Linear layer = getLayer();
   Eigen::MatrixXd weight{{1}};
   EXPECT_THROW(layer.setWeight(weight), src_exceptions::InvalidShapeException);
@@ -189,7 +189,7 @@ TEST(Linear, Test_Weight_Invalid_Shape) {
 #pragma endregion Weight
 
 #pragma region Bias
-TEST(Linear, Test_Bias) {
+TEST(Linear, TestBias) {
   Linear layer = getLayer();
   Eigen::MatrixXd bias = Eigen::VectorXd::Ones(layer.outChannels);
   ASSERT_FALSE(bias.isApprox(layer.getBias()));
@@ -197,7 +197,7 @@ TEST(Linear, Test_Bias) {
   ASSERT_TRUE(bias.isApprox(layer.getBias()));
 }
 
-TEST(Linear, Test_Bias_Invalid_Shape) {
+TEST(Linear, TestBiasInvalidShape) {
   Linear layer = getLayer();
   Eigen::MatrixXd bias{{1}};
   EXPECT_THROW(layer.setBias(bias), src_exceptions::InvalidShapeException);
@@ -205,7 +205,7 @@ TEST(Linear, Test_Bias_Invalid_Shape) {
 #pragma endregion Bias
 
 #pragma region Activation function
-TEST(Linear, Test_Activation_Function) {
+TEST(Linear, TestActivationFunction) {
   Linear layer = getLayer();
   ASSERT_EQ(*layer.getActivation(), activation_functions::NoActivation());
   layer.setActivation("ReLU");
@@ -220,7 +220,7 @@ TEST(Linear, Test_Activation_Function) {
 #pragma endregion Properties
 
 #pragma region Forward pass
-TEST_P(TestLinear, Test_Forward) {
+TEST_P(TestLinear, TestForward) {
   Linear layer = GetParam().layer;
   auto [X, Y] =
       getForwardData(GetParam().dataSize, layer.getActivation()->getName());
@@ -233,7 +233,7 @@ TEST_P(TestLinear, Test_Forward) {
 #pragma endregion Forward pass
 
 #pragma region Backward pass
-TEST_P(TestLinear, Test_Backward) {
+TEST_P(TestLinear, TestBackward) {
   Linear layer = GetParam().layer;
   auto [X, _] =
       getForwardData(GetParam().dataSize, layer.getActivation()->getName());
@@ -246,7 +246,7 @@ TEST_P(TestLinear, Test_Backward) {
   ASSERT_TRUE(trueBiasGrad.isApprox(biasGrad));
 }
 
-TEST_P(TestLinear, Test_Backward_With_Eval) {
+TEST_P(TestLinear, TestBackwardWithEval) {
   Linear layer = GetParam().layer;
   auto [X, _] =
       getForwardData(GetParam().dataSize, layer.getActivation()->getName());
@@ -258,7 +258,7 @@ TEST_P(TestLinear, Test_Backward_With_Eval) {
                src_exceptions::BackwardCalledInEvalModeException);
 }
 
-TEST_P(TestLinear, Test_Backward_With_No_Input) {
+TEST_P(TestLinear, TestBackwardWithNoInput) {
   Linear layer = GetParam().layer;
   auto [grad, trueInputGrad, trueWeightGrad, trueBiasGrad] =
       getGradData(GetParam().dataSize, layer.getActivation()->getName());
@@ -266,7 +266,7 @@ TEST_P(TestLinear, Test_Backward_With_No_Input) {
                src_exceptions::BackwardCalledWithNoInputException);
 }
 
-TEST_P(TestLinear, Test_Update) {
+TEST_P(TestLinear, TestUpdate) {
   Linear layer = GetParam().layer;
   auto [X, _] =
       getForwardData(GetParam().dataSize, layer.getActivation()->getName());
@@ -291,7 +291,7 @@ TEST_P(TestLinear, Test_Update) {
 #pragma endregion Backward pass
 
 #pragma region Builtins
-TEST_P(TestLinear, Test_Call) {
+TEST_P(TestLinear, TestCall) {
   Linear layer = GetParam().layer;
   auto [X, Y] =
       getForwardData(GetParam().dataSize, layer.getActivation()->getName());
