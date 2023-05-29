@@ -8,7 +8,10 @@ Eigen::MatrixXd utils::from_json(const json &values) {
     return {};
   }
 
-  if (!values.is_array() || !values[0].is_array()) {
+  if (!values.is_array()) {
+    throw src_exceptions::JSONTypeException();
+  }
+  if (!values[0].is_array()) {
     throw src_exceptions::JSONArray2DException();
   }
 
@@ -17,6 +20,9 @@ Eigen::MatrixXd utils::from_json(const json &values) {
 
   for (int i = 0; i < rows; ++i) {
     for (int j = 0; j < cols; ++j) {
+      if (values[i][j].is_array()) {
+        throw src_exceptions::JSONArray2DException();
+      }
       if (!values[i][j].is_number()) {
         throw src_exceptions::JSONTypeException();
       }
