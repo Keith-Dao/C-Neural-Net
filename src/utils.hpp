@@ -10,7 +10,7 @@ namespace utils {
   Convert a matrix to a nested json array.
 */
 template <typename T> json to_json(const Eigen::MatrixBase<T> &matrix) {
-  json result;
+  json result = json::array();
 
   for (int i = 0; i < matrix.rows(); ++i) {
     json row;

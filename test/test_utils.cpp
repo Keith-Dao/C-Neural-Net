@@ -41,6 +41,7 @@ INSTANTIATE_TEST_SUITE_P(
                                  json{{1}, {2}, {3}}),
                       MatrixData(Eigen::VectorXd::LinSpaced(5, 1, 3),
                                  json{{1}, {1.5}, {2}, {2.5}, {3}}),
-                      MatrixData({}, {})));
+                      MatrixData({}, json::array())));
+
 #pragma endregion Matrices
 } // namespace test_utils
