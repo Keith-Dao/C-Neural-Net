@@ -6,9 +6,11 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include <memory>
+#include <nlohmann/json.hpp>
 #include <tuple>
 
 using namespace linear;
+using json = nlohmann::json;
 
 namespace test_linear {
 #pragma region Fixture
@@ -218,6 +220,24 @@ TEST(Linear, TestActivationFunction) {
 }
 #pragma endregion Activation function
 #pragma endregion Properties
+
+#pragma region Save
+TEST(Linear, TestToJson) {
+  Linear layer = getLayer();
+  json expected{{"class", "Linear"},
+                {"weight", {{1, 2, 3}, {4, 5, 6}}},
+                {"bias", {1, 2}},
+                {"activation_function", "NoActivation"}};
+  ASSERT_EQ(expected, layer.to_json()) << "NoActivation layer.\n";
+
+  layer = getLayer("ReLU");
+  expected = json{{"class", "Linear"},
+                  {"weight", {{1, 2, 3}, {4, 5, 6}}},
+                  {"bias", {1, 2}},
+                  {"activation_function", "ReLU"}};
+  ASSERT_EQ(expected, layer.to_json()) << "ReLU layer.\n";
+}
+#pragma endregion Save
 
 #pragma region Forward pass
 TEST_P(TestLinear, TestForward) {

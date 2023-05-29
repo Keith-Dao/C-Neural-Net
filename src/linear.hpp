@@ -5,6 +5,9 @@
 #include <exception>
 #include <math.h>
 #include <memory>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 namespace linear {
 class Linear {
@@ -88,7 +91,16 @@ public:
 #pragma endregion Load
 
 #pragma region Save
-// TODO
+  /*
+  Get all relevant attributes in a serialisable format.
+
+  Attributes includes:
+      - weight -- weights as a two-dimensional list
+      - bias -- bias as a list
+      - activation_function -- name of the activation function as a
+                                string
+  */
+  json to_json();
 #pragma endregion Save
 
 #pragma region Forward pass

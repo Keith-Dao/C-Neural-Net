@@ -1,5 +1,5 @@
 #include "linear.hpp"
-#include "exceptions.hpp"
+#include "utils.hpp"
 
 using namespace linear;
 
@@ -54,6 +54,17 @@ void Linear::setActivation(std::string activation_function) {
 }
 #pragma endregion Activation function
 #pragma endregion Properties
+
+#pragma region Save
+json Linear::to_json() {
+  return {{"class", "Linear"},
+          {"weight", utils::to_json(this->weight)},
+          {"bias",
+           utils::to_json(
+               this->bias.transpose())[0]}, // Needs to match the python output
+          {"activation_function", this->activationFunction->getName()}};
+}
+#pragma endregion Save
 
 #pragma region Forward pass
 Eigen::MatrixXd Linear::forward(const Eigen::MatrixXd &input) {
