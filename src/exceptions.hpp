@@ -22,11 +22,25 @@ class BackwardCalledWithNoInputException : public std::exception {
 };
 #pragma endregion Differentiable object
 
-#pragma region Shape
+#pragma region Eigen
 class InvalidShapeException : public std::exception {
   virtual const char *what() const throw() {
     return "An invalid shape was provided.";
   }
 };
-#pragma endregion Shape
+#pragma endregion Eigen
+
+#pragma region json
+class JSONTypeException : public std::exception {
+  virtual const char *what() const throw() {
+    return "An unexpected type was provided in the JSON data.";
+  }
+};
+
+class JSONArray2DException : public std::exception {
+  virtual const char *what() const throw() {
+    return "JSON data should be in the form of a 2D array.";
+  }
+};
+#pragma endregion json
 } // namespace src_exceptions

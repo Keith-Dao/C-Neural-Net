@@ -22,5 +22,7 @@ template <typename T> json to_json(const Eigen::MatrixBase<T> &matrix) {
 
   return result;
 };
+
+Eigen::MatrixXd from_json(const json &values);
 #pragma endregion Matrices
 } // namespace utils

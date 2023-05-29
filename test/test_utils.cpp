@@ -22,8 +22,13 @@ std::ostream &operator<<(std::ostream &os, MatrixData const &fixture) {
 class TestMatrix : public testing::TestWithParam<MatrixData> {};
 
 TEST_P(TestMatrix, TestMatrixToJson) {
-  auto [matrix, string] = GetParam();
-  ASSERT_EQ(string, to_json(matrix));
+  auto [matrix, values] = GetParam();
+  ASSERT_EQ(values, to_json(matrix));
+}
+
+TEST_P(TestMatrix, TestJsonToMatrix) {
+  auto [matrix, values] = GetParam();
+  ASSERT_TRUE(matrix.isApprox(from_json(values)));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -35,6 +40,7 @@ INSTANTIATE_TEST_SUITE_P(
                       MatrixData(Eigen::VectorXd::LinSpaced(3, 1, 3),
                                  json{{1}, {2}, {3}}),
                       MatrixData(Eigen::VectorXd::LinSpaced(5, 1, 3),
-                                 json{{1}, {1.5}, {2}, {2.5}, {3}})));
+                                 json{{1}, {1.5}, {2}, {2.5}, {3}}),
+                      MatrixData({}, {})));
 #pragma endregion Matrices
 } // namespace test_utils
