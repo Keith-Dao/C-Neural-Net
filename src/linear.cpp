@@ -1,0 +1,136 @@
+#include "linear.hpp"
+#include "exceptions.hpp"
+#include "utils.hpp"
+
+using namespace linear;
+
+#pragma region Properties
+#pragma region Evaluation mode
+bool Linear::getEval() const { return this->eval; }
+
+void Linear::setEval(bool eval) {
+  if (this->eval != eval)
+    this->input = nullptr;
+  this->eval = eval;
+}
+#pragma endregion Evaluation mode
+
+#pragma region Weight
+Eigen::MatrixXd Linear::getWeight() const { return this->weight; }
+
+void Linear::setWeight(Eigen::MatrixXd weight) {
+  if (this->weight.rows() != weight.rows() ||
+      this->weight.cols() != weight.cols()) {
+    throw src_exceptions::InvalidShapeException();
+  }
+  this->weight = weight;
+}
+#pragma endregion Weight
+
+#pragma region Bias
+Eigen::MatrixXd Linear::getBias() const { return this->bias; };
+
+void Linear::setBias(Eigen::MatrixXd bias) {
+  if (this->bias.rows() != bias.rows() || this->bias.cols() != bias.cols()) {
+    throw src_exceptions::InvalidShapeException();
+  }
+  this->bias = bias;
+};
+#pragma endregion Bias
+
+#pragma region Activation function
+std::shared_ptr<activation_functions::ActivationFunction>
+Linear::getActivation() const {
+  return this->activationFunction;
+};
+
+void Linear::setActivation(std::string activation_function) {
+  if (activation_function == "ReLU") {
+    this->setActivation<activation_functions::ReLU>();
+  } else if (activation_function == "NoActivation") {
+    this->setActivation<activation_functions::NoActivation>();
+  } else {
+    throw "Unknown activation function.";
+  }
+}
+#pragma endregion Activation function
+#pragma endregion Properties
+
+#pragma region Load
+Linear Linear::from_json(const json &values) {
+  if (values["class"] != "Linear") {
+    throw src_exceptions::InvalidClassAttributeValue();
+  }
+
+  Eigen::MatrixXd weight = utils::from_json(values["weight"]),
+                  bias = utils::from_json(json::array({values["bias"]}))
+                             .transpose();
+  int outChannels = weight.rows(), inChannels = weight.cols();
+  Linear layer(inChannels, outChannels);
+  layer.setWeight(weight);
+  layer.setBias(bias);
+  layer.setActivation(values["activation_function"]);
+  return layer;
+}
+#pragma endregion Load
+
+#pragma region Save
+json Linear::to_json() {
+  return {{"class", "Linear"},
+          {"weight", utils::to_json(this->weight)},
+          {"bias",
+           utils::to_json(
+               this->bias.transpose())[0]}, // Needs to match the python output
+          {"activation_function", this->activationFunction->getName()}};
+}
+#pragma endregion Save
+
+#pragma region Forward pass
+Eigen::MatrixXd Linear::forward(const Eigen::MatrixXd &input) {
+  this->input = this->eval ? nullptr : std::make_shared<Eigen::MatrixXd>(input);
+  Eigen::MatrixXd output = input * this->weight.transpose();
+  output.rowwise() += this->bias.transpose();
+  return (*this->activationFunction)(output);
+}
+#pragma endregion Forward pass
+
+#pragma region Backward pass
+/*
+  Perform the backward pass for the layer.
+*/
+std::tuple<Eigen::MatrixXd, Eigen::MatrixXd, Eigen::MatrixXd>
+Linear::backward(const Eigen::MatrixXd &grad) {
+  if (this->eval) {
+    throw src_exceptions::BackwardCalledInEvalModeException();
+  }
+  if (this->input == nullptr) {
+    throw src_exceptions::BackwardCalledWithNoInputException();
+  }
+
+  Eigen::MatrixXd totalGrad = grad.array() *
+                              this->activationFunction->backward().array(),
+                  weightGrad = totalGrad.transpose() * *this->input,
+                  biasGrad = totalGrad.colwise().sum().transpose(),
+                  inputGrad = totalGrad * this->weight;
+  return std::make_tuple(inputGrad, weightGrad, biasGrad);
+}
+
+Eigen::MatrixXd Linear::update(const Eigen::MatrixXd &grad,
+                               const double learningRate) {
+  auto [inputGrad, weightGrad, biasGrad] = this->backward(grad);
+  this->weight -= learningRate * weightGrad;
+  this->bias -= learningRate * biasGrad;
+  return inputGrad;
+}
+#pragma endregion Backward pass
+
+#pragma region Builtins
+bool Linear::operator==(const Linear &other) const {
+  return typeid(*this) == typeid(other) &&
+         this->inChannels == other.inChannels &&
+         this->outChannels == other.outChannels &&
+         this->weight.isApprox(other.getWeight()) &&
+         this->bias.isApprox(other.getBias()) &&
+         *this->activationFunction == *other.getActivation();
+}
+#pragma endregion Builtins

@@ -4,13 +4,13 @@ using namespace activation_functions;
 
 #pragma region ActivationFunction
 Eigen::MatrixXd ActivationFunction::forward(const Eigen::MatrixXd &input) {
-  this->input = std::make_unique<Eigen::MatrixXd>(input);
+  this->input = std::make_shared<Eigen::MatrixXd>(input);
   return input;
 }
 
 Eigen::MatrixXd ActivationFunction::backward() {
   if (this->input == nullptr) {
-    throw BackwardBeforeForwardException();
+    throw src_exceptions::BackwardBeforeForwardException();
   }
   return *this->input;
 }
