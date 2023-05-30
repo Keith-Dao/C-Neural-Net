@@ -221,6 +221,33 @@ TEST(Linear, TestActivationFunction) {
 #pragma endregion Activation function
 #pragma endregion Properties
 
+#pragma region Load
+TEST(Linear, TestFromJson) {
+  Linear expected = getLayer();
+  json values{{"class", "Linear"},
+              {"weight", {{1, 2, 3}, {4, 5, 6}}},
+              {"bias", {1, 2}},
+              {"activation_function", "NoActivation"}};
+  ASSERT_EQ(expected, Linear::from_json(values));
+
+  expected = getLayer("ReLU");
+  values = json{{"class", "Linear"},
+                {"weight", {{1, 2, 3}, {4, 5, 6}}},
+                {"bias", {1, 2}},
+                {"activation_function", "ReLU"}};
+  ASSERT_EQ(expected, Linear::from_json(values));
+}
+
+TEST(Linear, TestFromJsonInvalidClassAttribute) {
+  json values{{"class", "NotLinear"},
+              {"weight", {{1, 2, 3}, {4, 5, 6}}},
+              {"bias", {1, 2}},
+              {"activation_function", "NoActivation"}};
+  EXPECT_THROW(Linear::from_json(values),
+               src_exceptions::InvalidClassAttributeValue);
+}
+#pragma endregion Load
+
 #pragma region Save
 TEST(Linear, TestToJson) {
   Linear layer = getLayer();

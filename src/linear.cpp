@@ -1,4 +1,5 @@
 #include "linear.hpp"
+#include "exceptions.hpp"
 #include "utils.hpp"
 
 using namespace linear;
@@ -54,6 +55,24 @@ void Linear::setActivation(std::string activation_function) {
 }
 #pragma endregion Activation function
 #pragma endregion Properties
+
+#pragma region Load
+Linear Linear::from_json(const json &values) {
+  if (values["class"] != "Linear") {
+    throw src_exceptions::InvalidClassAttributeValue();
+  }
+
+  Eigen::MatrixXd weight = utils::from_json(values["weight"]),
+                  bias = utils::from_json(json::array({values["bias"]}))
+                             .transpose();
+  int outChannels = weight.rows(), inChannels = weight.cols();
+  Linear layer(inChannels, outChannels);
+  layer.setWeight(weight);
+  layer.setBias(bias);
+  layer.setActivation(values["activation_function"]);
+  return layer;
+}
+#pragma endregion Load
 
 #pragma region Save
 json Linear::to_json() {

@@ -87,18 +87,21 @@ public:
 #pragma endregion Properties
 
 #pragma region Load
-// TODO
+  /*
+    Creates a linear instance from the JSON values.
+  */
+  static Linear from_json(const json &values);
 #pragma endregion Load
 
 #pragma region Save
   /*
-  Get all relevant attributes in a serialisable format.
+    Get all relevant attributes in a serialisable format.
 
-  Attributes includes:
-      - weight -- weights as a two-dimensional list
-      - bias -- bias as a list
-      - activation_function -- name of the activation function as a
-                                string
+    Attributes includes:
+        - weight -- weights as a two-dimensional list
+        - bias -- bias as a list
+        - activation_function -- name of the activation function as a
+                                  string
   */
   json to_json();
 #pragma endregion Save
