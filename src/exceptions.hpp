@@ -1,5 +1,7 @@
 #pragma once
+#include <cstring>
 #include <exception>
+#include <string>
 
 namespace src_exceptions {
 #pragma region Differentiable object
@@ -27,6 +29,19 @@ class InvalidReductionException : public std::exception {
   virtual const char *what() const throw() {
     return "The selected reduction is not valid.";
   }
+};
+class EmptyMatrixException : public std::exception {
+  std::string variable;
+
+  virtual const char *what() const throw() {
+    std::string s = this->variable + " cannot be empty.";
+    char *result = new char[s.length() + 1];
+    std::strcpy(result, s.c_str());
+    return result;
+  }
+
+public:
+  EmptyMatrixException(std::string variable) : variable(variable){};
 };
 #pragma endregion Loss
 

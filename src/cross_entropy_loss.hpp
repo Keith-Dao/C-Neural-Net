@@ -1,5 +1,6 @@
 #pragma once
 #include <Eigen/Dense>
+#include <memory>
 
 namespace loss {
 class CrossEntropyLoss {
@@ -8,6 +9,9 @@ class CrossEntropyLoss {
       reductions;
   std::string reduction;
 #pragma endregion Reductions
+
+  std::shared_ptr<Eigen::MatrixXi> targets = nullptr;
+  std::shared_ptr<Eigen::MatrixXd> probabilities = nullptr;
 
 public:
   CrossEntropyLoss(std::string reduction = "mean") {
@@ -27,5 +31,52 @@ public:
   void setReduction(std::string reduction);
 #pragma endregion Reduction
 #pragma endregion Properties
+
+#pragma region Load
+// TODO
+#pragma endregion Load
+
+#pragma region Save
+// TODO
+#pragma endregion Save
+
+#pragma region Forward
+  /*
+    Calculate the cross entropy loss given the logits and the one hot encoded
+    labels.
+  */
+  double forward(const Eigen::MatrixXd &logits, const Eigen::MatrixXi &targets);
+
+  /*
+    Calculate the cross entropy loss given the logits and the target class
+    labels.
+  */
+  double forward(const Eigen::MatrixXd &logits,
+                 const std::vector<int> &targets);
+#pragma endregion Forward
+
+#pragma region Backward
+// TODO
+#pragma endregion Backward
+
+#pragma region Builtins
+  /*
+    Calculate the cross entropy loss given the logits and the one hot encoded
+    labels.
+  */
+  double operator()(const Eigen::MatrixXd &logits,
+                    const Eigen::MatrixXi &targets) {
+    return this->forward(logits, targets);
+  }
+
+  /*
+   Calculate the cross entropy loss given the logits and the target class
+   labels.
+ */
+  double operator()(const Eigen::MatrixXd &logits,
+                    const std::vector<int> &targets) {
+    return this->forward(logits, targets);
+  }
+#pragma endregion Builtins
 };
 } // namespace loss

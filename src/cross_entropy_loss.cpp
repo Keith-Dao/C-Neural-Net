@@ -1,5 +1,7 @@
 #include "cross_entropy_loss.hpp"
 #include "exceptions.hpp"
+#include "utils.hpp"
+#include <iostream>
 
 using namespace loss;
 
@@ -22,3 +24,31 @@ void CrossEntropyLoss::setReduction(std::string reduction) {
 }
 #pragma region Reduction
 #pragma endregion Properties
+
+#pragma region Forward
+double CrossEntropyLoss::forward(const Eigen::MatrixXd &logits,
+                                 const Eigen::MatrixXi &targets) {
+  if (logits.rows() < 1) {
+    throw src_exceptions::EmptyMatrixException("logits");
+  }
+  if (targets.rows() < 1) {
+    throw src_exceptions::EmptyMatrixException("targets");
+  }
+
+  if (logits.rows() != targets.rows() || logits.cols() != targets.cols()) {
+    throw src_exceptions::InvalidShapeException();
+  }
+  this->targets = std::make_shared<Eigen::MatrixXi>(targets);
+  this->probabilities =
+      std::make_shared<Eigen::MatrixXd>(utils::softmax(logits));
+  return CrossEntropyLoss::reductions[this->reduction](
+      -(targets.cast<double>().cwiseProduct(utils::log_softmax(logits)))
+           .rowwise()
+           .sum());
+}
+
+double CrossEntropyLoss::forward(const Eigen::MatrixXd &logits,
+                                 const std::vector<int> &targets) {
+  return this->forward(logits, utils::one_hot_encode(targets, logits.cols()));
+}
+#pragma endregion Forward
