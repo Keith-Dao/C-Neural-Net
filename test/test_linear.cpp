@@ -2,10 +2,8 @@
 #include "exceptions.hpp"
 #include "linear.hpp"
 #include <Eigen/Dense>
-#include <Eigen/src/Core/Matrix.h>
 #include <gtest/gtest.h>
 #include <iostream>
-#include <memory>
 #include <nlohmann/json.hpp>
 #include <tuple>
 
