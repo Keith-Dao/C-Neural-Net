@@ -22,6 +22,14 @@ class BackwardCalledWithNoInputException : public std::exception {
 };
 #pragma endregion Differentiable object
 
+#pragma region Loss
+class InvalidReductionException : public std::exception {
+  virtual const char *what() const throw() {
+    return "The selected reduction is not valid.";
+  }
+};
+#pragma endregion Loss
+
 #pragma region Load
 class InvalidClassAttributeValue : public std::exception {
   virtual const char *what() const throw() {
