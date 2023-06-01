@@ -51,4 +51,11 @@ Eigen::MatrixXd utils::softmax(const Eigen::MatrixXd &in) {
   result.array().colwise() /= result.rowwise().sum().array();
   return result;
 }
+
+Eigen::MatrixXd utils::log_softmax(const Eigen::MatrixXd &in) {
+  Eigen::MatrixXd result(in);
+  result.colwise() -= in.rowwise().maxCoeff();
+  result.array().colwise() -= result.array().exp().rowwise().sum().log();
+  return result;
+}
 #pragma endregion Matrices

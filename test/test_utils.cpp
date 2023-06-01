@@ -119,5 +119,25 @@ TEST(MatrixUtils, TestSoftmax) {
   ASSERT_TRUE(trueP.isApprox(softmax(x))) << "Last softmax failed.";
 }
 #pragma endregion Softmax
+
+#pragma region Log softmax
+TEST(MatrixUtils, TestLogSoftmax) {
+  Eigen::MatrixXd x{{1, 1, 1}},
+      trueP{{-1.098612288668, -1.098612288668, -1.098612288668}};
+  ASSERT_TRUE(trueP.isApprox(log_softmax(x))) << "First log softmax failed.";
+
+  x = Eigen::MatrixXd{{1, 0, 0}};
+  trueP = Eigen::MatrixXd{{-0.551444713932, -1.551444713932, -1.551444713932}};
+  ASSERT_TRUE(trueP.isApprox(log_softmax(x))) << "Second log softmax failed.";
+
+  x = Eigen::MatrixXd{{-1, -1, -1}};
+  trueP = Eigen::MatrixXd{{-1.098612288668, -1.098612288668, -1.098612288668}};
+  ASSERT_TRUE(trueP.isApprox(log_softmax(x))) << "Third log softmax failed.";
+
+  x = Eigen::MatrixXd{{999, 0, 0}};
+  trueP = Eigen::MatrixXd{{0, -999, -999}};
+  ASSERT_TRUE(trueP.isApprox(log_softmax(x))) << "Last log softmax failed.";
+}
+#pragma endregion Log softmax
 #pragma endregion Matrices
 } // namespace test_utils
