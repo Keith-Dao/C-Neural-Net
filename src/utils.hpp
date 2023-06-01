@@ -36,11 +36,23 @@ Eigen::MatrixXi one_hot_encode(const std::vector<int> &targets, int numClasses);
 /*
   The softmax function.
 */
-Eigen::MatrixXd softmax(const Eigen::MatrixXd &in);
+template <typename T> Eigen::MatrixXd softmax(const Eigen::MatrixBase<T> &in) {
+  Eigen::MatrixXd result = in.template cast<double>();
+  result.colwise() -= result.rowwise().maxCoeff();
+  result = result.array().exp().matrix();
+  result.array().colwise() /= result.rowwise().sum().array();
+  return result;
+}
 
 /*
   The log softmax function.
 */
-Eigen::MatrixXd log_softmax(const Eigen::MatrixXd &in);
+template <typename T>
+Eigen::MatrixXd log_softmax(const Eigen::MatrixBase<T> &in) {
+  Eigen::MatrixXd result = in.template cast<double>();
+  result.colwise() -= result.rowwise().maxCoeff();
+  result.array().colwise() -= result.array().exp().rowwise().sum().log();
+  return result;
+}
 #pragma endregion Matrices
 } // namespace utils

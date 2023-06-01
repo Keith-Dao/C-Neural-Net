@@ -106,15 +106,15 @@ TEST(MatrixUtils, TestOneHotEncodeWithInvalidLabels) {
 
 #pragma region Softmax
 TEST(MatrixUtils, TestSoftmax) {
-  Eigen::MatrixXd x{{1, 1, 1}},
-      trueP{{0.33333333333333, 0.33333333333333, 0.33333333333333}};
+  Eigen::MatrixXi x{{1, 1, 1}};
+  Eigen::MatrixXd trueP{{0.33333333333333, 0.33333333333333, 0.33333333333333}};
   ASSERT_TRUE(trueP.isApprox(softmax(x))) << "First softmax failed.";
 
-  x = Eigen::MatrixXd{{1, 0, 0}};
+  x = Eigen::MatrixXi{{1, 0, 0}};
   trueP = Eigen::MatrixXd{{0.576116884766, 0.211941557617, 0.211941557617}};
   ASSERT_TRUE(trueP.isApprox(softmax(x))) << "Second softmax failed.";
 
-  x = Eigen::MatrixXd{{999, 0, 0}};
+  x = Eigen::MatrixXi{{999, 0, 0}};
   trueP = Eigen::MatrixXd{{1, 0, 0}};
   ASSERT_TRUE(trueP.isApprox(softmax(x))) << "Last softmax failed.";
 }
@@ -122,19 +122,19 @@ TEST(MatrixUtils, TestSoftmax) {
 
 #pragma region Log softmax
 TEST(MatrixUtils, TestLogSoftmax) {
-  Eigen::MatrixXd x{{1, 1, 1}},
-      trueP{{-1.098612288668, -1.098612288668, -1.098612288668}};
+  Eigen::MatrixXi x{{1, 1, 1}};
+  Eigen::MatrixXd trueP{{-1.098612288668, -1.098612288668, -1.098612288668}};
   ASSERT_TRUE(trueP.isApprox(log_softmax(x))) << "First log softmax failed.";
 
-  x = Eigen::MatrixXd{{1, 0, 0}};
+  x = Eigen::MatrixXi{{1, 0, 0}};
   trueP = Eigen::MatrixXd{{-0.551444713932, -1.551444713932, -1.551444713932}};
   ASSERT_TRUE(trueP.isApprox(log_softmax(x))) << "Second log softmax failed.";
 
-  x = Eigen::MatrixXd{{-1, -1, -1}};
+  x = Eigen::MatrixXi{{-1, -1, -1}};
   trueP = Eigen::MatrixXd{{-1.098612288668, -1.098612288668, -1.098612288668}};
   ASSERT_TRUE(trueP.isApprox(log_softmax(x))) << "Third log softmax failed.";
 
-  x = Eigen::MatrixXd{{999, 0, 0}};
+  x = Eigen::MatrixXi{{999, 0, 0}};
   trueP = Eigen::MatrixXd{{0, -999, -999}};
   ASSERT_TRUE(trueP.isApprox(log_softmax(x))) << "Last log softmax failed.";
 }
