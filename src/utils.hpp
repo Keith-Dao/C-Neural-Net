@@ -23,6 +23,14 @@ template <typename T> json to_json(const Eigen::MatrixBase<T> &matrix) {
   return result;
 };
 
+/*
+  Convert a nested json array to a matrix.
+*/
 Eigen::MatrixXd from_json(const json &values);
+
+/*
+  Convert a vector of classes to a one-hot encoded matrix.
+*/
+Eigen::MatrixXi one_hot_encode(const std::vector<int> &targets, int numClasses);
 #pragma endregion Matrices
 } // namespace utils

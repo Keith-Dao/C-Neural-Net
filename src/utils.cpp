@@ -1,6 +1,5 @@
 #include "utils.hpp"
 #include "exceptions.hpp"
-#include <iostream>
 
 #pragma region Matrices
 Eigen::MatrixXd utils::from_json(const json &values) {
@@ -32,4 +31,17 @@ Eigen::MatrixXd utils::from_json(const json &values) {
 
   return result;
 }
+
+Eigen::MatrixXi utils::one_hot_encode(const std::vector<int> &targets,
+                                      int numClasses) {
+  Eigen::MatrixXi result = Eigen::MatrixXi::Zero(targets.size(), numClasses);
+  for (int i = 0; i < targets.size(); ++i) {
+    if (targets[i] >= numClasses || targets[i] < 0) {
+      throw src_exceptions::InvalidLabelIndexException();
+    }
+    result(i, targets[i]) = 1;
+  }
+  return result;
+}
+
 #pragma endregion Matrices

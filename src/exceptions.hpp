@@ -30,6 +30,14 @@ class InvalidReductionException : public std::exception {
 };
 #pragma endregion Loss
 
+#pragma region Utils
+class InvalidLabelIndexException : public std::exception {
+  virtual const char *what() const throw() {
+    return "Received a label index greater than the number of classes.";
+  }
+};
+#pragma endregion Utils
+
 #pragma region Load
 class InvalidClassAttributeValue : public std::exception {
   virtual const char *what() const throw() {

@@ -75,5 +75,31 @@ TEST(MatrixUtils, TestJsonToMatrixWithInvalidTypes) {
   EXPECT_THROW(from_json(values), src_exceptions::JSONTypeException)
       << "JSON objects are not supported, only 2D.";
 }
+
+TEST(MatrixUtils, TestOneHotEncode) {
+  std::vector<int> labels{0, 1, 2};
+  int classes = 3;
+  Eigen::MatrixXi encoded{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
+  ASSERT_TRUE(encoded.isApprox(one_hot_encode(labels, classes)))
+      << "First one hot encode failed.";
+
+  labels = std::vector<int>{1, 0, 2};
+  encoded = Eigen::MatrixXi{{0, 1, 0}, {1, 0, 0}, {0, 0, 1}};
+  ASSERT_TRUE(encoded.isApprox(one_hot_encode(labels, classes)))
+      << "Second one hot encode failed.";
+
+  labels = std::vector<int>{3};
+  classes = 10;
+  encoded = Eigen::MatrixXi{{0, 0, 0, 1, 0, 0, 0, 0, 0, 0}};
+  ASSERT_TRUE(encoded.isApprox(one_hot_encode(labels, classes)))
+      << "Last one hot encode failed.";
+}
+
+TEST(MatrixUtils, TestOneHotEncodeWithInvalidLabels) {
+  std::vector<int> labels{0, 1, 3};
+  int classes = 3;
+  EXPECT_THROW(one_hot_encode(labels, classes),
+               src_exceptions::InvalidLabelIndexException);
+}
 #pragma endregion Matrices
 } // namespace test_utils
