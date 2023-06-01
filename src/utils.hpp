@@ -32,5 +32,10 @@ Eigen::MatrixXd from_json(const json &values);
   Convert a vector of classes to a one-hot encoded matrix.
 */
 Eigen::MatrixXi one_hot_encode(const std::vector<int> &targets, int numClasses);
+
+/*
+  The softmax function.
+*/
+Eigen::MatrixXd softmax(const Eigen::MatrixXd &in);
 #pragma endregion Matrices
 } // namespace utils

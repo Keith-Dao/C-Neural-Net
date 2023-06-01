@@ -76,6 +76,7 @@ TEST(MatrixUtils, TestJsonToMatrixWithInvalidTypes) {
       << "JSON objects are not supported, only 2D.";
 }
 
+#pragma region One hot encode
 TEST(MatrixUtils, TestOneHotEncode) {
   std::vector<int> labels{0, 1, 2};
   int classes = 3;
@@ -101,5 +102,22 @@ TEST(MatrixUtils, TestOneHotEncodeWithInvalidLabels) {
   EXPECT_THROW(one_hot_encode(labels, classes),
                src_exceptions::InvalidLabelIndexException);
 }
+#pragma endregion One hot encode
+
+#pragma region Softmax
+TEST(MatrixUtils, TestSoftmax) {
+  Eigen::MatrixXd x{{1, 1, 1}},
+      trueP{{0.33333333333333, 0.33333333333333, 0.33333333333333}};
+  ASSERT_TRUE(trueP.isApprox(softmax(x))) << "First softmax failed.";
+
+  x = Eigen::MatrixXd{{1, 0, 0}};
+  trueP = Eigen::MatrixXd{{0.576116884766, 0.211941557617, 0.211941557617}};
+  ASSERT_TRUE(trueP.isApprox(softmax(x))) << "Second softmax failed.";
+
+  x = Eigen::MatrixXd{{999, 0, 0}};
+  trueP = Eigen::MatrixXd{{1, 0, 0}};
+  ASSERT_TRUE(trueP.isApprox(softmax(x))) << "Last softmax failed.";
+}
+#pragma endregion Softmax
 #pragma endregion Matrices
 } // namespace test_utils

@@ -44,4 +44,11 @@ Eigen::MatrixXi utils::one_hot_encode(const std::vector<int> &targets,
   return result;
 }
 
+Eigen::MatrixXd utils::softmax(const Eigen::MatrixXd &in) {
+  Eigen::MatrixXd result(in);
+  result.colwise() -= in.rowwise().maxCoeff();
+  result = result.array().exp().matrix();
+  result.array().colwise() /= result.rowwise().sum().array();
+  return result;
+}
 #pragma endregion Matrices
