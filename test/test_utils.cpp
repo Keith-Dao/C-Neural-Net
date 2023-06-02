@@ -75,5 +75,69 @@ TEST(MatrixUtils, TestJsonToMatrixWithInvalidTypes) {
   EXPECT_THROW(from_json(values), src_exceptions::JSONTypeException)
       << "JSON objects are not supported, only 2D.";
 }
+
+#pragma region One hot encode
+TEST(MatrixUtils, TestOneHotEncode) {
+  std::vector<int> labels{0, 1, 2};
+  int classes = 3;
+  Eigen::MatrixXi encoded{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
+  ASSERT_TRUE(encoded.isApprox(one_hot_encode(labels, classes)))
+      << "First one hot encode failed.";
+
+  labels = std::vector<int>{1, 0, 2};
+  encoded = Eigen::MatrixXi{{0, 1, 0}, {1, 0, 0}, {0, 0, 1}};
+  ASSERT_TRUE(encoded.isApprox(one_hot_encode(labels, classes)))
+      << "Second one hot encode failed.";
+
+  labels = std::vector<int>{3};
+  classes = 10;
+  encoded = Eigen::MatrixXi{{0, 0, 0, 1, 0, 0, 0, 0, 0, 0}};
+  ASSERT_TRUE(encoded.isApprox(one_hot_encode(labels, classes)))
+      << "Last one hot encode failed.";
+}
+
+TEST(MatrixUtils, TestOneHotEncodeWithInvalidLabels) {
+  std::vector<int> labels{0, 1, 3};
+  int classes = 3;
+  EXPECT_THROW(one_hot_encode(labels, classes),
+               src_exceptions::InvalidLabelIndexException);
+}
+#pragma endregion One hot encode
+
+#pragma region Softmax
+TEST(MatrixUtils, TestSoftmax) {
+  Eigen::MatrixXi x{{1, 1, 1}};
+  Eigen::MatrixXd trueP{{0.33333333333333, 0.33333333333333, 0.33333333333333}};
+  ASSERT_TRUE(trueP.isApprox(softmax(x))) << "First softmax failed.";
+
+  x = Eigen::MatrixXi{{1, 0, 0}};
+  trueP = Eigen::MatrixXd{{0.576116884766, 0.211941557617, 0.211941557617}};
+  ASSERT_TRUE(trueP.isApprox(softmax(x))) << "Second softmax failed.";
+
+  x = Eigen::MatrixXi{{999, 0, 0}};
+  trueP = Eigen::MatrixXd{{1, 0, 0}};
+  ASSERT_TRUE(trueP.isApprox(softmax(x))) << "Last softmax failed.";
+}
+#pragma endregion Softmax
+
+#pragma region Log softmax
+TEST(MatrixUtils, TestLogSoftmax) {
+  Eigen::MatrixXi x{{1, 1, 1}};
+  Eigen::MatrixXd trueP{{-1.098612288668, -1.098612288668, -1.098612288668}};
+  ASSERT_TRUE(trueP.isApprox(log_softmax(x))) << "First log softmax failed.";
+
+  x = Eigen::MatrixXi{{1, 0, 0}};
+  trueP = Eigen::MatrixXd{{-0.551444713932, -1.551444713932, -1.551444713932}};
+  ASSERT_TRUE(trueP.isApprox(log_softmax(x))) << "Second log softmax failed.";
+
+  x = Eigen::MatrixXi{{-1, -1, -1}};
+  trueP = Eigen::MatrixXd{{-1.098612288668, -1.098612288668, -1.098612288668}};
+  ASSERT_TRUE(trueP.isApprox(log_softmax(x))) << "Third log softmax failed.";
+
+  x = Eigen::MatrixXi{{999, 0, 0}};
+  trueP = Eigen::MatrixXd{{0, -999, -999}};
+  ASSERT_TRUE(trueP.isApprox(log_softmax(x))) << "Last log softmax failed.";
+}
+#pragma endregion Log softmax
 #pragma endregion Matrices
 } // namespace test_utils

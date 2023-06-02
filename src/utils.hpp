@@ -23,6 +23,36 @@ template <typename T> json to_json(const Eigen::MatrixBase<T> &matrix) {
   return result;
 };
 
+/*
+  Convert a nested json array to a matrix.
+*/
 Eigen::MatrixXd from_json(const json &values);
+
+/*
+  Convert a vector of classes to a one-hot encoded matrix.
+*/
+Eigen::MatrixXi one_hot_encode(const std::vector<int> &targets, int numClasses);
+
+/*
+  The softmax function.
+*/
+template <typename T> Eigen::MatrixXd softmax(const Eigen::MatrixBase<T> &in) {
+  Eigen::MatrixXd result = in.template cast<double>();
+  result.colwise() -= result.rowwise().maxCoeff();
+  result = result.array().exp().matrix();
+  result.array().colwise() /= result.rowwise().sum().array();
+  return result;
+}
+
+/*
+  The log softmax function.
+*/
+template <typename T>
+Eigen::MatrixXd log_softmax(const Eigen::MatrixBase<T> &in) {
+  Eigen::MatrixXd result = in.template cast<double>();
+  result.colwise() -= result.rowwise().maxCoeff();
+  result.array().colwise() -= result.array().exp().rowwise().sum().log();
+  return result;
+}
 #pragma endregion Matrices
 } // namespace utils
