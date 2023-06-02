@@ -299,6 +299,15 @@ TEST_P(TestCrossEntropyLoss, TestCall) {
   ASSERT_EQ(lossValue, loss(logits, oneHot)) << "Call with one hot encoded.";
   ASSERT_EQ(lossValue, loss(logits, labels)) << "Call with labels.";
 }
+
+TEST(CrossEntropyLoss, TestEqual) {
+  CrossEntropyLoss loss("mean"), other("mean");
+  ASSERT_EQ(loss, other) << "Both are using mean reduction.";
+  other = CrossEntropyLoss("sum");
+  ASSERT_NE(loss, other) << "Different reductions.";
+  loss = CrossEntropyLoss("sum");
+  ASSERT_EQ(loss, other) << "Both are using sum reduction.";
+}
 #pragma endregion Builtins
 
 #pragma region Data

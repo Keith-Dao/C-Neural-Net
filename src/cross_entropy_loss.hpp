@@ -80,6 +80,8 @@ public:
                     const std::vector<int> &targets) {
     return this->forward(logits, targets);
   }
+
+  bool operator==(const CrossEntropyLoss &other) const;
 #pragma endregion Builtins
 };
 } // namespace loss
