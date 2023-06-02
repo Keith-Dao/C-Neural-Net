@@ -56,7 +56,10 @@ public:
 #pragma endregion Forward
 
 #pragma region Backward
-// TODO
+  /*
+    Perform the backward pass using the previous forward inputs.
+  */
+  Eigen::MatrixXd backward();
 #pragma endregion Backward
 
 #pragma region Builtins

@@ -101,6 +101,51 @@ double getLoss(std::string reduction, DataSize dataSize) {
   }
 }
 #pragma endregion Values
+
+#pragma region Gradients
+Eigen::MatrixXd getSmallCloseGrad(std::string reduction) {
+  return Eigen::MatrixXd{{-0.423883115234, 0.211941557617, 0.211941557617}};
+}
+
+Eigen::MatrixXd getSmallExactGrad(std::string reduction) {
+  return Eigen::MatrixXd{{0, 0, 0}};
+}
+
+Eigen::MatrixXd getSmallFarGrad(std::string reduction) {
+  return Eigen::MatrixXd{{-0.844637596503, 0.422318798252, 0.422318798252}};
+}
+
+Eigen::MatrixXd getLargeGrad(std::string reduction) {
+  if (reduction == "sum") {
+    return Eigen::MatrixXd{{-0.423883115234, 0.211941557617, 0.211941557617},
+                           {0., 0., 0.},
+                           {-0.844637596503, 0.422318798252, 0.422318798252}};
+  }
+  if (reduction == "mean") {
+    return Eigen::MatrixXd{
+        {-0.1412943717447, 0.0706471858724, 0.0706471858724},
+        {0., 0., 0.},
+        {-0.2815458655010, 0.1407729327505, 0.1407729327505}};
+  }
+  throw "Invalid";
+}
+
+Eigen::MatrixXd getGrad(std::string reduction, DataSize dataSize) {
+  switch (dataSize) {
+  case smallClose:
+    return getSmallCloseGrad(reduction);
+  case smallExact:
+    return getSmallExactGrad(reduction);
+  case smallFar:
+    return getSmallFarGrad(reduction);
+  case large:
+    return getLargeGrad(reduction);
+  default:
+    throw "Invalid";
+  }
+}
+#pragma endregion Gradients
+
 struct FixtureData {
   std::string reduction;
   DataSize dataSize;
@@ -223,6 +268,28 @@ TEST(CrossEntropyLoss, TestForwardWithInvalidLabel) {
                src_exceptions::InvalidLabelIndexException);
 }
 #pragma endregion Forward
+
+#pragma region Backward
+TEST_P(TestCrossEntropyLoss, TestBackward) {
+  CrossEntropyLoss loss(GetParam().reduction);
+  auto [logits, oneHot, labels] = getData(GetParam().dataSize);
+  auto trueGrad = getGrad(GetParam().reduction, GetParam().dataSize);
+  loss(logits, oneHot);
+  ASSERT_TRUE(trueGrad.isApprox(loss.backward()))
+      << "Backward call with one hot encoded.";
+  loss(logits, labels);
+  ASSERT_TRUE(trueGrad.isApprox(loss.backward()))
+      << "Backward call with labels.";
+}
+
+TEST(CrossEntropyLoss, TestBackwardBeforeForward) {
+  CrossEntropyLoss loss("mean");
+  EXPECT_THROW(loss.backward(), src_exceptions::BackwardBeforeForwardException);
+
+  loss = CrossEntropyLoss("sum");
+  EXPECT_THROW(loss.backward(), src_exceptions::BackwardBeforeForwardException);
+}
+#pragma endregion Backward
 
 #pragma region Builtins
 TEST_P(TestCrossEntropyLoss, TestCall) {

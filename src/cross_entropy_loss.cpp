@@ -52,3 +52,19 @@ double CrossEntropyLoss::forward(const Eigen::MatrixXd &logits,
   return this->forward(logits, utils::one_hot_encode(targets, logits.cols()));
 }
 #pragma endregion Forward
+
+#pragma region Backward
+Eigen::MatrixXd CrossEntropyLoss::backward() {
+  if (this->probabilities == nullptr || this->targets == nullptr) {
+    throw src_exceptions::BackwardBeforeForwardException();
+  }
+
+  int batchSize = this->probabilities->rows();
+  if (this->reduction == "sum") {
+    batchSize = 1;
+  }
+
+  return (*this->probabilities - this->targets->template cast<double>()) /
+         batchSize;
+}
+#pragma endregion Backward
