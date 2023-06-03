@@ -90,7 +90,7 @@ public:
   /*
     Creates a linear instance from the JSON values.
   */
-  static Linear from_json(const json &values);
+  static Linear fromJson(const json &values);
 #pragma endregion Load
 
 #pragma region Save
@@ -103,7 +103,7 @@ public:
         - activation_function -- name of the activation function as a
                                   string
   */
-  json to_json();
+  json toJson();
 #pragma endregion Save
 
 #pragma region Forward pass

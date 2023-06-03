@@ -41,14 +41,14 @@ double CrossEntropyLoss::forward(const Eigen::MatrixXd &logits,
   this->probabilities =
       std::make_shared<Eigen::MatrixXd>(utils::softmax(logits));
   return CrossEntropyLoss::reductions[this->reduction](
-      -(targets.cast<double>().cwiseProduct(utils::log_softmax(logits)))
+      -(targets.cast<double>().cwiseProduct(utils::logSoftmax(logits)))
            .rowwise()
            .sum());
 }
 
 double CrossEntropyLoss::forward(const Eigen::MatrixXd &logits,
                                  const std::vector<int> &targets) {
-  return this->forward(logits, utils::one_hot_encode(targets, logits.cols()));
+  return this->forward(logits, utils::oneHotEncode(targets, logits.cols()));
 }
 #pragma endregion Forward
 

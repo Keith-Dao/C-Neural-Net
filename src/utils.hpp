@@ -9,7 +9,7 @@ namespace utils {
 /*
   Convert a matrix to a nested json array.
 */
-template <typename T> json to_json(const Eigen::MatrixBase<T> &matrix) {
+template <typename T> json toJson(const Eigen::MatrixBase<T> &matrix) {
   json result = json::array();
 
   for (int i = 0; i < matrix.rows(); ++i) {
@@ -26,12 +26,12 @@ template <typename T> json to_json(const Eigen::MatrixBase<T> &matrix) {
 /*
   Convert a nested json array to a matrix.
 */
-Eigen::MatrixXd from_json(const json &values);
+Eigen::MatrixXd fromJson(const json &values);
 
 /*
   Convert a vector of classes to a one-hot encoded matrix.
 */
-Eigen::MatrixXi one_hot_encode(const std::vector<int> &targets, int numClasses);
+Eigen::MatrixXi oneHotEncode(const std::vector<int> &targets, int numClasses);
 
 /*
   The softmax function.
@@ -48,7 +48,7 @@ template <typename T> Eigen::MatrixXd softmax(const Eigen::MatrixBase<T> &in) {
   The log softmax function.
 */
 template <typename T>
-Eigen::MatrixXd log_softmax(const Eigen::MatrixBase<T> &in) {
+Eigen::MatrixXd logSoftmax(const Eigen::MatrixBase<T> &in) {
   Eigen::MatrixXd result = in.template cast<double>();
   result.colwise() -= result.rowwise().maxCoeff();
   result.array().colwise() -= result.array().exp().rowwise().sum().log();

@@ -2,7 +2,7 @@
 #include "exceptions.hpp"
 
 #pragma region Matrices
-Eigen::MatrixXd utils::from_json(const json &values) {
+Eigen::MatrixXd utils::fromJson(const json &values) {
   if (values.empty()) {
     return {};
   }
@@ -32,8 +32,8 @@ Eigen::MatrixXd utils::from_json(const json &values) {
   return result;
 }
 
-Eigen::MatrixXi utils::one_hot_encode(const std::vector<int> &targets,
-                                      int numClasses) {
+Eigen::MatrixXi utils::oneHotEncode(const std::vector<int> &targets,
+                                    int numClasses) {
   Eigen::MatrixXi result = Eigen::MatrixXi::Zero(targets.size(), numClasses);
   for (int i = 0; i < targets.size(); ++i) {
     if (targets[i] >= numClasses || targets[i] < 0) {
