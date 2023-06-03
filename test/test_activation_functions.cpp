@@ -101,7 +101,7 @@ TEST_P(TestActivationFunctions, TestBackwardBeforeForward) {
   std::shared_ptr<ActivationFunction> function =
       getActivationFunction(GetParam().type);
   EXPECT_THROW(function->backward(),
-               src_exceptions::BackwardBeforeForwardException);
+               exceptions::differentiable::BackwardBeforeForwardException);
 }
 
 TEST_P(TestActivationFunctions, TestEqual) {

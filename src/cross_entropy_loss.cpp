@@ -17,7 +17,7 @@ std::string CrossEntropyLoss::getReduction() const { return this->reduction; }
 
 void CrossEntropyLoss::setReduction(std::string reduction) {
   if (!this->reductions.count(reduction)) {
-    throw src_exceptions::InvalidReductionException();
+    throw exceptions::loss::InvalidReductionException();
   }
   this->reduction = reduction;
 }
@@ -28,14 +28,14 @@ void CrossEntropyLoss::setReduction(std::string reduction) {
 double CrossEntropyLoss::forward(const Eigen::MatrixXd &logits,
                                  const Eigen::MatrixXi &targets) {
   if (logits.rows() < 1) {
-    throw src_exceptions::EmptyMatrixException("logits");
+    throw exceptions::eigen::EmptyMatrixException("logits");
   }
   if (targets.rows() < 1) {
-    throw src_exceptions::EmptyMatrixException("targets");
+    throw exceptions::eigen::EmptyMatrixException("targets");
   }
 
   if (logits.rows() != targets.rows() || logits.cols() != targets.cols()) {
-    throw src_exceptions::InvalidShapeException();
+    throw exceptions::eigen::InvalidShapeException();
   }
   this->targets = std::make_shared<Eigen::MatrixXi>(targets);
   this->probabilities =
@@ -55,7 +55,7 @@ double CrossEntropyLoss::forward(const Eigen::MatrixXd &logits,
 #pragma region Backward
 Eigen::MatrixXd CrossEntropyLoss::backward() {
   if (this->probabilities == nullptr || this->targets == nullptr) {
-    throw src_exceptions::BackwardBeforeForwardException();
+    throw exceptions::differentiable::BackwardBeforeForwardException();
   }
 
   int batchSize = this->probabilities->rows();

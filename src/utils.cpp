@@ -8,10 +8,10 @@ Eigen::MatrixXd utils::fromJson(const json &values) {
   }
 
   if (!values.is_array()) {
-    throw src_exceptions::JSONTypeException();
+    throw exceptions::json::JSONTypeException();
   }
   if (!values[0].is_array()) {
-    throw src_exceptions::JSONArray2DException();
+    throw exceptions::json::JSONArray2DException();
   }
 
   int rows = values.size(), cols = values[0].size();
@@ -20,10 +20,10 @@ Eigen::MatrixXd utils::fromJson(const json &values) {
   for (int i = 0; i < rows; ++i) {
     for (int j = 0; j < cols; ++j) {
       if (values[i][j].is_array()) {
-        throw src_exceptions::JSONArray2DException();
+        throw exceptions::json::JSONArray2DException();
       }
       if (!values[i][j].is_number()) {
-        throw src_exceptions::JSONTypeException();
+        throw exceptions::json::JSONTypeException();
       }
       result(i, j) = values[i][j];
     }
@@ -37,7 +37,7 @@ Eigen::MatrixXi utils::oneHotEncode(const std::vector<int> &targets,
   Eigen::MatrixXi result = Eigen::MatrixXi::Zero(targets.size(), numClasses);
   for (int i = 0; i < targets.size(); ++i) {
     if (targets[i] >= numClasses || targets[i] < 0) {
-      throw src_exceptions::InvalidLabelIndexException();
+      throw exceptions::utils::one_hot_encode::InvalidLabelIndexException();
     }
     result(i, targets[i]) = 1;
   }

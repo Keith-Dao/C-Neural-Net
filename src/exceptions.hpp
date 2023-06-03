@@ -3,8 +3,8 @@
 #include <exception>
 #include <string>
 
-namespace src_exceptions {
-#pragma region Differentiable object
+namespace exceptions {
+namespace differentiable {
 class BackwardBeforeForwardException : public std::exception {
   virtual const char *what() const throw() {
     return "backward was called before forward.";
@@ -22,14 +22,41 @@ class BackwardCalledWithNoInputException : public std::exception {
     return "backward cannot be called without a stored input.";
   }
 };
-#pragma endregion Differentiable object
+} // namespace differentiable
 
-#pragma region Loss
+namespace loss {
 class InvalidReductionException : public std::exception {
   virtual const char *what() const throw() {
     return "The selected reduction is not valid.";
   }
 };
+} // namespace loss
+
+namespace utils {
+namespace one_hot_encode {
+class InvalidLabelIndexException : public std::exception {
+  virtual const char *what() const throw() {
+    return "Received a label index greater than the number of classes.";
+  }
+};
+} // namespace one_hot_encode
+} // namespace utils
+
+namespace load {
+class InvalidClassAttributeValue : public std::exception {
+  virtual const char *what() const throw() {
+    return "Invalid value for class.";
+  }
+};
+} // namespace load
+
+namespace eigen {
+class InvalidShapeException : public std::exception {
+  virtual const char *what() const throw() {
+    return "An invalid shape was provided.";
+  }
+};
+
 class EmptyMatrixException : public std::exception {
   std::string variable;
 
@@ -43,33 +70,9 @@ class EmptyMatrixException : public std::exception {
 public:
   EmptyMatrixException(std::string variable) : variable(variable){};
 };
-#pragma endregion Loss
+} // namespace eigen
 
-#pragma region Utils
-class InvalidLabelIndexException : public std::exception {
-  virtual const char *what() const throw() {
-    return "Received a label index greater than the number of classes.";
-  }
-};
-#pragma endregion Utils
-
-#pragma region Load
-class InvalidClassAttributeValue : public std::exception {
-  virtual const char *what() const throw() {
-    return "Invalid value for class.";
-  }
-};
-#pragma endregion Load
-
-#pragma region Eigen
-class InvalidShapeException : public std::exception {
-  virtual const char *what() const throw() {
-    return "An invalid shape was provided.";
-  }
-};
-#pragma endregion Eigen
-
-#pragma region JSON
+namespace json {
 class JSONTypeException : public std::exception {
   virtual const char *what() const throw() {
     return "An unexpected type was provided in the JSON data.";
@@ -81,5 +84,5 @@ class JSONArray2DException : public std::exception {
     return "JSON data should be in the form of a 2D array.";
   }
 };
-#pragma endregion JSON
-} // namespace src_exceptions
+} // namespace json
+} // namespace exceptions
