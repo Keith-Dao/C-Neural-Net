@@ -226,14 +226,14 @@ TEST(Linear, TestFromJson) {
               {"weight", {{1, 2, 3}, {4, 5, 6}}},
               {"bias", {1, 2}},
               {"activation_function", "NoActivation"}};
-  ASSERT_EQ(expected, Linear::from_json(values));
+  ASSERT_EQ(expected, Linear::fromJson(values));
 
   expected = getLayer("ReLU");
   values = json{{"class", "Linear"},
                 {"weight", {{1, 2, 3}, {4, 5, 6}}},
                 {"bias", {1, 2}},
                 {"activation_function", "ReLU"}};
-  ASSERT_EQ(expected, Linear::from_json(values));
+  ASSERT_EQ(expected, Linear::fromJson(values));
 }
 
 TEST(Linear, TestFromJsonInvalidClassAttribute) {
@@ -241,7 +241,7 @@ TEST(Linear, TestFromJsonInvalidClassAttribute) {
               {"weight", {{1, 2, 3}, {4, 5, 6}}},
               {"bias", {1, 2}},
               {"activation_function", "NoActivation"}};
-  EXPECT_THROW(Linear::from_json(values),
+  EXPECT_THROW(Linear::fromJson(values),
                src_exceptions::InvalidClassAttributeValue);
 }
 #pragma endregion Load
@@ -253,14 +253,14 @@ TEST(Linear, TestToJson) {
                 {"weight", {{1, 2, 3}, {4, 5, 6}}},
                 {"bias", {1, 2}},
                 {"activation_function", "NoActivation"}};
-  ASSERT_EQ(expected, layer.to_json()) << "NoActivation layer.\n";
+  ASSERT_EQ(expected, layer.toJson()) << "NoActivation layer.\n";
 
   layer = getLayer("ReLU");
   expected = json{{"class", "Linear"},
                   {"weight", {{1, 2, 3}, {4, 5, 6}}},
                   {"bias", {1, 2}},
                   {"activation_function", "ReLU"}};
-  ASSERT_EQ(expected, layer.to_json()) << "ReLU layer.\n";
+  ASSERT_EQ(expected, layer.toJson()) << "ReLU layer.\n";
 }
 #pragma endregion Save
 

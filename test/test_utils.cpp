@@ -24,12 +24,12 @@ class TestMatrix : public testing::TestWithParam<MatrixData> {};
 
 TEST_P(TestMatrix, TestMatrixToJson) {
   auto [matrix, values] = GetParam();
-  ASSERT_EQ(values, to_json(matrix));
+  ASSERT_EQ(values, toJson(matrix));
 }
 
 TEST_P(TestMatrix, TestJsonToMatrix) {
   auto [matrix, values] = GetParam();
-  ASSERT_TRUE(matrix.isApprox(from_json(values)));
+  ASSERT_TRUE(matrix.isApprox(fromJson(values)));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -46,33 +46,33 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST(MatrixUtils, TestJsonToMatrixWithInvalidValues) {
   json values = json::parse(R"([1, 2])");
-  EXPECT_THROW(from_json(values), src_exceptions::JSONArray2DException)
+  EXPECT_THROW(fromJson(values), src_exceptions::JSONArray2DException)
       << "1D arrays are not supported, only 2D.";
 
   values = json::parse(R"([[[1, 2]]])");
-  EXPECT_THROW(from_json(values), src_exceptions::JSONArray2DException)
+  EXPECT_THROW(fromJson(values), src_exceptions::JSONArray2DException)
       << "Higher dimension arrays are not supported, only 2D.";
 }
 
 TEST(MatrixUtils, TestJsonToMatrixWithInvalidTypes) {
   json values = json::parse(R"([[true, false]])");
-  EXPECT_THROW(from_json(values), src_exceptions::JSONTypeException)
+  EXPECT_THROW(fromJson(values), src_exceptions::JSONTypeException)
       << "Booleans are not supported, only numbers.";
 
   values = json::parse(R"([["a", "b"]])");
-  EXPECT_THROW(from_json(values), src_exceptions::JSONTypeException)
+  EXPECT_THROW(fromJson(values), src_exceptions::JSONTypeException)
       << "Strings are not supported, only numbers.";
 
   values = json::parse(R"([[null]])");
-  EXPECT_THROW(from_json(values), src_exceptions::JSONTypeException)
+  EXPECT_THROW(fromJson(values), src_exceptions::JSONTypeException)
       << "null is not supported, only numbers.";
 
   values = json::parse(R"([[{"a": "b"}, {"b": "c"}]])");
-  EXPECT_THROW(from_json(values), src_exceptions::JSONTypeException)
+  EXPECT_THROW(fromJson(values), src_exceptions::JSONTypeException)
       << "JSON objects are not supported, only numbers.";
 
   values = json::parse(R"({"a": "b"})");
-  EXPECT_THROW(from_json(values), src_exceptions::JSONTypeException)
+  EXPECT_THROW(fromJson(values), src_exceptions::JSONTypeException)
       << "JSON objects are not supported, only 2D.";
 }
 
@@ -81,25 +81,25 @@ TEST(MatrixUtils, TestOneHotEncode) {
   std::vector<int> labels{0, 1, 2};
   int classes = 3;
   Eigen::MatrixXi encoded{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
-  ASSERT_TRUE(encoded.isApprox(one_hot_encode(labels, classes)))
+  ASSERT_TRUE(encoded.isApprox(oneHotEncode(labels, classes)))
       << "First one hot encode failed.";
 
   labels = std::vector<int>{1, 0, 2};
   encoded = Eigen::MatrixXi{{0, 1, 0}, {1, 0, 0}, {0, 0, 1}};
-  ASSERT_TRUE(encoded.isApprox(one_hot_encode(labels, classes)))
+  ASSERT_TRUE(encoded.isApprox(oneHotEncode(labels, classes)))
       << "Second one hot encode failed.";
 
   labels = std::vector<int>{3};
   classes = 10;
   encoded = Eigen::MatrixXi{{0, 0, 0, 1, 0, 0, 0, 0, 0, 0}};
-  ASSERT_TRUE(encoded.isApprox(one_hot_encode(labels, classes)))
+  ASSERT_TRUE(encoded.isApprox(oneHotEncode(labels, classes)))
       << "Last one hot encode failed.";
 }
 
 TEST(MatrixUtils, TestOneHotEncodeWithInvalidLabels) {
   std::vector<int> labels{0, 1, 3};
   int classes = 3;
-  EXPECT_THROW(one_hot_encode(labels, classes),
+  EXPECT_THROW(oneHotEncode(labels, classes),
                src_exceptions::InvalidLabelIndexException);
 }
 #pragma endregion One hot encode
@@ -124,19 +124,19 @@ TEST(MatrixUtils, TestSoftmax) {
 TEST(MatrixUtils, TestLogSoftmax) {
   Eigen::MatrixXi x{{1, 1, 1}};
   Eigen::MatrixXd trueP{{-1.098612288668, -1.098612288668, -1.098612288668}};
-  ASSERT_TRUE(trueP.isApprox(log_softmax(x))) << "First log softmax failed.";
+  ASSERT_TRUE(trueP.isApprox(logSoftmax(x))) << "First log softmax failed.";
 
   x = Eigen::MatrixXi{{1, 0, 0}};
   trueP = Eigen::MatrixXd{{-0.551444713932, -1.551444713932, -1.551444713932}};
-  ASSERT_TRUE(trueP.isApprox(log_softmax(x))) << "Second log softmax failed.";
+  ASSERT_TRUE(trueP.isApprox(logSoftmax(x))) << "Second log softmax failed.";
 
   x = Eigen::MatrixXi{{-1, -1, -1}};
   trueP = Eigen::MatrixXd{{-1.098612288668, -1.098612288668, -1.098612288668}};
-  ASSERT_TRUE(trueP.isApprox(log_softmax(x))) << "Third log softmax failed.";
+  ASSERT_TRUE(trueP.isApprox(logSoftmax(x))) << "Third log softmax failed.";
 
   x = Eigen::MatrixXi{{999, 0, 0}};
   trueP = Eigen::MatrixXd{{0, -999, -999}};
-  ASSERT_TRUE(trueP.isApprox(log_softmax(x))) << "Last log softmax failed.";
+  ASSERT_TRUE(trueP.isApprox(logSoftmax(x))) << "Last log softmax failed.";
 }
 #pragma endregion Log softmax
 #pragma endregion Matrices
