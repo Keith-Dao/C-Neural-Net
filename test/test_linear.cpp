@@ -184,7 +184,8 @@ TEST(Linear, TestWeight) {
 TEST(Linear, TestWeight_Invalid_Shape) {
   Linear layer = getLayer();
   Eigen::MatrixXd weight{{1}};
-  EXPECT_THROW(layer.setWeight(weight), src_exceptions::InvalidShapeException);
+  EXPECT_THROW(layer.setWeight(weight),
+               exceptions::eigen::InvalidShapeException);
 }
 #pragma endregion Weight
 
@@ -200,7 +201,7 @@ TEST(Linear, TestBias) {
 TEST(Linear, TestBiasInvalidShape) {
   Linear layer = getLayer();
   Eigen::MatrixXd bias{{1}};
-  EXPECT_THROW(layer.setBias(bias), src_exceptions::InvalidShapeException);
+  EXPECT_THROW(layer.setBias(bias), exceptions::eigen::InvalidShapeException);
 }
 #pragma endregion Bias
 
@@ -242,7 +243,7 @@ TEST(Linear, TestFromJsonInvalidClassAttribute) {
               {"bias", {1, 2}},
               {"activation_function", "NoActivation"}};
   EXPECT_THROW(Linear::fromJson(values),
-               src_exceptions::InvalidClassAttributeValue);
+               exceptions::load::InvalidClassAttributeValue);
 }
 #pragma endregion Load
 
@@ -300,7 +301,7 @@ TEST_P(TestLinear, TestBackwardWithEval) {
   auto [grad, trueInputGrad, trueWeightGrad, trueBiasGrad] =
       getGradData(GetParam().dataSize, layer.getActivation()->getName());
   EXPECT_THROW(layer.backward(grad),
-               src_exceptions::BackwardCalledInEvalModeException);
+               exceptions::differentiable::BackwardCalledInEvalModeException);
 }
 
 TEST_P(TestLinear, TestBackwardWithNoInput) {
@@ -308,7 +309,7 @@ TEST_P(TestLinear, TestBackwardWithNoInput) {
   auto [grad, trueInputGrad, trueWeightGrad, trueBiasGrad] =
       getGradData(GetParam().dataSize, layer.getActivation()->getName());
   EXPECT_THROW(layer.backward(grad),
-               src_exceptions::BackwardCalledWithNoInputException);
+               exceptions::differentiable::BackwardCalledWithNoInputException);
 }
 
 TEST_P(TestLinear, TestUpdate) {

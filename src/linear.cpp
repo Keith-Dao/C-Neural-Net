@@ -21,7 +21,7 @@ Eigen::MatrixXd Linear::getWeight() const { return this->weight; }
 void Linear::setWeight(Eigen::MatrixXd weight) {
   if (this->weight.rows() != weight.rows() ||
       this->weight.cols() != weight.cols()) {
-    throw src_exceptions::InvalidShapeException();
+    throw exceptions::eigen::InvalidShapeException();
   }
   this->weight = weight;
 }
@@ -32,7 +32,7 @@ Eigen::MatrixXd Linear::getBias() const { return this->bias; };
 
 void Linear::setBias(Eigen::MatrixXd bias) {
   if (this->bias.rows() != bias.rows() || this->bias.cols() != bias.cols()) {
-    throw src_exceptions::InvalidShapeException();
+    throw exceptions::eigen::InvalidShapeException();
   }
   this->bias = bias;
 };
@@ -59,7 +59,7 @@ void Linear::setActivation(std::string activation_function) {
 #pragma region Load
 Linear Linear::fromJson(const json &values) {
   if (values["class"] != "Linear") {
-    throw src_exceptions::InvalidClassAttributeValue();
+    throw exceptions::load::InvalidClassAttributeValue();
   }
 
   Eigen::MatrixXd weight = utils::fromJson(values["weight"]),
@@ -101,10 +101,10 @@ Eigen::MatrixXd Linear::forward(const Eigen::MatrixXd &input) {
 std::tuple<Eigen::MatrixXd, Eigen::MatrixXd, Eigen::MatrixXd>
 Linear::backward(const Eigen::MatrixXd &grad) {
   if (this->eval) {
-    throw src_exceptions::BackwardCalledInEvalModeException();
+    throw exceptions::differentiable::BackwardCalledInEvalModeException();
   }
   if (this->input == nullptr) {
-    throw src_exceptions::BackwardCalledWithNoInputException();
+    throw exceptions::differentiable::BackwardCalledWithNoInputException();
   }
 
   Eigen::MatrixXd totalGrad = grad.array() *

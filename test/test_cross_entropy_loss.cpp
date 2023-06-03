@@ -168,7 +168,7 @@ TEST(CrossEntropyLoss, TestInit) {
 
 TEST(CrossEntropyLoss, TestInitWithInvalidReduction) {
   EXPECT_THROW(CrossEntropyLoss loss("INVALID"),
-               src_exceptions::InvalidReductionException);
+               exceptions::loss::InvalidReductionException);
 }
 #pragma endregion Init
 
@@ -190,7 +190,7 @@ TEST(CrossEntropyLoss, TestSetReduction) {
 TEST(CrossEntropyLoss, TestSetReductionWithInvalidReduction) {
   CrossEntropyLoss loss;
   EXPECT_THROW(loss.setReduction("INVALID"),
-               src_exceptions::InvalidReductionException);
+               exceptions::loss::InvalidReductionException);
 }
 #pragma endregion Reduction
 #pragma endregion Properties
@@ -210,23 +210,23 @@ TEST(CrossEntropyLoss, TestForwardWithMissingValues) {
   Eigen::MatrixXd logits{{1, 1, 1}};
   std::vector<int> labels;
   EXPECT_THROW(loss.forward(logits, labels),
-               src_exceptions::EmptyMatrixException)
+               exceptions::eigen::EmptyMatrixException)
       << "Missing labels.";
 
   Eigen::MatrixXi oneHot;
   EXPECT_THROW(loss.forward(logits, oneHot),
-               src_exceptions::EmptyMatrixException)
+               exceptions::eigen::EmptyMatrixException)
       << "Missing one hot encoded labels.";
 
   oneHot = Eigen::MatrixXi{{1, 0, 0}};
   logits = Eigen::MatrixXd();
   EXPECT_THROW(loss.forward(logits, oneHot),
-               src_exceptions::EmptyMatrixException)
+               exceptions::eigen::EmptyMatrixException)
       << "Missing logits.";
 
   oneHot = Eigen::MatrixXi();
   EXPECT_THROW(loss.forward(logits, oneHot),
-               src_exceptions::EmptyMatrixException)
+               exceptions::eigen::EmptyMatrixException)
       << "Logits and one hot encoding labels are empty.";
 }
 
@@ -235,28 +235,28 @@ TEST(CrossEntropyLoss, TestForwardWithMismatchedShapes) {
   Eigen::MatrixXd logits{{1, 1, 1}};
   std::vector<int> labels{2, 1};
   EXPECT_THROW(loss.forward(logits, labels),
-               src_exceptions::InvalidShapeException)
+               exceptions::eigen::InvalidShapeException)
       << "Extra labels.";
 
   Eigen::MatrixXi oneHot{{0, 0, 1}, {0, 1, 0}};
   EXPECT_THROW(loss.forward(logits, oneHot),
-               src_exceptions::InvalidShapeException)
+               exceptions::eigen::InvalidShapeException)
       << "Extra one hot encoded labels.";
 
   logits = Eigen::MatrixXd{{1, 1, 1}, {1, 1, 1}};
   labels = std::vector<int>{1};
   EXPECT_THROW(loss.forward(logits, labels),
-               src_exceptions::InvalidShapeException)
+               exceptions::eigen::InvalidShapeException)
       << "Extra logits on label call.";
 
   oneHot = Eigen::MatrixXi{{0, 1, 0}};
   EXPECT_THROW(loss.forward(logits, labels),
-               src_exceptions::InvalidShapeException)
+               exceptions::eigen::InvalidShapeException)
       << "Extra logits on one hot encoded call.";
 
   oneHot = Eigen::MatrixXi{{0, 1}, {0, 1}};
   EXPECT_THROW(loss.forward(logits, labels),
-               src_exceptions::InvalidShapeException)
+               exceptions::eigen::InvalidShapeException)
       << "Shape mismatch.";
 }
 
@@ -265,7 +265,7 @@ TEST(CrossEntropyLoss, TestForwardWithInvalidLabel) {
   Eigen::MatrixXd logits{{1, 1, 1}};
   std::vector<int> labels{3};
   EXPECT_THROW(loss.forward(logits, labels),
-               src_exceptions::InvalidLabelIndexException);
+               exceptions::utils::one_hot_encode::InvalidLabelIndexException);
 }
 #pragma endregion Forward
 
@@ -284,10 +284,12 @@ TEST_P(TestCrossEntropyLoss, TestBackward) {
 
 TEST(CrossEntropyLoss, TestBackwardBeforeForward) {
   CrossEntropyLoss loss("mean");
-  EXPECT_THROW(loss.backward(), src_exceptions::BackwardBeforeForwardException);
+  EXPECT_THROW(loss.backward(),
+               exceptions::differentiable::BackwardBeforeForwardException);
 
   loss = CrossEntropyLoss("sum");
-  EXPECT_THROW(loss.backward(), src_exceptions::BackwardBeforeForwardException);
+  EXPECT_THROW(loss.backward(),
+               exceptions::differentiable::BackwardBeforeForwardException);
 }
 #pragma endregion Backward
 

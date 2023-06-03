@@ -46,33 +46,33 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST(MatrixUtils, TestJsonToMatrixWithInvalidValues) {
   json values = json::parse(R"([1, 2])");
-  EXPECT_THROW(fromJson(values), src_exceptions::JSONArray2DException)
+  EXPECT_THROW(fromJson(values), exceptions::json::JSONArray2DException)
       << "1D arrays are not supported, only 2D.";
 
   values = json::parse(R"([[[1, 2]]])");
-  EXPECT_THROW(fromJson(values), src_exceptions::JSONArray2DException)
+  EXPECT_THROW(fromJson(values), exceptions::json::JSONArray2DException)
       << "Higher dimension arrays are not supported, only 2D.";
 }
 
 TEST(MatrixUtils, TestJsonToMatrixWithInvalidTypes) {
   json values = json::parse(R"([[true, false]])");
-  EXPECT_THROW(fromJson(values), src_exceptions::JSONTypeException)
+  EXPECT_THROW(fromJson(values), exceptions::json::JSONTypeException)
       << "Booleans are not supported, only numbers.";
 
   values = json::parse(R"([["a", "b"]])");
-  EXPECT_THROW(fromJson(values), src_exceptions::JSONTypeException)
+  EXPECT_THROW(fromJson(values), exceptions::json::JSONTypeException)
       << "Strings are not supported, only numbers.";
 
   values = json::parse(R"([[null]])");
-  EXPECT_THROW(fromJson(values), src_exceptions::JSONTypeException)
+  EXPECT_THROW(fromJson(values), exceptions::json::JSONTypeException)
       << "null is not supported, only numbers.";
 
   values = json::parse(R"([[{"a": "b"}, {"b": "c"}]])");
-  EXPECT_THROW(fromJson(values), src_exceptions::JSONTypeException)
+  EXPECT_THROW(fromJson(values), exceptions::json::JSONTypeException)
       << "JSON objects are not supported, only numbers.";
 
   values = json::parse(R"({"a": "b"})");
-  EXPECT_THROW(fromJson(values), src_exceptions::JSONTypeException)
+  EXPECT_THROW(fromJson(values), exceptions::json::JSONTypeException)
       << "JSON objects are not supported, only 2D.";
 }
 
@@ -100,7 +100,7 @@ TEST(MatrixUtils, TestOneHotEncodeWithInvalidLabels) {
   std::vector<int> labels{0, 1, 3};
   int classes = 3;
   EXPECT_THROW(oneHotEncode(labels, classes),
-               src_exceptions::InvalidLabelIndexException);
+               exceptions::utils::one_hot_encode::InvalidLabelIndexException);
 }
 #pragma endregion One hot encode
 
