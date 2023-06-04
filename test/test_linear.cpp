@@ -14,12 +14,12 @@ namespace test_linear {
 #pragma region Fixture
 Linear getLayer(std::string activation = "") {
   Linear layer(3, 2);
+  if (activation != "") {
+    layer = Linear(3, 2, activation);
+  }
   layer.setWeight(
       Eigen::VectorXd::LinSpaced(6, 1, 6).reshaped(3, 2).transpose());
   layer.setBias(Eigen::VectorXd::LinSpaced(2, 1, 2));
-  if (activation != "") {
-    layer.setActivation(activation);
-  }
 
   return layer;
 };
