@@ -27,11 +27,16 @@ class Linear {
 public:
   int inChannels, outChannels;
   Linear(int inChannels, int outChannels,
-         std::shared_ptr<activation_functions::ActivationFunction>
-             activationFunction =
-                 std::make_shared<activation_functions::NoActivation>())
-      : inChannels(inChannels), outChannels(outChannels),
-        activationFunction(activationFunction) {
+         std::string activation = "NoActivation")
+      : inChannels(inChannels), outChannels(outChannels) {
+    if (activation == "NoActivation") {
+      this->activationFunction =
+          std::make_shared<activation_functions::NoActivation>();
+    } else if (activation == "ReLU") {
+      this->activationFunction = std::make_shared<activation_functions::ReLU>();
+    } else {
+      throw exceptions::activation::InvalidActivationException(activation);
+    }
     double distributionRange = sqrt(1 / (double)inChannels);
     this->weight =
         Eigen::MatrixXd::Random(outChannels, inChannels) * distributionRange;

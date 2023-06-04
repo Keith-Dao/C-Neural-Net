@@ -9,38 +9,39 @@ using namespace activation_functions;
 
 namespace test_activation_functions {
 #pragma region Fixture
-std::shared_ptr<ActivationFunction> getActivationFunction(std::string type) {
-  if (type == "ReLU") {
+std::shared_ptr<ActivationFunction>
+getActivationFunction(std::string activation) {
+  if (activation == "ReLU") {
     return std::make_shared<ReLU>();
   }
-  if (type == "NoActivation") {
+  if (activation == "NoActivation") {
     return std::make_shared<NoActivation>();
   }
-  throw "Invalid";
+  throw exceptions::activation::InvalidActivationException(activation);
 }
 
 std::tuple<Eigen::MatrixXd, Eigen::MatrixXd, Eigen::MatrixXd>
-getData(std::string type) {
-  if (type != "ReLU" && type != "NoActivation") {
-    throw "Invalid";
+getData(std::string activation) {
+  if (activation != "ReLU" && activation != "NoActivation") {
+    throw exceptions::activation::InvalidActivationException(activation);
   }
 
   Eigen::MatrixXd
       X = Eigen::VectorXd::LinSpaced(20, -10, 9).reshaped(4, 5).transpose(),
-      Y = type == "ReLU" ? Eigen::MatrixXd{{0, 0, 0, 0},
-                                           {0, 0, 0, 0},
-                                           {0, 0, 0, 1},
-                                           {2, 3, 4, 5},
-                                           {6, 7, 8, 9}}
-                         : Eigen::VectorXd::LinSpaced(20, -10, 9)
-                               .reshaped(4, 5)
-                               .transpose(),
-      grad = type == "ReLU" ? Eigen::MatrixXd{{0, 0, 0, 0},
-                                              {0, 0, 0, 0},
-                                              {0, 0, 0, 1},
-                                              {1, 1, 1, 1},
-                                              {1, 1, 1, 1}}
-                            : Eigen::MatrixXd::Ones(5, 4);
+      Y = activation == "ReLU" ? Eigen::MatrixXd{{0, 0, 0, 0},
+                                                 {0, 0, 0, 0},
+                                                 {0, 0, 0, 1},
+                                                 {2, 3, 4, 5},
+                                                 {6, 7, 8, 9}}
+                               : Eigen::VectorXd::LinSpaced(20, -10, 9)
+                                     .reshaped(4, 5)
+                                     .transpose(),
+      grad = activation == "ReLU" ? Eigen::MatrixXd{{0, 0, 0, 0},
+                                                    {0, 0, 0, 0},
+                                                    {0, 0, 0, 1},
+                                                    {1, 1, 1, 1},
+                                                    {1, 1, 1, 1}}
+                                  : Eigen::MatrixXd::Ones(5, 4);
 
   return std::make_tuple(X, Y, grad);
 }

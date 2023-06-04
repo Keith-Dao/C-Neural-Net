@@ -44,13 +44,13 @@ Linear::getActivation() const {
   return this->activationFunction;
 };
 
-void Linear::setActivation(std::string activation_function) {
-  if (activation_function == "ReLU") {
+void Linear::setActivation(std::string activation) {
+  if (activation == "ReLU") {
     this->setActivation<activation_functions::ReLU>();
-  } else if (activation_function == "NoActivation") {
+  } else if (activation == "NoActivation") {
     this->setActivation<activation_functions::NoActivation>();
   } else {
-    throw "Unknown activation function.";
+    throw exceptions::activation::InvalidActivationException(activation);
   }
 }
 #pragma endregion Activation function
