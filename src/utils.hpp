@@ -1,6 +1,8 @@
 #pragma once
 #include <Eigen/Dense>
+#include <filesystem>
 #include <nlohmann/json.hpp>
+#include <unordered_set>
 
 using json = nlohmann::json;
 
@@ -55,4 +57,12 @@ Eigen::MatrixXd logSoftmax(const Eigen::MatrixBase<T> &in) {
   return result;
 }
 #pragma endregion Matrices
+
+#pragma region Path
+/*
+  Recursively find all files with matching extensions
+*/
+std::vector<std::string> glob(const std::filesystem::path &path,
+                              std::unordered_set<std::string> extensions);
+#pragma endregion Path
 } // namespace utils

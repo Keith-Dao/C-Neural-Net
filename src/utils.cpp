@@ -1,5 +1,6 @@
 #include "utils.hpp"
 #include "exceptions.hpp"
+#include <filesystem>
 
 #pragma region Matrices
 Eigen::MatrixXd utils::fromJson(const json &values) {
@@ -44,3 +45,19 @@ Eigen::MatrixXi utils::oneHotEncode(const std::vector<int> &targets,
   return result;
 }
 #pragma endregion Matrices
+
+#pragma region Path
+std::vector<std::string>
+utils::glob(const std::filesystem::path &path,
+            std::unordered_set<std::string> extensions) {
+  std::vector<std::string> result;
+  for (auto const &entry :
+       std::filesystem::recursive_directory_iterator(path)) {
+    if (!std::filesystem::is_directory(entry.path()) &&
+        extensions.count(entry.path().extension())) {
+      result.push_back(entry.path());
+    }
+  };
+  return result;
+};
+#pragma endregion Path
