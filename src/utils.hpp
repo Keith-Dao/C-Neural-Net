@@ -62,7 +62,7 @@ Eigen::MatrixXd logSoftmax(const Eigen::MatrixBase<T> &in) {
 /*
   Recursively find all files with matching extensions
 */
-std::vector<std::string> glob(const std::filesystem::path &path,
-                              std::unordered_set<std::string> extensions);
+std::vector<std::filesystem::path> glob(const std::filesystem::path &path,
+                                        std::vector<std::string> extensions);
 #pragma endregion Path
 } // namespace utils

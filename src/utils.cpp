@@ -47,14 +47,16 @@ Eigen::MatrixXi utils::oneHotEncode(const std::vector<int> &targets,
 #pragma endregion Matrices
 
 #pragma region Path
-std::vector<std::string>
+std::vector<std::filesystem::path>
 utils::glob(const std::filesystem::path &path,
-            std::unordered_set<std::string> extensions) {
-  std::vector<std::string> result;
+            std::vector<std::string> extensions) {
+  std::unordered_set<std::string> extensionSet(extensions.begin(),
+                                               extensions.end());
+  std::vector<std::filesystem::path> result;
   for (auto const &entry :
        std::filesystem::recursive_directory_iterator(path)) {
     if (!std::filesystem::is_directory(entry.path()) &&
-        extensions.count(entry.path().extension())) {
+        extensionSet.count(entry.path().extension())) {
       result.push_back(entry.path());
     }
   };

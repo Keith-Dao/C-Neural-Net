@@ -6,7 +6,6 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include <nlohmann/json.hpp>
-#include <string>
 
 using namespace utils;
 using json = nlohmann::json;
@@ -181,10 +180,10 @@ protected:
 };
 
 TEST_F(GlobFixture, TestGlob) {
-  std::vector<std::string> expected = {
+  std::vector<std::filesystem::path> expected = {
       root / "0" / "a" / "0.png", root / "0" / "a" / "2.png",
       root / "0" / "a" / "5.png", root / "1" / "a" / "6.png"};
-  std::vector<std::string> result = glob(root, {".png"});
+  std::vector<std::filesystem::path> result = glob(root, {".png"});
   std::sort(result.begin(), result.end());
   ASSERT_EQ(expected, result) << "Glob .png only";
 
