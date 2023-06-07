@@ -18,7 +18,7 @@ find_package(Eigen3 REQUIRED NO_MODULE)
 find_package(nlohmann_json 3.2.0 REQUIRED)
 
 # Tests
-file(GLOB_RECURSE TEST_FILES test_*.cpp)
+file(GLOB_RECURSE TEST_FILES test_*.cpp shared/*.hpp)
 add_executable(tests ${TEST_FILES})
 target_link_libraries(
     tests 
