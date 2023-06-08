@@ -1,6 +1,9 @@
 #include "utils.hpp"
 #include "exceptions.hpp"
 #include <filesystem>
+#include <opencv2/core.hpp>
+#include <opencv2/core/eigen.hpp>
+#include <opencv2/imgcodecs.hpp>
 
 #pragma region Matrices
 Eigen::MatrixXd utils::fromJson(const json &values) {
@@ -63,3 +66,15 @@ utils::glob(const std::filesystem::path &path,
   return result;
 };
 #pragma endregion Path
+
+#pragma region Image
+Eigen::MatrixXd utils::openImageAsMatrix(std::filesystem::path path) {
+  Eigen::MatrixXd result;
+  cv::Mat img = cv::imread(path, cv::IMREAD_UNCHANGED);
+  if (img.empty()) {
+    throw exceptions::utils::image::InvalidImageFileException(path);
+  }
+  cv::cv2eigen(img, result);
+  return result;
+}
+#pragma endregion Image

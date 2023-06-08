@@ -2,9 +2,14 @@
 #include "fixtures.hpp"
 #include "utils.hpp"
 #include <Eigen/Dense>
+#include <fstream>
 #include <gtest/gtest.h>
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/core/eigen.hpp>
+#include <opencv2/core/mat.hpp>
+#include <opencv2/imgcodecs.hpp>
 
 using namespace utils;
 using json = nlohmann::json;
@@ -163,4 +168,44 @@ TEST_F(UtilsGlob, TestGlob) {
 }
 #pragma endregion Glob
 #pragma endregion Path
+
+#pragma region Image
+class Image : public ::testing::Test {
+protected:
+  std::filesystem::path root;
+  Eigen::MatrixXd data;
+
+  void SetUp() override {
+    std::filesystem::path tempRoot(testing::TempDir());
+    std::string tempDir = std::to_string(rand());
+    while (std::filesystem::exists(tempRoot / tempDir)) {
+      tempDir = std::to_string(rand());
+    }
+    this->root = tempRoot / tempDir;
+    std::filesystem::create_directory(this->root);
+
+    this->data = Eigen::VectorXd::LinSpaced(100, 0, 99).reshaped(10, 10);
+    cv::Mat image;
+    cv::eigen2cv(this->data, image);
+    cv::imwrite(this->root / "test.png", image);
+
+    std::ofstream file(this->root / "test.txt");
+    file << "Some data";
+    file.close();
+  }
+
+  void TearDown() override { std::filesystem::remove_all(this->root); }
+};
+
+TEST_F(Image, TestOpenImageAsMatrix) {
+  ASSERT_TRUE(data.isApprox(utils::openImageAsMatrix(root / "test.png")))
+      << "Opened image data is not equivalent.";
+}
+
+TEST_F(Image, TestOpenImageAsMatrixWithNonImage) {
+  EXPECT_THROW(utils::openImageAsMatrix(root / "test.txt"),
+               exceptions::utils::image::InvalidImageFileException)
+      << "Cannot open non image file as a matrix.";
+}
+#pragma endregion Image
 } // namespace test_utils

@@ -65,4 +65,11 @@ Eigen::MatrixXd logSoftmax(const Eigen::MatrixBase<T> &in) {
 std::vector<std::filesystem::path> glob(const std::filesystem::path &path,
                                         std::vector<std::string> extensions);
 #pragma endregion Path
+
+#pragma region Image
+/*
+  Open the provided image path as an eigen matrix.
+*/
+Eigen::MatrixXd openImageAsMatrix(std::filesystem::path path);
+#pragma endregion Image
 } // namespace utils

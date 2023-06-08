@@ -1,6 +1,7 @@
 #pragma once
 #include <cstring>
 #include <exception>
+#include <filesystem>
 #include <string>
 
 namespace exceptions {
@@ -56,6 +57,23 @@ class InvalidLabelIndexException : public std::exception {
   }
 };
 } // namespace one_hot_encode
+
+namespace image {
+class InvalidImageFileException : public std::exception {
+  std::string file;
+
+  virtual const char *what() const throw() {
+    std::string s =
+        "The file at " + this->file + " could not be opened as an image.";
+    char *result = new char[s.length() + 1];
+    std::strcpy(result, s.c_str());
+    return result;
+  }
+
+public:
+  InvalidImageFileException(const std::filesystem::path &file) : file(file){};
+};
+} // namespace image
 } // namespace utils
 
 namespace load {
