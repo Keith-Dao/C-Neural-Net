@@ -74,6 +74,14 @@ public:
   InvalidImageFileException(const std::filesystem::path &file) : file(file){};
 };
 } // namespace image
+
+namespace normalise {
+class InvalidRangeException : public std::exception {
+  virtual const char *what() const throw() {
+    return "An invalid range was provided.";
+  }
+};
+} // namespace normalise
 } // namespace utils
 
 namespace load {

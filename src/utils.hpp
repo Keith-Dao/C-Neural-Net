@@ -56,6 +56,13 @@ Eigen::MatrixXd logSoftmax(const Eigen::MatrixBase<T> &in) {
   result.array().colwise() -= result.array().exp().rowwise().sum().log();
   return result;
 }
+
+/*
+  Normalise the data from the current range to the target range.
+*/
+Eigen::MatrixXd normalise(const Eigen::MatrixXd &data,
+                          std::pair<float, float> from,
+                          std::pair<float, float> to);
 #pragma endregion Matrices
 
 #pragma region Path
@@ -71,5 +78,10 @@ std::vector<std::filesystem::path> glob(const std::filesystem::path &path,
   Open the provided image path as an eigen matrix.
 */
 Eigen::MatrixXd openImageAsMatrix(std::filesystem::path path);
+
+/*
+  Normalise the image data matrix from [0, 255] to [-1, 1]
+*/
+Eigen::MatrixXd normaliseImage(const Eigen::MatrixXd &data);
 #pragma endregion Image
 } // namespace utils

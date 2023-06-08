@@ -47,6 +47,23 @@ Eigen::MatrixXi utils::oneHotEncode(const std::vector<int> &targets,
   }
   return result;
 }
+
+Eigen::MatrixXd utils::normalise(const Eigen::MatrixXd &data,
+                                 std::pair<float, float> from,
+                                 std::pair<float, float> to) {
+  auto [fromMin, fromMax] = from;
+  if (fromMin >= fromMax) {
+    throw exceptions::utils::normalise::InvalidRangeException();
+  }
+
+  auto [toMin, toMax] = to;
+  if (toMin >= toMax) {
+    throw exceptions::utils::normalise::InvalidRangeException();
+  }
+
+  return (data.array() - fromMin) * (toMax - toMin) / (fromMax - fromMin) +
+         toMin;
+}
 #pragma endregion Matrices
 
 #pragma region Path

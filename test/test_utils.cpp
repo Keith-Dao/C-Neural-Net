@@ -145,6 +145,43 @@ TEST(MatrixUtils, TestLogSoftmax) {
   ASSERT_TRUE(trueP.isApprox(logSoftmax(x))) << "Last log softmax failed.";
 }
 #pragma endregion Log softmax
+
+#pragma region Normalise
+TEST(MatrixUtils, TestNormalise) {
+  Eigen::MatrixXd data{{0, 127.5, 255}}, expected{{0, 0.5, 1}};
+  std::pair<float, float> from{0, 255}, to{0, 1};
+  EXPECT_TRUE(expected.isApprox(normalise(data, from, to)))
+      << "First normalise failed.";
+
+  expected << -1, 0, 1;
+  to = std::make_pair(-1, 1);
+  EXPECT_TRUE(expected.isApprox(normalise(data, from, to)))
+      << "Second normalise failed.";
+
+  expected << -2, 0, 2;
+  to = std::make_pair(-2, 2);
+  EXPECT_TRUE(expected.isApprox(normalise(data, from, to)))
+      << "Third normalise failed.";
+
+  expected << -2, 0.5, 3;
+  to = std::make_pair(-2, 3);
+  EXPECT_TRUE(expected.isApprox(normalise(data, from, to)))
+      << "Last normalise failed.";
+}
+
+TEST(MatrixUtils, TestNormaliseWithInvalidRange) {
+  Eigen::MatrixXd data{{0, 127.5, 255}};
+  std::pair<float, float> from{0, -1}, to{0, 1};
+  EXPECT_THROW(normalise(data, from, to),
+               exceptions::utils::normalise::InvalidRangeException)
+      << "First normalise did not throw.";
+
+  std::swap(from, to);
+  EXPECT_THROW(normalise(data, from, to),
+               exceptions::utils::normalise::InvalidRangeException)
+      << "Second normalise did not throw.";
+}
+#pragma endregion Normalise
 #pragma endregion Matrices
 
 #pragma region Path
