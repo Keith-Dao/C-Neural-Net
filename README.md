@@ -15,6 +15,7 @@ The following libraries are required.
 | yaml-cpp   | 0.6.3   | https://github.com/jbeder/yaml-cpp/releases/tag/yaml-cpp-0.6.3       |
 | matplot++  | 1.1.0   | https://github.com/alandefreitas/matplotplusplus/releases/tag/v1.1.0 |
 | indicators | 2.3     | https://github.com/p-ranav/indicators/releases/tag/v2.3              |
+| OpenCV     | 4.7.0   | https://github.com/opencv/opencv/releases/tag/4.7.0                  |
 
 The following are also required.
 
