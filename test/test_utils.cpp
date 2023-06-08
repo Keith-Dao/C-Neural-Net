@@ -17,6 +17,7 @@ using json = nlohmann::json;
 
 namespace test_utils {
 #pragma region Matrices
+#pragma region JSON
 struct MatrixData {
   Eigen::MatrixXd matrix;
   json value;
@@ -27,20 +28,20 @@ struct MatrixData {
 std::ostream &operator<<(std::ostream &os, MatrixData const &fixture) {
   return os << fixture.value;
 }
-class TestMatrix : public testing::TestWithParam<MatrixData> {};
+class TestMatrixJson : public testing::TestWithParam<MatrixData> {};
 
-TEST_P(TestMatrix, TestMatrixToJson) {
+TEST_P(TestMatrixJson, TestMatrixToJson) {
   auto [matrix, values] = GetParam();
   ASSERT_EQ(values, toJson(matrix));
 }
 
-TEST_P(TestMatrix, TestJsonToMatrix) {
+TEST_P(TestMatrixJson, TestJsonToMatrix) {
   auto [matrix, values] = GetParam();
   ASSERT_TRUE(matrix.isApprox(fromJson(values)));
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    Utils, TestMatrix,
+    Utils, TestMatrixJson,
     ::testing::Values(MatrixData(Eigen::MatrixXd{{1, 2, 3}, {3, 2, 1}},
                                  json{{1, 2, 3}, {3, 2, 1}}),
                       MatrixData(Eigen::MatrixXd::Ones(3, 3),
@@ -82,6 +83,7 @@ TEST(MatrixUtils, TestJsonToMatrixWithInvalidTypes) {
   EXPECT_THROW(fromJson(values), exceptions::json::JSONTypeException)
       << "JSON objects are not supported, only 2D.";
 }
+#pragma endregion JSON
 
 #pragma region One hot encode
 TEST(MatrixUtils, TestOneHotEncode) {
