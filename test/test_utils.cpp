@@ -205,17 +205,16 @@ TEST(MatrixUtils, TestFlatten) {
 #pragma region Glob
 using UtilsGlob = test_filesystem::FileSystemFixture;
 TEST_F(UtilsGlob, TestGlob) {
-  std::vector<std::filesystem::path> expected = {
-      root / "0" / "a" / "0.png", root / "0" / "a" / "2.png",
-      root / "0" / "a" / "5.png", root / "1" / "a" / "6.png"};
+  std::vector<std::filesystem::path> expected = {root / "0" / "a" / "0.png",
+                                                 root / "0" / "a" / "4.png",
+                                                 root / "1" / "a" / "5.png"};
   std::vector<std::filesystem::path> result = glob(root, {".png"});
   std::sort(result.begin(), result.end());
   ASSERT_EQ(expected, result) << "Glob .png only";
 
   expected = {root / "0" / "a" / "0.png", root / "0" / "a" / "1.txt",
-              root / "0" / "a" / "2.png", root / "0" / "a" / "3.jpg",
-              root / "0" / "a" / "5.png", root / "1" / "a" / "4.txt",
-              root / "1" / "a" / "6.png"};
+              root / "0" / "a" / "2.jpg", root / "0" / "a" / "4.png",
+              root / "1" / "a" / "3.txt", root / "1" / "a" / "5.png"};
   result = glob(root, {".png", ".jpg", ".txt"});
   std::sort(result.begin(), result.end());
   ASSERT_EQ(expected, result) << "Glob .png, .jpg and .txt.";

@@ -26,8 +26,8 @@ protected:
 
     // Add the files
     std::vector<std::pair<std::string, std::string>> files = {
-        {"0", ".png"}, {"0", ".txt"}, {"0", ".png"}, {"0", ".jpg"},
-        {"1", ".txt"}, {"0", ".png"}, {"1", ".png"}, {"2", ".exe"}};
+        {"0", ".png"}, {"0", ".txt"}, {"0", ".jpg"}, {"1", ".txt"},
+        {"0", ".png"}, {"1", ".png"}, {"2", ".exe"}};
     for (int i = 0; i < files.size(); ++i) {
       std::ofstream ofs(this->root / files[i].first / "a" /
                         (std::to_string(i) + files[i].second));
