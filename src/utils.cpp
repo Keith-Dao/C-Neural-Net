@@ -1,5 +1,6 @@
 #include "utils.hpp"
 #include "exceptions.hpp"
+#include <Eigen/src/Core/util/Constants.h>
 #include <filesystem>
 #include <opencv2/core.hpp>
 #include <opencv2/core/eigen.hpp>
@@ -64,6 +65,11 @@ Eigen::MatrixXd utils::normalise(const Eigen::MatrixXd &data,
 
   return (data.array() - fromMin) * (toMax - toMin) / (fromMax - fromMin) +
          toMin;
+}
+
+Eigen::MatrixXd utils::flatten(const Eigen::MatrixXd &in) {
+  Eigen::MatrixXd out(in);
+  return out.reshaped<Eigen::RowMajor>().transpose();
 }
 #pragma endregion Matrices
 

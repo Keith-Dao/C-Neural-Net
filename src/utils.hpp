@@ -1,5 +1,6 @@
 #pragma once
 #include <Eigen/Dense>
+#include <Eigen/src/Core/util/Constants.h>
 #include <filesystem>
 #include <nlohmann/json.hpp>
 #include <unordered_set>
@@ -63,6 +64,11 @@ Eigen::MatrixXd logSoftmax(const Eigen::MatrixBase<T> &in) {
 Eigen::MatrixXd normalise(const Eigen::MatrixXd &data,
                           std::pair<float, float> from,
                           std::pair<float, float> to);
+
+/*
+  Flatten the matrix to be 1xN matrix.
+*/
+Eigen::MatrixXd flatten(const Eigen::MatrixXd &in);
 #pragma endregion Matrices
 
 #pragma region Path

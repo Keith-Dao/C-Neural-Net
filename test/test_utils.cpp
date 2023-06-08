@@ -185,6 +185,20 @@ TEST(MatrixUtils, TestNormaliseWithInvalidRange) {
       << "Second normalise did not throw.";
 }
 #pragma endregion Normalise
+
+#pragma region Flatten
+TEST(MatrixUtils, TestFlatten) {
+  Eigen::MatrixXd data{{1, 2, 3}}, expected{{1, 2, 3}};
+  ASSERT_TRUE(expected.isApprox(flatten(data))) << "First flatten failed.";
+
+  data = Eigen::MatrixXd{{1}, {2}, {3}};
+  ASSERT_TRUE(expected.isApprox(flatten(data))) << "Second flatten failed.";
+
+  data = Eigen::MatrixXd{{1, 2, 3, 4}, {5, 6, 7, 8}};
+  expected = Eigen::MatrixXd{{1, 2, 3, 4, 5, 6, 7, 8}};
+  ASSERT_TRUE(expected.isApprox(flatten(data))) << "Last flatten failed.";
+}
+#pragma endregion Flatten
 #pragma endregion Matrices
 
 #pragma region Path
