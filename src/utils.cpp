@@ -4,6 +4,7 @@
 #include <opencv2/core.hpp>
 #include <opencv2/core/eigen.hpp>
 #include <opencv2/imgcodecs.hpp>
+#include <utility>
 
 #pragma region Matrices
 Eigen::MatrixXd utils::fromJson(const json &values) {
@@ -93,5 +94,9 @@ Eigen::MatrixXd utils::openImageAsMatrix(std::filesystem::path path) {
   }
   cv::cv2eigen(img, result);
   return result;
+}
+
+Eigen::MatrixXd utils::normaliseImage(const Eigen::MatrixXd &data) {
+  return utils::normalise(data, std::make_pair(0, 255), std::make_pair(-1, 1));
 }
 #pragma endregion Image
