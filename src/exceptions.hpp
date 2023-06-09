@@ -3,6 +3,7 @@
 #include <exception>
 #include <filesystem>
 #include <string>
+#include <vector>
 
 namespace exceptions {
 namespace differentiable {
@@ -48,6 +49,49 @@ class InvalidReductionException : public std::exception {
   }
 };
 } // namespace loss
+
+namespace loader {
+class InvalidTrainTestSplitException : public std::exception {
+  float split;
+
+  virtual const char *what() const throw() {
+    std::string s = "The train test split must be in the [0, 1], got " +
+                    std::to_string(split);
+    char *result = new char[s.length() + 1];
+    std::strcpy(result, s.c_str());
+    return result;
+  }
+
+public:
+  InvalidTrainTestSplitException(float split) : split(split){};
+};
+
+class NoFilesFoundException : public std::exception {
+  std::string root, fileFormats;
+
+  virtual const char *what() const throw() {
+    std::string s = "No matching files were found at " + this->root +
+                    " with the extensions [" + this->fileFormats + "].";
+    char *result = new char[s.length() + 1];
+    std::strcpy(result, s.c_str());
+    return result;
+  }
+
+public:
+  NoFilesFoundException(const std::filesystem::path &root,
+                        const std::vector<std::string> &fileFormats)
+      : root(root) {
+    if (fileFormats.empty()) {
+      this->fileFormats = "";
+      return;
+    }
+    this->fileFormats = fileFormats[0];
+    for (int i = 1; i < fileFormats.size(); ++i) {
+      this->fileFormats += ", " + fileFormats[i];
+    }
+  };
+};
+} // namespace loader
 
 namespace utils {
 namespace one_hot_encode {
