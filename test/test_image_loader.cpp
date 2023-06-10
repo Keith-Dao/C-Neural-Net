@@ -1,6 +1,7 @@
 #include "exceptions.hpp"
 #include "fixtures.hpp"
 #include "image_loader.hpp"
+#include "utils.hpp"
 #include <gtest/gtest.h>
 #include <iostream>
 
@@ -16,15 +17,17 @@ struct FixtureData {
 std::ostream &operator<<(std::ostream &os, FixtureData const &fixture) {
   return os << std::to_string(fixture.trainTestSplit);
 }
+
+#pragma region Image loader
 class TestImageLoader : public ImageLoaderFileSystem,
                         public testing::WithParamInterface<FixtureData> {};
 
 #pragma region Init
-TEST_F(ImageLoaderFileSystem, TestInit) {
+TEST_F(ImageLoaderFileSystem, TestImageLoaderInit) {
   ImageLoader(root, ImageLoader::standardPreprocessing, {".png"}, 0.7, false);
 }
 
-TEST_F(ImageLoaderFileSystem, TestInitWithInvalidSplit) {
+TEST_F(ImageLoaderFileSystem, TestImageLoaderInitWithInvalidSplit) {
   float split = -0.1;
   EXPECT_THROW(ImageLoader(root, ImageLoader::standardPreprocessing, {".png"},
                            split, false),
@@ -50,4 +53,22 @@ TEST_F(ImageLoaderFileSystem, TestImageLoaderInitWithNoFiles) {
       << "No files with a given extension did not throw.";
 }
 #pragma endregion Init
+#pragma endregion Image loader
+
+#pragma region Dataset batcher
+#pragma region Init
+TEST_F(ImageLoaderFileSystem, TestDatasetBatcherInit) {
+  DatasetBatcher(root, utils::glob(root, {".png"}),
+                 ImageLoader::standardPreprocessing,
+                 {{"0", 0}, {"1", 1}, {"2", 2}}, 1, false);
+}
+
+TEST_F(ImageLoaderFileSystem, TestDatasetBatcherInitWithInvalidBatchSize) {
+  EXPECT_THROW(DatasetBatcher(root, utils::glob(root, {".png"}),
+                              ImageLoader::standardPreprocessing,
+                              {{"0", 0}, {"1", 1}, {"2", 2}}, 0, false),
+               exceptions::loader::InvalidBatchSizeException);
+}
+#pragma endregion Init
+#pragma endregion Dataset batcher
 } // namespace test_image_loader

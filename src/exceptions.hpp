@@ -66,6 +66,21 @@ public:
   InvalidTrainTestSplitException(float split) : split(split){};
 };
 
+class InvalidBatchSizeException : public std::exception {
+  int batchSize;
+
+  virtual const char *what() const throw() {
+    std::string s = "The batch size must be greater than or equal 1, got " +
+                    std::to_string(batchSize);
+    char *result = new char[s.length() + 1];
+    std::strcpy(result, s.c_str());
+    return result;
+  }
+
+public:
+  InvalidBatchSizeException(int batchSize) : batchSize(batchSize){};
+};
+
 class NoFilesFoundException : public std::exception {
   std::string root, fileFormats;
 

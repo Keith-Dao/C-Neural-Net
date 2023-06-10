@@ -10,6 +10,34 @@ namespace loader {
 typedef std::vector<std::function<Eigen::MatrixXd(Eigen::MatrixXd)>>
     preprocessingFunctions;
 
+#pragma region Dataset batcher
+class DatasetBatcher {
+  std::filesystem::path root;
+  std::vector<std::filesystem::path> data;
+  preprocessingFunctions preprocessing;
+  std::unordered_map<std::string, int> classesToNum;
+  int batchSize;
+  bool dropLast;
+
+public:
+  DatasetBatcher(const std::filesystem::path &root,
+                 const std::vector<std::filesystem::path> &data,
+                 const preprocessingFunctions &preprocessing,
+                 const std::unordered_map<std::string, int> &classesToNum,
+                 int batchSize, bool shuffle = true, bool dropLast = false)
+      : root(root), data(data), preprocessing(preprocessing),
+        classesToNum(classesToNum), batchSize(batchSize), dropLast(dropLast) {
+    if (batchSize < 1) {
+      throw exceptions::loader::InvalidBatchSizeException(batchSize);
+    }
+    if (shuffle) {
+      std::shuffle(this->data.begin(), this->data.end(),
+                   std::default_random_engine{});
+    }
+  };
+};
+#pragma endregion Dataset batcher
+
 #pragma region Image loader
 class ImageLoader {
   std::filesystem::path root;
