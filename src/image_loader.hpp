@@ -35,6 +35,11 @@ public:
                    std::default_random_engine{});
     }
   };
+
+  /*
+    The number of batches.
+  */
+  int size() const;
 };
 #pragma endregion Dataset batcher
 
