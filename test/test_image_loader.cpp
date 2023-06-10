@@ -38,10 +38,9 @@ TEST_F(ImageLoaderFileSystem, TestInitWithInvalidSplit) {
       << "Last invalid range did not throw.";
 }
 
-TEST_F(ImageLoaderFileSystem, TestInitWithNoFiles) {
-  EXPECT_THROW(ImageLoader(testing::TempDir(),
-                           ImageLoader::standardPreprocessing, {".png"}, 0.7,
-                           false),
+TEST_F(ImageLoaderFileSystem, TestImageLoaderInitWithNoFiles) {
+  EXPECT_THROW(ImageLoader(root / "0" / "b", ImageLoader::standardPreprocessing,
+                           {".png"}, 0.7, false),
                exceptions::loader::NoFilesFoundException)
       << "Invalid directory did not throw.";
 
