@@ -40,6 +40,11 @@ public:
     The number of batches.
   */
   int size() const;
+
+  /*
+    Get processed data and labels at batch i (0-based).
+  */
+  std::pair<Eigen::MatrixXd, std::vector<int>> operator[](int i) const;
 };
 #pragma endregion Dataset batcher
 

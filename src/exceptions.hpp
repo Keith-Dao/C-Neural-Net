@@ -106,6 +106,21 @@ public:
     }
   };
 };
+
+class InvalidDataShapeAfterPreprocessingException : public std::exception {
+  int rows;
+
+  virtual const char *what() const throw() {
+    std::string s = "Data must have 1 row after preprocessing, got " +
+                    std::to_string(this->rows);
+    char *result = new char[s.length() + 1];
+    std::strcpy(result, s.c_str());
+    return result;
+  }
+
+public:
+  InvalidDataShapeAfterPreprocessingException(int rows) : rows(rows){};
+};
 } // namespace loader
 
 namespace utils {

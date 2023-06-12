@@ -4,6 +4,8 @@
 #include "utils.hpp"
 #include <gtest/gtest.h>
 #include <iostream>
+#include <iterator>
+#include <stdexcept>
 
 using namespace loader;
 
@@ -73,8 +75,9 @@ class TestDatasetBatcher
       public testing::WithParamInterface<DatasetBatcherData> {
 public:
   DatasetBatcher getBatcher() {
-    return DatasetBatcher(root, utils::glob(root, {".png"}),
-                          ImageLoader::standardPreprocessing,
+    std::vector<std::filesystem::path> files = utils::glob(root, {".png"});
+    std::sort(files.begin(), files.end());
+    return DatasetBatcher(root, files, {utils::flatten},
                           {{"0", 0}, {"1", 1}, {"2", 2}}, GetParam().batchSize,
                           false, GetParam().dropLast);
   }
@@ -93,6 +96,50 @@ TEST_F(ImageLoaderFileSystem, TestDatasetBatcherInitWithInvalidBatchSize) {
                exceptions::loader::InvalidBatchSizeException);
 }
 #pragma endregion Init
+
+#pragma region Get
+TEST_P(TestDatasetBatcher, TestDatasetBatcherIndex) {
+  DatasetBatcher batcher = getBatcher();
+  for (int i = 0, j = 0; i < GetParam().size; ++i) {
+    auto [result, resultLabels] = batcher[i];
+
+    std::vector<int> expectedLabels(
+        labels.begin() + i * GetParam().batchSize,
+        std::min(labels.end(),
+                 labels.begin() + (i + 1) * GetParam().batchSize));
+    ASSERT_EQ(expectedLabels, resultLabels)
+        << "Labels do not match on batch " << i << std::endl;
+    // Construct the expected matrix
+    int rows = std::min((unsigned long)GetParam().batchSize,
+                        data.size() - i * GetParam().batchSize);
+    if (rows <= 0) {
+      throw "Test error: Missing data rows.";
+    }
+    Eigen::MatrixXd expected(rows, data[0].size());
+    for (int j = 0; j < rows; ++j) {
+      expected.row(j) = utils::flatten(data[i * GetParam().batchSize + j]);
+    }
+    ASSERT_EQ(expected.rows(), result.rows())
+        << "Number of rows don't match on batch " << i << std::endl
+        << "Expected: " << expected.rows() << ", Got: " << result.rows();
+    ASSERT_EQ(expected.cols(), result.cols())
+        << "Number of cols don't match on batch " << i << std::endl
+        << "Expected: " << expected.cols() << ", Got: " << result.cols();
+    ASSERT_TRUE(expected.isApprox(result))
+        << "Data does not match on batch " << i << std::endl
+        << "Expected: " << expected << ", Got: " << result;
+  }
+}
+
+TEST_P(TestDatasetBatcher, TestDatasetBatcherIndexOutOfRange) {
+  DatasetBatcher batcher = getBatcher();
+  EXPECT_THROW(batcher[GetParam().size], std::out_of_range)
+      << "Did not throw out of range.";
+
+  EXPECT_THROW(batcher[-1], std::out_of_range)
+      << "Did not throw out of range for negative numbers.";
+}
+#pragma endregion Get
 
 #pragma region Size
 TEST_P(TestDatasetBatcher, TestDatasetBatcherSize) {
