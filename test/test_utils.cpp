@@ -223,41 +223,15 @@ TEST_F(UtilsGlob, TestGlob) {
 #pragma endregion Path
 
 #pragma region Image
-class Image : public ::testing::Test {
-protected:
-  std::filesystem::path root;
-  Eigen::MatrixXd data;
-
-  void SetUp() override {
-    std::filesystem::path tempRoot(testing::TempDir());
-    std::string tempDir = std::to_string(rand());
-    while (std::filesystem::exists(tempRoot / tempDir)) {
-      tempDir = std::to_string(rand());
-    }
-    this->root = tempRoot / tempDir;
-    std::filesystem::create_directory(this->root);
-
-    this->data = Eigen::VectorXd::LinSpaced(100, 0, 99).reshaped(10, 10);
-    cv::Mat image;
-    cv::eigen2cv(this->data, image);
-    cv::imwrite(this->root / "test.png", image);
-
-    std::ofstream file(this->root / "test.txt");
-    file << "Some data";
-    file.close();
-  }
-
-  void TearDown() override { std::filesystem::remove_all(this->root); }
-};
-
+using TestImageUtils = test_filesystem::FileSystemFixture;
 #pragma region Open image
-TEST_F(Image, TestOpenImageAsMatrix) {
-  ASSERT_TRUE(data.isApprox(openImageAsMatrix(root / "test.png")))
+TEST_F(TestImageUtils, TestOpenImageAsMatrix) {
+  ASSERT_TRUE(data[0].isApprox(openImageAsMatrix(root / "0" / "a" / "0.png")))
       << "Opened image data is not equivalent.";
 }
 
-TEST_F(Image, TestOpenImageAsMatrixWithNonImage) {
-  EXPECT_THROW(openImageAsMatrix(root / "test.txt"),
+TEST_F(TestImageUtils, TestOpenImageAsMatrixWithNonImage) {
+  EXPECT_THROW(openImageAsMatrix(root / "0" / "a" / "1.txt"),
                exceptions::utils::image::InvalidImageFileException)
       << "Cannot open non image file as a matrix.";
 }
