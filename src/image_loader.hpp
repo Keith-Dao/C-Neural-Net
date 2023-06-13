@@ -106,6 +106,15 @@ public:
       this->classesToNum[this->classes[i]] = i;
     }
   }
+
+#pragma region Properties
+#pragma region Classes
+  /*
+    Get a copy of the classes in the loader.
+  */
+  std::vector<std::string> getClasses() const;
+#pragma endregion Classes
+#pragma endregion Properties
 };
 #pragma endregion Image loader
 } // namespace loader

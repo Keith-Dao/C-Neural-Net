@@ -55,6 +55,21 @@ TEST_F(ImageLoaderFileSystem, TestImageLoaderInitWithNoFiles) {
       << "No files with a given extension did not throw.";
 }
 #pragma endregion Init
+
+#pragma region Properties
+#pragma region Classes
+TEST_F(ImageLoaderFileSystem, TestImageLoaderClasses) {
+  ImageLoader loader(root, ImageLoader::standardPreprocessing, {".png"}, 0.7,
+                     false);
+  ASSERT_EQ(classes, loader.getClasses()) << "Classes did not match.";
+
+  std::vector<std::string> alteredClasses = loader.getClasses();
+  alteredClasses[0] = "ALTERED";
+  ASSERT_NE(alteredClasses, loader.getClasses())
+      << "Class getter returns a reference  to the member.";
+}
+#pragma endregion Classes
+#pragma endregion Properties
 #pragma endregion Image loader
 
 #pragma region Dataset batcher

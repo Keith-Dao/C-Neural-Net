@@ -52,4 +52,12 @@ DatasetBatcher::operator[](int batch) const {
 #pragma region Image loader
 const preprocessingFunctions ImageLoader::standardPreprocessing{
     utils::normaliseImage, utils::flatten};
+
+#pragma region Properties
+#pragma region Classes
+std::vector<std::string> ImageLoader::getClasses() const {
+  return this->classes;
+};
+#pragma endregion Classes
+#pragma endregion Properties
 #pragma endregion Image loader
