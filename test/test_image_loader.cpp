@@ -77,22 +77,33 @@ public:
   DatasetBatcher getBatcher() {
     std::vector<std::filesystem::path> files = utils::glob(root, {".png"});
     std::sort(files.begin(), files.end());
+
+    DatasetBatcher::KeywordArgs kwargs;
+    kwargs.shuffle = false;
+    kwargs.dropLast = GetParam().dropLast;
     return DatasetBatcher(root, files, {utils::flatten},
                           {{"0", 0}, {"1", 1}, {"2", 2}}, GetParam().batchSize,
-                          false, GetParam().dropLast);
+                          kwargs);
   }
 };
 #pragma region Init
 TEST_F(ImageLoaderFileSystem, TestDatasetBatcherInit) {
-  DatasetBatcher(root, utils::glob(root, {".png"}),
-                 ImageLoader::standardPreprocessing,
-                 {{"0", 0}, {"1", 1}, {"2", 2}}, 1, false);
+  DatasetBatcher(
+      root, utils::glob(root, {".png"}), ImageLoader::standardPreprocessing,
+      {{"0", 0}, {"1", 1}, {"2", 2}}, 1, DatasetBatcher::KeywordArgs());
 }
 
+TEST_F(ImageLoaderFileSystem,
+       TestDatasetBatcherInitWithoutExplicitKeywordArgs) {
+  DatasetBatcher(root, utils::glob(root, {".png"}),
+                 ImageLoader::standardPreprocessing,
+                 {{"0", 0}, {"1", 1}, {"2", 2}}, 1);
+}
 TEST_F(ImageLoaderFileSystem, TestDatasetBatcherInitWithInvalidBatchSize) {
   EXPECT_THROW(DatasetBatcher(root, utils::glob(root, {".png"}),
                               ImageLoader::standardPreprocessing,
-                              {{"0", 0}, {"1", 1}, {"2", 2}}, 0, false),
+                              {{"0", 0}, {"1", 1}, {"2", 2}}, 0,
+                              DatasetBatcher::KeywordArgs()),
                exceptions::loader::InvalidBatchSizeException);
 }
 #pragma endregion Init

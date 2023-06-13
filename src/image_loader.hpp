@@ -20,21 +20,34 @@ class DatasetBatcher {
   bool dropLast;
 
 public:
+  struct KeywordArgs {
+    bool shuffle = true, dropLast = false;
+  };
+
   DatasetBatcher(const std::filesystem::path &root,
                  const std::vector<std::filesystem::path> &data,
                  const preprocessingFunctions &preprocessing,
                  const std::unordered_map<std::string, int> &classesToNum,
-                 int batchSize, bool shuffle = true, bool dropLast = false)
+                 int batchSize, const KeywordArgs kwargs)
       : root(root), data(data), preprocessing(preprocessing),
-        classesToNum(classesToNum), batchSize(batchSize), dropLast(dropLast) {
+        classesToNum(classesToNum), batchSize(batchSize),
+        dropLast(kwargs.dropLast) {
     if (batchSize < 1) {
       throw exceptions::loader::InvalidBatchSizeException(batchSize);
     }
-    if (shuffle) {
+    if (kwargs.shuffle) {
       std::shuffle(this->data.begin(), this->data.end(),
                    std::default_random_engine{});
     }
   };
+
+  DatasetBatcher(const std::filesystem::path &root,
+                 const std::vector<std::filesystem::path> &data,
+                 const preprocessingFunctions &preprocessing,
+                 const std::unordered_map<std::string, int> &classesToNum,
+                 int batchSize)
+      : DatasetBatcher(root, data, preprocessing, classesToNum, batchSize,
+                       KeywordArgs()){};
 
   /*
     The number of batches.
