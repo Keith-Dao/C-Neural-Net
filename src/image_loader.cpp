@@ -15,7 +15,7 @@ int DatasetBatcher::size() const {
 std::pair<Eigen::MatrixXd, std::vector<int>>
 DatasetBatcher::operator[](int batch) const {
   if (batch >= this->size() || batch < 0) {
-    throw std::out_of_range("batch");
+    throw std::out_of_range("Batch is out of range.");
   }
 
   Eigen::MatrixXd
