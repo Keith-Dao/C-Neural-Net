@@ -5,7 +5,6 @@
 #include <opencv2/core.hpp>
 #include <opencv2/core/eigen.hpp>
 #include <opencv2/imgcodecs.hpp>
-#include <utility>
 
 #pragma region Matrices
 Eigen::MatrixXd utils::fromJson(const json &values) {
