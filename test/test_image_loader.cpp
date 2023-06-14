@@ -210,7 +210,7 @@ TEST_F(ImageLoaderFileSystem, TestDatasetBatcherInitWithInvalidBatchSize) {
 }
 #pragma endregion Init
 
-#pragma region Get
+#pragma region Index
 TEST_P(TestDatasetBatcher, TestDatasetBatcherIndex) {
   DatasetBatcher batcher = getBatcher();
   for (int i = 0, j = 0; i < GetParam().size; ++i) {
@@ -252,7 +252,42 @@ TEST_P(TestDatasetBatcher, TestDatasetBatcherIndexOutOfRange) {
   EXPECT_THROW(batcher[-1], std::out_of_range)
       << "Did not throw out of range for negative numbers.";
 }
-#pragma endregion Get
+#pragma endregion Index
+
+#pragma region Range based for loop
+TEST_P(TestDatasetBatcher, TestDatasetBatcherRangeBasedForLoop) {
+  DatasetBatcher batcher = getBatcher();
+  int i = 0;
+  for (auto &[result, resultLabels] : batcher) {
+    std::vector<int> expectedLabels(
+        labels.begin() + i * GetParam().batchSize,
+        std::min(labels.end(),
+                 labels.begin() + (i + 1) * GetParam().batchSize));
+    ASSERT_EQ(expectedLabels, resultLabels)
+        << "Labels do not match on batch " << i << std::endl;
+    // Construct the expected matrix
+    int rows = std::min((unsigned long)GetParam().batchSize,
+                        data.size() - i * GetParam().batchSize);
+    if (rows <= 0) {
+      throw "Test error: Missing data rows.";
+    }
+    Eigen::MatrixXd expected(rows, data[0].size());
+    for (int j = 0; j < rows; ++j) {
+      expected.row(j) = utils::flatten(data[i * GetParam().batchSize + j]);
+    }
+    ASSERT_EQ(expected.rows(), result.rows())
+        << "Number of rows don't match on batch " << i << std::endl
+        << "Expected: " << expected.rows() << ", Got: " << result.rows();
+    ASSERT_EQ(expected.cols(), result.cols())
+        << "Number of cols don't match on batch " << i << std::endl
+        << "Expected: " << expected.cols() << ", Got: " << result.cols();
+    ASSERT_TRUE(expected.isApprox(result))
+        << "Data does not match on batch " << i << std::endl
+        << "Expected: " << expected << ", Got: " << result;
+    i++;
+  }
+}
+#pragma endregion Range based for loop
 
 #pragma region Size
 TEST_P(TestDatasetBatcher, TestDatasetBatcherSize) {

@@ -7,13 +7,17 @@
 using namespace loader;
 
 #pragma region Dataset batcher
+#pragma region Properties
+#pragma region Size
 int DatasetBatcher::size() const {
   return (this->data.size() + (this->dropLast ? 0 : this->batchSize - 1)) /
          this->batchSize;
 }
+#pragma endregion Size
+#pragma endregion Properties
 
-std::pair<Eigen::MatrixXd, std::vector<int>>
-DatasetBatcher::operator[](int batch) const {
+#pragma region Builtins
+minibatch DatasetBatcher::operator[](int batch) const {
   if (batch >= this->size() || batch < 0) {
     throw std::out_of_range("Batch is out of range.");
   }
@@ -47,6 +51,7 @@ DatasetBatcher::operator[](int batch) const {
 
   return std::make_pair(result, labels);
 }
+#pragma endregion Builtins
 #pragma endregion Dataset batcher
 
 #pragma region Image loader

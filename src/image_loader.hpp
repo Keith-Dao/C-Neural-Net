@@ -9,8 +9,53 @@
 namespace loader {
 typedef std::vector<std::function<Eigen::MatrixXd(Eigen::MatrixXd)>>
     preprocessingFunctions;
+typedef std::pair<Eigen::MatrixXd, std::vector<int>> minibatch;
 
 #pragma region Dataset batcher
+template <typename Batcher> struct DatasetIterator {
+  using iterator_category = std::input_iterator_tag;
+  using value_type = minibatch;
+  using reference = value_type const &;
+  using pointer = value_type const *;
+  using difference_type = ptrdiff_t;
+
+  DatasetIterator(const Batcher &batcher, int i) : batcher(batcher), i(i) {
+    if (i != batcher.size()) {
+      this->value = this->batcher[this->i];
+    }
+  }
+
+  reference operator*() const { return this->value; }
+  pointer operator->() { return &this->value; }
+
+  // Prefix increment
+  DatasetIterator &operator++() {
+    if (++this->i < this->batcher.size()) {
+      this->value = this->batcher[this->i];
+    }
+    return *this;
+  }
+
+  // Postfix increment
+  DatasetIterator operator++(int) {
+    DatasetIterator tmp = *this;
+    ++(*this);
+    return tmp;
+  }
+
+  friend bool operator==(const DatasetIterator &a, const DatasetIterator &b) {
+    return a.i == b.i;
+  };
+  friend bool operator!=(const DatasetIterator &a, const DatasetIterator &b) {
+    return a.i != b.i;
+  };
+
+private:
+  Batcher batcher;
+  value_type value;
+  int i, end;
+};
+
 class DatasetBatcher {
   std::filesystem::path root;
   std::vector<std::filesystem::path> data;
@@ -23,6 +68,8 @@ public:
   struct KeywordArgs {
     bool shuffle = true, dropLast = false;
   };
+
+  using Iterator = DatasetIterator<DatasetBatcher>;
 
   DatasetBatcher(const std::filesystem::path &root,
                  const std::vector<std::filesystem::path> &data,
@@ -49,15 +96,27 @@ public:
       : DatasetBatcher(root, data, preprocessing, classesToNum, batchSize,
                        KeywordArgs()){};
 
+#pragma region Iterators
+  Iterator begin() { return Iterator(*this, 0); }
+
+  Iterator end() { return Iterator(*this, this->size()); }
+#pragma endregion Iterators
+
+#pragma region Properties
+#pragma region Size
   /*
     The number of batches.
   */
   int size() const;
+#pragma endregion Size
+#pragma endregion Properties
 
+#pragma region Builtins
   /*
     Get processed data and labels at batch i (0-based).
   */
-  std::pair<Eigen::MatrixXd, std::vector<int>> operator[](int i) const;
+  minibatch operator[](int i) const;
+#pragma endregion Builtins
 };
 #pragma endregion Dataset batcher
 
