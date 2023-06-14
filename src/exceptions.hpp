@@ -66,6 +66,22 @@ public:
   InvalidTrainTestSplitException(float split) : split(split){};
 };
 
+class InvalidDatasetException : public std::exception {
+  std::string dataset;
+
+  virtual const char *what() const throw() {
+    std::string s =
+        "An invalid dataset received. Expected \"train\" or \"test\", got " +
+        dataset;
+    char *result = new char[s.length() + 1];
+    std::strcpy(result, s.c_str());
+    return result;
+  }
+
+public:
+  InvalidDatasetException(std::string dataset) : dataset(dataset){};
+};
+
 class InvalidBatchSizeException : public std::exception {
   int batchSize;
 

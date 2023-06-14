@@ -129,6 +129,24 @@ public:
   std::vector<std::filesystem::path> getTestFiles() const;
 #pragma endregion Test files
 #pragma endregion Properties
+
+#pragma region Batcher
+  /*
+    Get the dataset batcher for the selected dataset.
+  */
+  DatasetBatcher getBatcher(
+      std::string dataset, int batchSize,
+      const DatasetBatcher::KeywordArgs kwargs = DatasetBatcher::KeywordArgs());
+#pragma endregion Batcher
+
+#pragma region Builtins
+  /*
+    Get the dataset batcher for the selected dataset.
+  */
+  DatasetBatcher operator()(
+      std::string dataset, int batchSize,
+      const DatasetBatcher::KeywordArgs kwargs = DatasetBatcher::KeywordArgs());
+#pragma endregion Builtins
 };
 #pragma endregion Image loader
 } // namespace loader

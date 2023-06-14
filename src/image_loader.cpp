@@ -72,4 +72,25 @@ std::vector<std::filesystem::path> ImageLoader::getTestFiles() const {
 }
 #pragma endregion Test files
 #pragma endregion Properties
+
+#pragma region Batcher
+DatasetBatcher
+ImageLoader::getBatcher(std::string dataset, int batchSize,
+                        const DatasetBatcher::KeywordArgs kwargs) {
+  if (dataset != "train" && dataset != "test") {
+    throw exceptions::loader::InvalidDatasetException(dataset);
+  }
+  return DatasetBatcher(
+      this->root, dataset == "train" ? this->trainFiles : this->testFiles,
+      this->preprocessing, this->classesToNum, batchSize, kwargs);
+};
+#pragma endregion Batcher
+
+#pragma region Builtins
+DatasetBatcher
+ImageLoader::operator()(std::string dataset, int batchSize,
+                        const DatasetBatcher::KeywordArgs kwargs) {
+  return this->getBatcher(dataset, batchSize, kwargs);
+}
+#pragma endregion Builtins
 #pragma endregion Image loader

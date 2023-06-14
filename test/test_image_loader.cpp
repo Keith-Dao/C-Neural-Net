@@ -82,6 +82,72 @@ TEST_F(ImageLoaderFileSystem, TestImageLoaderClasses) {
 }
 #pragma endregion Classes
 #pragma endregion Properties
+
+#pragma region Batcher
+TEST_P(TestImageLoader, TestImageLoaderGetBatcher) {
+  ImageLoader loader = getImageLoader();
+  DatasetBatcher::KeywordArgs kwargs;
+  kwargs.shuffle = false;
+  int batchSize = std::get<BATCH_SIZE>(GetParam());
+
+  // Test the train and test dataset batcher
+  std::pair<std::string, std::vector<std::filesystem::path>> datasets[2] = {
+      std::make_pair("train", loader.getTrainFiles()),
+      std::make_pair("test", loader.getTestFiles())};
+  for (auto [datasetName, datasetFiles] : datasets) {
+    DatasetBatcher datasetBatcher =
+        loader.getBatcher(datasetName, batchSize, kwargs);
+    for (int i = 0; i < (datasetFiles.size() + batchSize - 1) / batchSize;
+         ++i) {
+      auto [result, resultLabels] = datasetBatcher[i];
+
+      // Find the order in which the files have been loaded.
+      std::vector<int> indexes;
+      for (int j = 0; j < batchSize && i * batchSize + j < datasetFiles.size();
+           ++j) {
+        indexes.push_back(dataIndex[datasetFiles[i * batchSize + j]]);
+      }
+
+      // Check labels
+      std::vector<int> expectedLabels(indexes.size());
+      for (int j = 0; j < indexes.size(); ++j) {
+        expectedLabels[j] = labels[indexes[j]];
+      }
+      ASSERT_EQ(expectedLabels, resultLabels)
+          << "Labels do not match on batch " << i << " of " << datasetName
+          << std::endl;
+
+      // Construct the expected matrix
+      if (indexes.size() <= 0) {
+        throw "Test error: Missing data rows.";
+      }
+      Eigen::MatrixXd expected(indexes.size(), data[0].size());
+      for (int j = 0; j < indexes.size(); ++j) {
+        expected.row(j) = utils::flatten(data[indexes[j]]);
+      }
+      ASSERT_EQ(expected.rows(), result.rows())
+          << "Number of rows don't match on batch " << i << " for "
+          << datasetName << std::endl
+          << "Expected: " << expected.rows() << ", Got: " << result.rows();
+      ASSERT_EQ(expected.cols(), result.cols())
+          << "Number of cols don't match on batch " << i << " for "
+          << datasetName << std::endl
+          << "Expected: " << expected.cols() << ", Got: " << result.cols();
+      ASSERT_TRUE(expected.isApprox(result))
+          << "Data does not match on batch " << i << " for " << datasetName
+          << std::endl
+          << "Expected: " << expected << ", Got: " << result;
+    }
+  }
+}
+
+TEST_F(ImageLoaderFileSystem, TestImageLoaderGetBatcherWithInvalidDataset) {
+  ImageLoader loader = TestImageLoader::getImageLoader(root, 0.7);
+  EXPECT_THROW(loader.getBatcher("INVALID", 0),
+               exceptions::loader::InvalidDatasetException);
+}
+#pragma endregion Batcher
+
 #pragma region Data
 INSTANTIATE_TEST_SUITE_P(
     , TestImageLoader,
@@ -121,6 +187,7 @@ public:
                           kwargs);
   }
 };
+
 #pragma region Init
 TEST_F(ImageLoaderFileSystem, TestDatasetBatcherInit) {
   DatasetBatcher(
