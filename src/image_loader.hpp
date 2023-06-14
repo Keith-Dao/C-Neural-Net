@@ -114,6 +114,20 @@ public:
   */
   std::vector<std::string> getClasses() const;
 #pragma endregion Classes
+
+#pragma region Train files
+  /*
+    Get a copy of the train files.
+  */
+  std::vector<std::filesystem::path> getTrainFiles() const;
+#pragma endregion Train files
+
+#pragma region Test files
+  /*
+    Get a copy of the test files.
+  */
+  std::vector<std::filesystem::path> getTestFiles() const;
+#pragma endregion Test files
 #pragma endregion Properties
 };
 #pragma endregion Image loader

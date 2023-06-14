@@ -9,24 +9,36 @@
 
 using namespace loader;
 
+#define TRAIN_TEST_SPLIT 0
+#define BATCH_SIZE 1
+
 namespace test_image_loader {
 using ImageLoaderFileSystem = test_filesystem::FileSystemFixture;
 #pragma region Image loader
-struct ImageLoaderData {
-  float trainTestSplit;
+class TestImageLoader
+    : public ImageLoaderFileSystem,
+      public testing::WithParamInterface<std::tuple<float, int>> {
+public:
+  ImageLoader getImageLoader() {
+    return ImageLoader(root, {utils::flatten}, {".png"},
+                       std::get<TRAIN_TEST_SPLIT>(GetParam()), false);
+  }
 
-  ImageLoaderData(float trainTestSplit) : trainTestSplit(trainTestSplit){};
+  static ImageLoader getImageLoader(std::filesystem::path root,
+                                    float trainTestSplit) {
+    return ImageLoader(root, {utils::flatten}, {".png"}, trainTestSplit, false);
+  }
 };
-std::ostream &operator<<(std::ostream &os, ImageLoaderData const &fixture) {
-  return os << std::to_string(fixture.trainTestSplit);
-}
-
-class TestImageLoader : public ImageLoaderFileSystem,
-                        public testing::WithParamInterface<ImageLoaderData> {};
 
 #pragma region Init
-TEST_F(ImageLoaderFileSystem, TestImageLoaderInit) {
-  ImageLoader(root, ImageLoader::standardPreprocessing, {".png"}, 0.7, false);
+TEST_P(TestImageLoader, TestImageLoaderInit) {
+  ImageLoader loader = getImageLoader();
+  ASSERT_EQ((int)(std::get<TRAIN_TEST_SPLIT>(GetParam()) * 3),
+            loader.getTrainFiles().size())
+      << "Mismatched train size";
+  ASSERT_EQ(3 - (int)(std::get<TRAIN_TEST_SPLIT>(GetParam()) * 3),
+            loader.getTestFiles().size())
+      << "Mismatched test size";
 }
 
 TEST_F(ImageLoaderFileSystem, TestImageLoaderInitWithInvalidSplit) {
@@ -70,6 +82,14 @@ TEST_F(ImageLoaderFileSystem, TestImageLoaderClasses) {
 }
 #pragma endregion Classes
 #pragma endregion Properties
+#pragma region Data
+INSTANTIATE_TEST_SUITE_P(
+    , TestImageLoader,
+    ::testing::Combine(
+        ::testing::ConvertGenerator<float>(::testing::Values(0, (float)1 / 3,
+                                                             (float)2 / 3, 1)),
+        ::testing::ConvertGenerator<int>(::testing::Values(1, 2, 3))));
+#pragma endregion Data
 #pragma endregion Image loader
 
 #pragma region Dataset batcher

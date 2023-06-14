@@ -59,5 +59,17 @@ std::vector<std::string> ImageLoader::getClasses() const {
   return this->classes;
 };
 #pragma endregion Classes
+
+#pragma region Train files
+std::vector<std::filesystem::path> ImageLoader::getTrainFiles() const {
+  return this->trainFiles;
+}
+#pragma endregion Train files
+
+#pragma region Test files
+std::vector<std::filesystem::path> ImageLoader::getTestFiles() const {
+  return this->testFiles;
+}
+#pragma endregion Test files
 #pragma endregion Properties
 #pragma endregion Image loader
