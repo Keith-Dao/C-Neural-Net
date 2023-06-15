@@ -10,6 +10,8 @@ protected:
   std::shared_ptr<Eigen::MatrixXd> input = nullptr;
 
 public:
+  virtual ~ActivationFunction(){};
+
   /*
     Gets the name for the class.
   */
