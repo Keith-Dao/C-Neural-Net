@@ -1,8 +1,6 @@
 #pragma once
 #include <cstring>
-#include <exception>
 #include <filesystem>
-#include <string>
 #include <vector>
 
 namespace exceptions {

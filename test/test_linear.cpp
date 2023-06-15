@@ -1,11 +1,9 @@
-#include "activation_functions.hpp"
 #include "exceptions.hpp"
 #include "linear.hpp"
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
 #include <iostream>
 #include <nlohmann/json.hpp>
-#include <tuple>
 
 using namespace linear;
 using json = nlohmann::json;

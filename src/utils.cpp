@@ -1,10 +1,9 @@
 #include "utils.hpp"
 #include "exceptions.hpp"
-#include <Eigen/src/Core/util/Constants.h>
-#include <filesystem>
 #include <opencv2/core.hpp>
 #include <opencv2/core/eigen.hpp>
 #include <opencv2/imgcodecs.hpp>
+#include <unordered_set>
 
 #pragma region Matrices
 Eigen::MatrixXd utils::fromJson(const json &values) {

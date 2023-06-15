@@ -1,10 +1,6 @@
 #pragma once
 #include "activation_functions.hpp"
-#include "exceptions.hpp"
 #include <Eigen/Dense>
-#include <exception>
-#include <math.h>
-#include <memory>
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;

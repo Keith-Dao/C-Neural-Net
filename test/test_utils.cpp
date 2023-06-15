@@ -4,13 +4,7 @@
 #include <Eigen/Dense>
 #include <fstream>
 #include <gtest/gtest.h>
-#include <iostream>
 #include <nlohmann/json.hpp>
-#include <opencv2/core.hpp>
-#include <opencv2/core/eigen.hpp>
-#include <opencv2/core/mat.hpp>
-#include <opencv2/imgcodecs.hpp>
-#include <utility>
 
 using namespace utils;
 using json = nlohmann::json;

@@ -1,5 +1,4 @@
 #pragma once
-#include "exceptions.hpp"
 #include <Eigen/Dense>
 #include <memory>
 
