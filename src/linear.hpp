@@ -27,22 +27,7 @@ class Linear {
 public:
   int inChannels, outChannels;
   Linear(int inChannels, int outChannels,
-         std::string activation = "NoActivation")
-      : inChannels(inChannels), outChannels(outChannels) {
-    if (activation == "NoActivation") {
-      this->activationFunction =
-          std::make_shared<activation_functions::NoActivation>();
-    } else if (activation == "ReLU") {
-      this->activationFunction = std::make_shared<activation_functions::ReLU>();
-    } else {
-      throw exceptions::activation::InvalidActivationException(activation);
-    }
-    double distributionRange = sqrt(1 / (double)inChannels);
-    this->weight =
-        Eigen::MatrixXd::Random(outChannels, inChannels) * distributionRange;
-    this->bias =
-        Eigen::VectorXd::Random(outChannels).transpose() * distributionRange;
-  }
+         std::string activation = "NoActivation");
 
 #pragma region Properties
 #pragma region Evaluation mode
@@ -135,9 +120,7 @@ public:
   /*
     Perform the forward pass for the layer.
   */
-  Eigen::MatrixXd operator()(const Eigen::MatrixXd &input) {
-    return this->forward(input);
-  }
+  Eigen::MatrixXd operator()(const Eigen::MatrixXd &input);
 
   bool operator==(const Linear &other) const;
 #pragma endregion Builtins

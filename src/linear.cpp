@@ -4,6 +4,25 @@
 
 using namespace linear;
 
+#pragma region Constructor
+Linear::Linear(int inChannels, int outChannels, std::string activation)
+    : inChannels(inChannels), outChannels(outChannels) {
+  if (activation == "NoActivation") {
+    this->activationFunction =
+        std::make_shared<activation_functions::NoActivation>();
+  } else if (activation == "ReLU") {
+    this->activationFunction = std::make_shared<activation_functions::ReLU>();
+  } else {
+    throw exceptions::activation::InvalidActivationException(activation);
+  }
+  double distributionRange = sqrt(1 / (double)inChannels);
+  this->weight =
+      Eigen::MatrixXd::Random(outChannels, inChannels) * distributionRange;
+  this->bias =
+      Eigen::VectorXd::Random(outChannels).transpose() * distributionRange;
+}
+#pragma endregion Constructor
+
 #pragma region Properties
 #pragma region Evaluation mode
 bool Linear::getEval() const { return this->eval; }
@@ -125,6 +144,10 @@ Eigen::MatrixXd Linear::update(const Eigen::MatrixXd &grad,
 #pragma endregion Backward pass
 
 #pragma region Builtins
+Eigen::MatrixXd Linear::operator()(const Eigen::MatrixXd &input) {
+  return this->forward(input);
+}
+
 bool Linear::operator==(const Linear &other) const {
   return typeid(*this) == typeid(other) &&
          this->inChannels == other.inChannels &&
