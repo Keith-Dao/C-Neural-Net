@@ -1,15 +1,23 @@
 #include "exceptions.hpp"
+#include "fixtures.hpp"
 #include "utils.hpp"
 #include <Eigen/Dense>
+#include <fstream>
 #include <gtest/gtest.h>
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/core/eigen.hpp>
+#include <opencv2/core/mat.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <utility>
 
 using namespace utils;
 using json = nlohmann::json;
 
 namespace test_utils {
 #pragma region Matrices
+#pragma region JSON
 struct MatrixData {
   Eigen::MatrixXd matrix;
   json value;
@@ -20,20 +28,20 @@ struct MatrixData {
 std::ostream &operator<<(std::ostream &os, MatrixData const &fixture) {
   return os << fixture.value;
 }
-class TestMatrix : public testing::TestWithParam<MatrixData> {};
+class TestMatrixJson : public testing::TestWithParam<MatrixData> {};
 
-TEST_P(TestMatrix, TestMatrixToJson) {
+TEST_P(TestMatrixJson, TestMatrixToJson) {
   auto [matrix, values] = GetParam();
   ASSERT_EQ(values, toJson(matrix));
 }
 
-TEST_P(TestMatrix, TestJsonToMatrix) {
+TEST_P(TestMatrixJson, TestJsonToMatrix) {
   auto [matrix, values] = GetParam();
   ASSERT_TRUE(matrix.isApprox(fromJson(values)));
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    Utils, TestMatrix,
+    Utils, TestMatrixJson,
     ::testing::Values(MatrixData(Eigen::MatrixXd{{1, 2, 3}, {3, 2, 1}},
                                  json{{1, 2, 3}, {3, 2, 1}}),
                       MatrixData(Eigen::MatrixXd::Ones(3, 3),
@@ -75,6 +83,7 @@ TEST(MatrixUtils, TestJsonToMatrixWithInvalidTypes) {
   EXPECT_THROW(fromJson(values), exceptions::json::JSONTypeException)
       << "JSON objects are not supported, only 2D.";
 }
+#pragma endregion JSON
 
 #pragma region One hot encode
 TEST(MatrixUtils, TestOneHotEncode) {
@@ -139,5 +148,101 @@ TEST(MatrixUtils, TestLogSoftmax) {
   ASSERT_TRUE(trueP.isApprox(logSoftmax(x))) << "Last log softmax failed.";
 }
 #pragma endregion Log softmax
+
+#pragma region Normalise
+TEST(MatrixUtils, TestNormalise) {
+  Eigen::MatrixXd data{{0, 127.5, 255}}, expected{{0, 0.5, 1}};
+  std::pair<float, float> from{0, 255}, to{0, 1};
+  EXPECT_TRUE(expected.isApprox(normalise(data, from, to)))
+      << "First normalise failed.";
+
+  expected << -1, 0, 1;
+  to = std::make_pair(-1, 1);
+  EXPECT_TRUE(expected.isApprox(normalise(data, from, to)))
+      << "Second normalise failed.";
+
+  expected << -2, 0, 2;
+  to = std::make_pair(-2, 2);
+  EXPECT_TRUE(expected.isApprox(normalise(data, from, to)))
+      << "Third normalise failed.";
+
+  expected << -2, 0.5, 3;
+  to = std::make_pair(-2, 3);
+  EXPECT_TRUE(expected.isApprox(normalise(data, from, to)))
+      << "Last normalise failed.";
+}
+
+TEST(MatrixUtils, TestNormaliseWithInvalidRange) {
+  Eigen::MatrixXd data{{0, 127.5, 255}};
+  std::pair<float, float> from{0, -1}, to{0, 1};
+  EXPECT_THROW(normalise(data, from, to),
+               exceptions::utils::normalise::InvalidRangeException)
+      << "First normalise did not throw.";
+
+  std::swap(from, to);
+  EXPECT_THROW(normalise(data, from, to),
+               exceptions::utils::normalise::InvalidRangeException)
+      << "Second normalise did not throw.";
+}
+#pragma endregion Normalise
+
+#pragma region Flatten
+TEST(MatrixUtils, TestFlatten) {
+  Eigen::MatrixXd data{{1, 2, 3}}, expected{{1, 2, 3}};
+  ASSERT_TRUE(expected.isApprox(flatten(data))) << "First flatten failed.";
+
+  data = Eigen::MatrixXd{{1}, {2}, {3}};
+  ASSERT_TRUE(expected.isApprox(flatten(data))) << "Second flatten failed.";
+
+  data = Eigen::MatrixXd{{1, 2, 3, 4}, {5, 6, 7, 8}};
+  expected = Eigen::MatrixXd{{1, 2, 3, 4, 5, 6, 7, 8}};
+  ASSERT_TRUE(expected.isApprox(flatten(data))) << "Last flatten failed.";
+}
+#pragma endregion Flatten
 #pragma endregion Matrices
+
+#pragma region Path
+#pragma region Glob
+using UtilsGlob = test_filesystem::FileSystemFixture;
+TEST_F(UtilsGlob, TestGlob) {
+  std::vector<std::filesystem::path> expected = {root / "0" / "a" / "0.png",
+                                                 root / "0" / "a" / "4.png",
+                                                 root / "1" / "a" / "5.png"};
+  std::vector<std::filesystem::path> result = glob(root, {".png"});
+  std::sort(result.begin(), result.end());
+  ASSERT_EQ(expected, result) << "Glob .png only";
+
+  expected = {root / "0" / "a" / "0.png", root / "0" / "a" / "1.txt",
+              root / "0" / "a" / "2.jpg", root / "0" / "a" / "4.png",
+              root / "1" / "a" / "3.txt", root / "1" / "a" / "5.png"};
+  result = glob(root, {".png", ".jpg", ".txt"});
+  std::sort(result.begin(), result.end());
+  ASSERT_EQ(expected, result) << "Glob .png, .jpg and .txt.";
+}
+#pragma endregion Glob
+#pragma endregion Path
+
+#pragma region Image
+using TestImageUtils = test_filesystem::FileSystemFixture;
+#pragma region Open image
+TEST_F(TestImageUtils, TestOpenImageAsMatrix) {
+  ASSERT_TRUE(data[0].isApprox(openImageAsMatrix(root / "0" / "a" / "0.png")))
+      << "Opened image data is not equivalent.";
+}
+
+TEST_F(TestImageUtils, TestOpenImageAsMatrixWithNonImage) {
+  EXPECT_THROW(openImageAsMatrix(root / "0" / "a" / "1.txt"),
+               exceptions::utils::image::InvalidImageFileException)
+      << "Cannot open non image file as a matrix.";
+}
+#pragma endregion Open image
+
+#pragma region Normalise
+TEST(ImageUtils, TestNormaliseImage) {
+  Eigen::MatrixXd data{{0, 127.5, 255}}, expected{{-1, 0, 1}};
+  ASSERT_TRUE(expected.isApprox(normaliseImage(data)))
+      << "Normalise image failed.";
+}
+#pragma endregion Normalise
+#pragma endregion Image
 } // namespace test_utils

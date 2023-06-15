@@ -1,7 +1,9 @@
 #pragma once
 #include <cstring>
 #include <exception>
+#include <filesystem>
 #include <string>
+#include <vector>
 
 namespace exceptions {
 namespace differentiable {
@@ -48,6 +50,95 @@ class InvalidReductionException : public std::exception {
 };
 } // namespace loss
 
+namespace loader {
+class InvalidTrainTestSplitException : public std::exception {
+  float split;
+
+  virtual const char *what() const throw() {
+    std::string s = "The train test split must be in the [0, 1], got " +
+                    std::to_string(split);
+    char *result = new char[s.length() + 1];
+    std::strcpy(result, s.c_str());
+    return result;
+  }
+
+public:
+  InvalidTrainTestSplitException(float split) : split(split){};
+};
+
+class InvalidDatasetException : public std::exception {
+  std::string dataset;
+
+  virtual const char *what() const throw() {
+    std::string s =
+        "An invalid dataset received. Expected \"train\" or \"test\", got " +
+        dataset;
+    char *result = new char[s.length() + 1];
+    std::strcpy(result, s.c_str());
+    return result;
+  }
+
+public:
+  InvalidDatasetException(std::string dataset) : dataset(dataset){};
+};
+
+class InvalidBatchSizeException : public std::exception {
+  int batchSize;
+
+  virtual const char *what() const throw() {
+    std::string s = "The batch size must be greater than or equal 1, got " +
+                    std::to_string(batchSize);
+    char *result = new char[s.length() + 1];
+    std::strcpy(result, s.c_str());
+    return result;
+  }
+
+public:
+  InvalidBatchSizeException(int batchSize) : batchSize(batchSize){};
+};
+
+class NoFilesFoundException : public std::exception {
+  std::string root, fileFormats;
+
+  virtual const char *what() const throw() {
+    std::string s = "No matching files were found at " + this->root +
+                    " with the extensions [" + this->fileFormats + "].";
+    char *result = new char[s.length() + 1];
+    std::strcpy(result, s.c_str());
+    return result;
+  }
+
+public:
+  NoFilesFoundException(const std::filesystem::path &root,
+                        const std::vector<std::string> &fileFormats)
+      : root(root) {
+    if (fileFormats.empty()) {
+      this->fileFormats = "";
+      return;
+    }
+    this->fileFormats = fileFormats[0];
+    for (int i = 1; i < fileFormats.size(); ++i) {
+      this->fileFormats += ", " + fileFormats[i];
+    }
+  };
+};
+
+class InvalidDataShapeAfterPreprocessingException : public std::exception {
+  int rows;
+
+  virtual const char *what() const throw() {
+    std::string s = "Data must have 1 row after preprocessing, got " +
+                    std::to_string(this->rows);
+    char *result = new char[s.length() + 1];
+    std::strcpy(result, s.c_str());
+    return result;
+  }
+
+public:
+  InvalidDataShapeAfterPreprocessingException(int rows) : rows(rows){};
+};
+} // namespace loader
+
 namespace utils {
 namespace one_hot_encode {
 class InvalidLabelIndexException : public std::exception {
@@ -56,6 +147,31 @@ class InvalidLabelIndexException : public std::exception {
   }
 };
 } // namespace one_hot_encode
+
+namespace image {
+class InvalidImageFileException : public std::exception {
+  std::string file;
+
+  virtual const char *what() const throw() {
+    std::string s =
+        "The file at " + this->file + " could not be opened as an image.";
+    char *result = new char[s.length() + 1];
+    std::strcpy(result, s.c_str());
+    return result;
+  }
+
+public:
+  InvalidImageFileException(const std::filesystem::path &file) : file(file){};
+};
+} // namespace image
+
+namespace normalise {
+class InvalidRangeException : public std::exception {
+  virtual const char *what() const throw() {
+    return "An invalid range was provided.";
+  }
+};
+} // namespace normalise
 } // namespace utils
 
 namespace load {

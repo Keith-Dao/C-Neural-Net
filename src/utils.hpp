@@ -1,6 +1,9 @@
 #pragma once
 #include <Eigen/Dense>
+#include <Eigen/src/Core/util/Constants.h>
+#include <filesystem>
 #include <nlohmann/json.hpp>
+#include <unordered_set>
 
 using json = nlohmann::json;
 
@@ -54,5 +57,37 @@ Eigen::MatrixXd logSoftmax(const Eigen::MatrixBase<T> &in) {
   result.array().colwise() -= result.array().exp().rowwise().sum().log();
   return result;
 }
+
+/*
+  Normalise the data from the current range to the target range.
+*/
+Eigen::MatrixXd normalise(const Eigen::MatrixXd &data,
+                          std::pair<float, float> from,
+                          std::pair<float, float> to);
+
+/*
+  Flatten the matrix to be 1xN matrix.
+*/
+Eigen::MatrixXd flatten(const Eigen::MatrixXd &in);
 #pragma endregion Matrices
+
+#pragma region Path
+/*
+  Recursively find all files with matching extensions
+*/
+std::vector<std::filesystem::path> glob(const std::filesystem::path &path,
+                                        std::vector<std::string> extensions);
+#pragma endregion Path
+
+#pragma region Image
+/*
+  Open the provided image path as an eigen matrix.
+*/
+Eigen::MatrixXd openImageAsMatrix(std::filesystem::path path);
+
+/*
+  Normalise the image data matrix from [0, 255] to [-1, 1]
+*/
+Eigen::MatrixXd normaliseImage(const Eigen::MatrixXd &data);
+#pragma endregion Image
 } // namespace utils

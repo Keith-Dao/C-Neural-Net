@@ -24,3 +24,8 @@ target_link_libraries(${PROJECT_NAME} Matplot++::matplot)
 # Indicators
 find_package(indicators REQUIRED)
 target_link_libraries(${PROJECT_NAME} ${INDICATORS_LIBRARIES})
+
+# OpenCV
+find_package(OpenCV REQUIRED)
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )
