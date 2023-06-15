@@ -1,7 +1,6 @@
 #include "cross_entropy_loss.hpp"
 #include "exceptions.hpp"
 #include <gtest/gtest.h>
-#include <tuple>
 
 using namespace loss;
 

@@ -11,6 +11,12 @@ std::unordered_map<std::string, std::function<double(Eigen::MatrixXd)>>
         {"sum", [](Eigen::MatrixXd matrix) { return matrix.sum(); }}};
 #pragma endregion Reductions
 
+#pragma region Constructor
+CrossEntropyLoss::CrossEntropyLoss(std::string reduction) {
+  this->setReduction(reduction);
+}
+#pragma endregion Constructor
+
 #pragma region Properties
 #pragma region Reduction
 std::string CrossEntropyLoss::getReduction() const { return this->reduction; }

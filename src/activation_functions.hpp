@@ -1,5 +1,4 @@
 #pragma once
-#include "exceptions.hpp"
 #include <Eigen/Dense>
 #include <memory>
 
@@ -10,6 +9,8 @@ protected:
   std::shared_ptr<Eigen::MatrixXd> input = nullptr;
 
 public:
+  virtual ~ActivationFunction(){};
+
   /*
     Gets the name for the class.
   */
@@ -43,7 +44,7 @@ public:
   /*
     Gets the name for the class.
   */
-  std::string getName() const override { return "NoActivation"; };
+  std::string getName() const override;
   /*
     Performs the forward pass.
   */
@@ -61,7 +62,7 @@ public:
   /*
     Gets the name for the class.
   */
-  std::string getName() const override { return "ReLU"; };
+  std::string getName() const override;
   /*
     Performs the forward pass.
   */

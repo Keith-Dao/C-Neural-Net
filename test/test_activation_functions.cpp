@@ -2,8 +2,6 @@
 #include "exceptions.hpp"
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
-#include <memory>
-#include <tuple>
 
 using namespace activation_functions;
 

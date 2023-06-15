@@ -1,9 +1,7 @@
 #pragma once
 #include <Eigen/Dense>
-#include <Eigen/src/Core/util/Constants.h>
 #include <filesystem>
 #include <nlohmann/json.hpp>
-#include <unordered_set>
 
 using json = nlohmann::json;
 

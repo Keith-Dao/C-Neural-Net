@@ -1,4 +1,5 @@
 #include "activation_functions.hpp"
+#include "exceptions.hpp"
 
 using namespace activation_functions;
 
@@ -17,6 +18,8 @@ Eigen::MatrixXd ActivationFunction::backward() {
 #pragma endregion ActivationFunction
 
 #pragma region NoActivation
+std::string NoActivation::getName() const { return "NoActivation"; };
+
 Eigen::MatrixXd NoActivation::forward(const Eigen::MatrixXd &input) {
   return ActivationFunction::forward(input);
 }
@@ -28,6 +31,8 @@ Eigen::MatrixXd NoActivation::backward() {
 #pragma endregion NoActivation
 
 #pragma region ReLU
+std::string ReLU::getName() const { return "ReLU"; };
+
 Eigen::MatrixXd ReLU::forward(const Eigen::MatrixXd &input) {
   ActivationFunction::forward(input);
   return input.cwiseProduct((input.array() > 0).cast<double>().matrix());

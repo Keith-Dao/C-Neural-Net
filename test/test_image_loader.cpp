@@ -3,9 +3,6 @@
 #include "image_loader.hpp"
 #include "utils.hpp"
 #include <gtest/gtest.h>
-#include <iostream>
-#include <iterator>
-#include <stdexcept>
 
 using namespace loader;
 
