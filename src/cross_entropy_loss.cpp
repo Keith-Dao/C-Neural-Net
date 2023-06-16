@@ -30,6 +30,30 @@ void CrossEntropyLoss::setReduction(std::string reduction) {
 #pragma region Reduction
 #pragma endregion Properties
 
+#pragma region Load
+/*
+  Create a cross entropy loss instance from the JSON values.
+*/
+CrossEntropyLoss CrossEntropyLoss::fromJson(const json &values) {
+  if (values["class"] != "CrossEntropyLoss") {
+    throw exceptions::load::InvalidClassAttributeValue();
+  }
+  return CrossEntropyLoss(values["reduction"]);
+};
+#pragma endregion Load
+
+#pragma region Save
+/*
+    Get all relevant attributes in a serialisable format.
+
+    Attributes includes:
+        - reduction -- the reduction method used
+  */
+json CrossEntropyLoss::toJson() {
+  return {{"class", "CrossEntropyLoss"}, {"reduction", this->reduction}};
+};
+#pragma endregion Save
+
 #pragma region Forward
 double CrossEntropyLoss::forward(const Eigen::MatrixXd &logits,
                                  const Eigen::MatrixXi &targets) {
