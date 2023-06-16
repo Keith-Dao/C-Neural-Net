@@ -194,6 +194,36 @@ TEST(CrossEntropyLoss, TestSetReductionWithInvalidReduction) {
 #pragma endregion Reduction
 #pragma endregion Properties
 
+#pragma region Load
+TEST(CrossEntropyLoss, TestFromJson) {
+  CrossEntropyLoss expected;
+  json values{{"class", "CrossEntropyLoss"}, {"reduction", "mean"}};
+  ASSERT_EQ(expected, CrossEntropyLoss::fromJson(values));
+
+  expected = CrossEntropyLoss("sum");
+  values = json{{"class", "CrossEntropyLoss"}, {"reduction", "sum"}};
+  ASSERT_EQ(expected, CrossEntropyLoss::fromJson(values));
+}
+
+TEST(CrossEntropyLoss, TestFromJsonInvalidClassAttribute) {
+  json values{{"class", "NotCrossEntropyLoss"}, {"reduction", "mean"}};
+  EXPECT_THROW(CrossEntropyLoss::fromJson(values),
+               exceptions::load::InvalidClassAttributeValue);
+}
+#pragma endregion Load
+
+#pragma region Save
+TEST(CrossEntropyLoss, TestToJson) {
+  CrossEntropyLoss loss;
+  json expected{{"class", "CrossEntropyLoss"}, {"reduction", "mean"}};
+  ASSERT_EQ(expected, loss.toJson()) << "Mean cross entropy loss.\n";
+
+  loss = CrossEntropyLoss("sum");
+  expected = json{{"class", "CrossEntropyLoss"}, {"reduction", "sum"}};
+  ASSERT_EQ(expected, loss.toJson()) << "ReLU layer.\n";
+}
+#pragma endregion Save
+
 #pragma region Forward
 TEST_P(TestCrossEntropyLoss, TestForward) {
   CrossEntropyLoss loss(GetParam().reduction);

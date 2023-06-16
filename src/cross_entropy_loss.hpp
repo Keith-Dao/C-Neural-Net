@@ -1,6 +1,10 @@
 #pragma once
 #include <Eigen/Dense>
 #include <memory>
+#include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
+
+using json = nlohmann::json;
 
 namespace loss {
 class CrossEntropyLoss {
@@ -31,11 +35,20 @@ public:
 #pragma endregion Properties
 
 #pragma region Load
-// TODO
+  /*
+    Create a cross entropy loss instance from the JSON values.
+  */
+  static CrossEntropyLoss fromJson(const json &values);
 #pragma endregion Load
 
 #pragma region Save
-// TODO
+  /*
+      Get all relevant attributes in a serialisable format.
+
+      Attributes includes:
+          - reduction -- the reduction method used
+    */
+  json toJson();
 #pragma endregion Save
 
 #pragma region Forward
