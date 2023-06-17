@@ -1,6 +1,6 @@
 #include "exceptions.hpp"
 #include "fixtures.hpp"
-#include "utils.hpp"
+#include "utils/all.hpp"
 #include <Eigen/Dense>
 #include <fstream>
 #include <gtest/gtest.h>
@@ -26,12 +26,12 @@ class TestMatrixJson : public testing::TestWithParam<MatrixData> {};
 
 TEST_P(TestMatrixJson, TestMatrixToJson) {
   auto [matrix, values] = GetParam();
-  ASSERT_EQ(values, toJson(matrix));
+  ASSERT_EQ(values, matrix::toJson(matrix));
 }
 
 TEST_P(TestMatrixJson, TestJsonToMatrix) {
   auto [matrix, values] = GetParam();
-  ASSERT_TRUE(matrix.isApprox(fromJson(values)));
+  ASSERT_TRUE(matrix.isApprox(matrix::fromJson(values)));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -48,61 +48,80 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST(MatrixUtils, TestJsonToMatrixWithInvalidValues) {
   json values = json::parse(R"([1, 2])");
-  EXPECT_THROW(fromJson(values), exceptions::json::JSONArray2DException)
+  EXPECT_THROW(matrix::fromJson(values), exceptions::json::JSONArray2DException)
       << "1D arrays are not supported, only 2D.";
 
   values = json::parse(R"([[[1, 2]]])");
-  EXPECT_THROW(fromJson(values), exceptions::json::JSONArray2DException)
+  EXPECT_THROW(matrix::fromJson(values), exceptions::json::JSONArray2DException)
       << "Higher dimension arrays are not supported, only 2D.";
 }
 
 TEST(MatrixUtils, TestJsonToMatrixWithInvalidTypes) {
   json values = json::parse(R"([[true, false]])");
-  EXPECT_THROW(fromJson(values), exceptions::json::JSONTypeException)
+  EXPECT_THROW(matrix::fromJson(values), exceptions::json::JSONTypeException)
       << "Booleans are not supported, only numbers.";
 
   values = json::parse(R"([["a", "b"]])");
-  EXPECT_THROW(fromJson(values), exceptions::json::JSONTypeException)
+  EXPECT_THROW(matrix::fromJson(values), exceptions::json::JSONTypeException)
       << "Strings are not supported, only numbers.";
 
   values = json::parse(R"([[null]])");
-  EXPECT_THROW(fromJson(values), exceptions::json::JSONTypeException)
+  EXPECT_THROW(matrix::fromJson(values), exceptions::json::JSONTypeException)
       << "null is not supported, only numbers.";
 
   values = json::parse(R"([[{"a": "b"}, {"b": "c"}]])");
-  EXPECT_THROW(fromJson(values), exceptions::json::JSONTypeException)
+  EXPECT_THROW(matrix::fromJson(values), exceptions::json::JSONTypeException)
       << "JSON objects are not supported, only numbers.";
 
   values = json::parse(R"({"a": "b"})");
-  EXPECT_THROW(fromJson(values), exceptions::json::JSONTypeException)
+  EXPECT_THROW(matrix::fromJson(values), exceptions::json::JSONTypeException)
       << "JSON objects are not supported, only 2D.";
 }
 #pragma endregion JSON
 
+#pragma region Flatten
+TEST(MatrixUtils, TestFlatten) {
+  Eigen::MatrixXd data{{1, 2, 3}}, expected{{1, 2, 3}};
+  ASSERT_TRUE(expected.isApprox(matrix::flatten(data)))
+      << "First flatten failed.";
+
+  data = Eigen::MatrixXd{{1}, {2}, {3}};
+  ASSERT_TRUE(expected.isApprox(matrix::flatten(data)))
+      << "Second flatten failed.";
+
+  data = Eigen::MatrixXd{{1, 2, 3, 4}, {5, 6, 7, 8}};
+  expected = Eigen::MatrixXd{{1, 2, 3, 4, 5, 6, 7, 8}};
+  ASSERT_TRUE(expected.isApprox(matrix::flatten(data)))
+      << "Last flatten failed.";
+}
+#pragma endregion Flatten
+#pragma endregion Matrices
+
+#pragma region Math
 #pragma region One hot encode
 TEST(MatrixUtils, TestOneHotEncode) {
   std::vector<int> labels{0, 1, 2};
   int classes = 3;
   Eigen::MatrixXi encoded{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
-  ASSERT_TRUE(encoded.isApprox(oneHotEncode(labels, classes)))
+  ASSERT_TRUE(encoded.isApprox(math::oneHotEncode(labels, classes)))
       << "First one hot encode failed.";
 
   labels = std::vector<int>{1, 0, 2};
   encoded = Eigen::MatrixXi{{0, 1, 0}, {1, 0, 0}, {0, 0, 1}};
-  ASSERT_TRUE(encoded.isApprox(oneHotEncode(labels, classes)))
+  ASSERT_TRUE(encoded.isApprox(math::oneHotEncode(labels, classes)))
       << "Second one hot encode failed.";
 
   labels = std::vector<int>{3};
   classes = 10;
   encoded = Eigen::MatrixXi{{0, 0, 0, 1, 0, 0, 0, 0, 0, 0}};
-  ASSERT_TRUE(encoded.isApprox(oneHotEncode(labels, classes)))
+  ASSERT_TRUE(encoded.isApprox(math::oneHotEncode(labels, classes)))
       << "Last one hot encode failed.";
 }
 
 TEST(MatrixUtils, TestOneHotEncodeWithInvalidLabels) {
   std::vector<int> labels{0, 1, 3};
   int classes = 3;
-  EXPECT_THROW(oneHotEncode(labels, classes),
+  EXPECT_THROW(math::oneHotEncode(labels, classes),
                exceptions::utils::one_hot_encode::InvalidLabelIndexException);
 }
 #pragma endregion One hot encode
@@ -111,15 +130,15 @@ TEST(MatrixUtils, TestOneHotEncodeWithInvalidLabels) {
 TEST(MatrixUtils, TestSoftmax) {
   Eigen::MatrixXi x{{1, 1, 1}};
   Eigen::MatrixXd trueP{{0.33333333333333, 0.33333333333333, 0.33333333333333}};
-  ASSERT_TRUE(trueP.isApprox(softmax(x))) << "First softmax failed.";
+  ASSERT_TRUE(trueP.isApprox(math::softmax(x))) << "First softmax failed.";
 
   x = Eigen::MatrixXi{{1, 0, 0}};
   trueP = Eigen::MatrixXd{{0.576116884766, 0.211941557617, 0.211941557617}};
-  ASSERT_TRUE(trueP.isApprox(softmax(x))) << "Second softmax failed.";
+  ASSERT_TRUE(trueP.isApprox(math::softmax(x))) << "Second softmax failed.";
 
   x = Eigen::MatrixXi{{999, 0, 0}};
   trueP = Eigen::MatrixXd{{1, 0, 0}};
-  ASSERT_TRUE(trueP.isApprox(softmax(x))) << "Last softmax failed.";
+  ASSERT_TRUE(trueP.isApprox(math::softmax(x))) << "Last softmax failed.";
 }
 #pragma endregion Softmax
 
@@ -127,19 +146,23 @@ TEST(MatrixUtils, TestSoftmax) {
 TEST(MatrixUtils, TestLogSoftmax) {
   Eigen::MatrixXi x{{1, 1, 1}};
   Eigen::MatrixXd trueP{{-1.098612288668, -1.098612288668, -1.098612288668}};
-  ASSERT_TRUE(trueP.isApprox(logSoftmax(x))) << "First log softmax failed.";
+  ASSERT_TRUE(trueP.isApprox(math::logSoftmax(x)))
+      << "First log softmax failed.";
 
   x = Eigen::MatrixXi{{1, 0, 0}};
   trueP = Eigen::MatrixXd{{-0.551444713932, -1.551444713932, -1.551444713932}};
-  ASSERT_TRUE(trueP.isApprox(logSoftmax(x))) << "Second log softmax failed.";
+  ASSERT_TRUE(trueP.isApprox(math::logSoftmax(x)))
+      << "Second log softmax failed.";
 
   x = Eigen::MatrixXi{{-1, -1, -1}};
   trueP = Eigen::MatrixXd{{-1.098612288668, -1.098612288668, -1.098612288668}};
-  ASSERT_TRUE(trueP.isApprox(logSoftmax(x))) << "Third log softmax failed.";
+  ASSERT_TRUE(trueP.isApprox(math::logSoftmax(x)))
+      << "Third log softmax failed.";
 
   x = Eigen::MatrixXi{{999, 0, 0}};
   trueP = Eigen::MatrixXd{{0, -999, -999}};
-  ASSERT_TRUE(trueP.isApprox(logSoftmax(x))) << "Last log softmax failed.";
+  ASSERT_TRUE(trueP.isApprox(math::logSoftmax(x)))
+      << "Last log softmax failed.";
 }
 #pragma endregion Log softmax
 
@@ -147,53 +170,39 @@ TEST(MatrixUtils, TestLogSoftmax) {
 TEST(MatrixUtils, TestNormalise) {
   Eigen::MatrixXd data{{0, 127.5, 255}}, expected{{0, 0.5, 1}};
   std::pair<float, float> from{0, 255}, to{0, 1};
-  EXPECT_TRUE(expected.isApprox(normalise(data, from, to)))
+  EXPECT_TRUE(expected.isApprox(math::normalise(data, from, to)))
       << "First normalise failed.";
 
   expected << -1, 0, 1;
   to = std::make_pair(-1, 1);
-  EXPECT_TRUE(expected.isApprox(normalise(data, from, to)))
+  EXPECT_TRUE(expected.isApprox(math::normalise(data, from, to)))
       << "Second normalise failed.";
 
   expected << -2, 0, 2;
   to = std::make_pair(-2, 2);
-  EXPECT_TRUE(expected.isApprox(normalise(data, from, to)))
+  EXPECT_TRUE(expected.isApprox(math::normalise(data, from, to)))
       << "Third normalise failed.";
 
   expected << -2, 0.5, 3;
   to = std::make_pair(-2, 3);
-  EXPECT_TRUE(expected.isApprox(normalise(data, from, to)))
+  EXPECT_TRUE(expected.isApprox(math::normalise(data, from, to)))
       << "Last normalise failed.";
 }
 
 TEST(MatrixUtils, TestNormaliseWithInvalidRange) {
   Eigen::MatrixXd data{{0, 127.5, 255}};
   std::pair<float, float> from{0, -1}, to{0, 1};
-  EXPECT_THROW(normalise(data, from, to),
+  EXPECT_THROW(math::normalise(data, from, to),
                exceptions::utils::normalise::InvalidRangeException)
       << "First normalise did not throw.";
 
   std::swap(from, to);
-  EXPECT_THROW(normalise(data, from, to),
+  EXPECT_THROW(math::normalise(data, from, to),
                exceptions::utils::normalise::InvalidRangeException)
       << "Second normalise did not throw.";
 }
 #pragma endregion Normalise
-
-#pragma region Flatten
-TEST(MatrixUtils, TestFlatten) {
-  Eigen::MatrixXd data{{1, 2, 3}}, expected{{1, 2, 3}};
-  ASSERT_TRUE(expected.isApprox(flatten(data))) << "First flatten failed.";
-
-  data = Eigen::MatrixXd{{1}, {2}, {3}};
-  ASSERT_TRUE(expected.isApprox(flatten(data))) << "Second flatten failed.";
-
-  data = Eigen::MatrixXd{{1, 2, 3, 4}, {5, 6, 7, 8}};
-  expected = Eigen::MatrixXd{{1, 2, 3, 4, 5, 6, 7, 8}};
-  ASSERT_TRUE(expected.isApprox(flatten(data))) << "Last flatten failed.";
-}
-#pragma endregion Flatten
-#pragma endregion Matrices
+#pragma endregion Math
 
 #pragma region Path
 #pragma region Glob
@@ -202,14 +211,14 @@ TEST_F(UtilsGlob, TestGlob) {
   std::vector<std::filesystem::path> expected = {root / "0" / "a" / "0.png",
                                                  root / "0" / "a" / "4.png",
                                                  root / "1" / "a" / "5.png"};
-  std::vector<std::filesystem::path> result = glob(root, {".png"});
+  std::vector<std::filesystem::path> result = path::glob(root, {".png"});
   std::sort(result.begin(), result.end());
   ASSERT_EQ(expected, result) << "Glob .png only";
 
   expected = {root / "0" / "a" / "0.png", root / "0" / "a" / "1.txt",
               root / "0" / "a" / "2.jpg", root / "0" / "a" / "4.png",
               root / "1" / "a" / "3.txt", root / "1" / "a" / "5.png"};
-  result = glob(root, {".png", ".jpg", ".txt"});
+  result = path::glob(root, {".png", ".jpg", ".txt"});
   std::sort(result.begin(), result.end());
   ASSERT_EQ(expected, result) << "Glob .png, .jpg and .txt.";
 }
@@ -220,12 +229,12 @@ TEST_F(UtilsGlob, TestGlob) {
 using TestImageUtils = test_filesystem::FileSystemFixture;
 #pragma region Open image
 TEST_F(TestImageUtils, TestOpenImageAsMatrix) {
-  ASSERT_TRUE(data[0].isApprox(openImageAsMatrix(root / "0" / "a" / "0.png")))
+  ASSERT_TRUE(data[0].isApprox(image::openAsMatrix(root / "0" / "a" / "0.png")))
       << "Opened image data is not equivalent.";
 }
 
 TEST_F(TestImageUtils, TestOpenImageAsMatrixWithNonImage) {
-  EXPECT_THROW(openImageAsMatrix(root / "0" / "a" / "1.txt"),
+  EXPECT_THROW(image::openAsMatrix(root / "0" / "a" / "1.txt"),
                exceptions::utils::image::InvalidImageFileException)
       << "Cannot open non image file as a matrix.";
 }
@@ -234,7 +243,7 @@ TEST_F(TestImageUtils, TestOpenImageAsMatrixWithNonImage) {
 #pragma region Normalise
 TEST(ImageUtils, TestNormaliseImage) {
   Eigen::MatrixXd data{{0, 127.5, 255}}, expected{{-1, 0, 1}};
-  ASSERT_TRUE(expected.isApprox(normaliseImage(data)))
+  ASSERT_TRUE(expected.isApprox(image::normalise(data)))
       << "Normalise image failed.";
 }
 #pragma endregion Normalise

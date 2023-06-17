@@ -1,6 +1,6 @@
 #include "cross_entropy_loss.hpp"
 #include "exceptions.hpp"
-#include "utils.hpp"
+#include "utils/math.hpp"
 
 using namespace loss;
 
@@ -69,16 +69,17 @@ double CrossEntropyLoss::forward(const Eigen::MatrixXd &logits,
   }
   this->targets = std::make_shared<Eigen::MatrixXi>(targets);
   this->probabilities =
-      std::make_shared<Eigen::MatrixXd>(utils::softmax(logits));
+      std::make_shared<Eigen::MatrixXd>(utils::math::softmax(logits));
   return CrossEntropyLoss::reductions[this->reduction](
-      -(targets.cast<double>().cwiseProduct(utils::logSoftmax(logits)))
+      -(targets.cast<double>().cwiseProduct(utils::math::logSoftmax(logits)))
            .rowwise()
            .sum());
 }
 
 double CrossEntropyLoss::forward(const Eigen::MatrixXd &logits,
                                  const std::vector<int> &targets) {
-  return this->forward(logits, utils::oneHotEncode(targets, logits.cols()));
+  return this->forward(logits,
+                       utils::math::oneHotEncode(targets, logits.cols()));
 }
 #pragma endregion Forward
 

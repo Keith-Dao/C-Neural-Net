@@ -1,6 +1,8 @@
 #include "image_loader.hpp"
 #include "exceptions.hpp"
-#include "utils.hpp"
+#include "utils/image.hpp"
+#include "utils/matrix.hpp"
+#include "utils/path.hpp"
 #include <random>
 
 using namespace loader;
@@ -66,7 +68,7 @@ minibatch DatasetBatcher::operator[](int batch) const {
     std::filesystem::path path = this->data[i];
 
     // Process image data
-    Eigen::MatrixXd image = utils::openImageAsMatrix(path);
+    Eigen::MatrixXd image = utils::image::openAsMatrix(path);
     for (auto step : this->preprocessing) {
       image = step(image);
     }
@@ -91,7 +93,7 @@ minibatch DatasetBatcher::operator[](int batch) const {
 
 #pragma region Image loader
 const preprocessingFunctions ImageLoader::standardPreprocessing{
-    utils::normaliseImage, utils::flatten};
+    utils::image::normalise, utils::matrix::flatten};
 
 #pragma region Constructor
 ImageLoader::ImageLoader(const std::string &folderPath,
@@ -105,7 +107,7 @@ ImageLoader::ImageLoader(const std::string &folderPath,
 
   this->root = std::filesystem::path(folderPath);
   std::vector<std::filesystem::path> files =
-      utils::glob(this->root, fileFormats);
+      utils::path::glob(this->root, fileFormats);
   if (files.empty()) {
     throw exceptions::loader::NoFilesFoundException(this->root, fileFormats);
   }

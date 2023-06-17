@@ -1,7 +1,8 @@
 #include "exceptions.hpp"
 #include "fixtures.hpp"
 #include "image_loader.hpp"
-#include "utils.hpp"
+#include "utils/matrix.hpp"
+#include "utils/path.hpp"
 #include <gtest/gtest.h>
 
 using namespace loader;
@@ -17,13 +18,14 @@ class TestImageLoader
       public testing::WithParamInterface<std::tuple<float, int>> {
 public:
   ImageLoader getImageLoader() {
-    return ImageLoader(root, {utils::flatten}, {".png"},
+    return ImageLoader(root, {utils::matrix::flatten}, {".png"},
                        std::get<TRAIN_TEST_SPLIT>(GetParam()), false);
   }
 
   static ImageLoader getImageLoader(std::filesystem::path root,
                                     float trainTestSplit) {
-    return ImageLoader(root, {utils::flatten}, {".png"}, trainTestSplit, false);
+    return ImageLoader(root, {utils::matrix::flatten}, {".png"}, trainTestSplit,
+                       false);
   }
 };
 
@@ -120,7 +122,7 @@ TEST_P(TestImageLoader, TestImageLoaderGetBatcher) {
       }
       Eigen::MatrixXd expected(indexes.size(), data[0].size());
       for (int j = 0; j < indexes.size(); ++j) {
-        expected.row(j) = utils::flatten(data[indexes[j]]);
+        expected.row(j) = utils::matrix::flatten(data[indexes[j]]);
       }
       ASSERT_EQ(expected.rows(), result.rows())
           << "Number of rows don't match on batch " << i << " for "
@@ -173,13 +175,14 @@ class TestDatasetBatcher
       public testing::WithParamInterface<DatasetBatcherData> {
 public:
   DatasetBatcher getBatcher() {
-    std::vector<std::filesystem::path> files = utils::glob(root, {".png"});
+    std::vector<std::filesystem::path> files =
+        utils::path::glob(root, {".png"});
     std::sort(files.begin(), files.end());
 
     DatasetBatcher::KeywordArgs kwargs;
     kwargs.shuffle = false;
     kwargs.dropLast = GetParam().dropLast;
-    return DatasetBatcher(root, files, {utils::flatten},
+    return DatasetBatcher(root, files, {utils::matrix::flatten},
                           {{"0", 0}, {"1", 1}, {"2", 2}}, GetParam().batchSize,
                           kwargs);
   }
@@ -187,19 +190,20 @@ public:
 
 #pragma region Init
 TEST_F(ImageLoaderFileSystem, TestDatasetBatcherInit) {
-  DatasetBatcher(
-      root, utils::glob(root, {".png"}), ImageLoader::standardPreprocessing,
-      {{"0", 0}, {"1", 1}, {"2", 2}}, 1, DatasetBatcher::KeywordArgs());
+  DatasetBatcher(root, utils::path::glob(root, {".png"}),
+                 ImageLoader::standardPreprocessing,
+                 {{"0", 0}, {"1", 1}, {"2", 2}}, 1,
+                 DatasetBatcher::KeywordArgs());
 }
 
 TEST_F(ImageLoaderFileSystem,
        TestDatasetBatcherInitWithoutExplicitKeywordArgs) {
-  DatasetBatcher(root, utils::glob(root, {".png"}),
+  DatasetBatcher(root, utils::path::glob(root, {".png"}),
                  ImageLoader::standardPreprocessing,
                  {{"0", 0}, {"1", 1}, {"2", 2}}, 1);
 }
 TEST_F(ImageLoaderFileSystem, TestDatasetBatcherInitWithInvalidBatchSize) {
-  EXPECT_THROW(DatasetBatcher(root, utils::glob(root, {".png"}),
+  EXPECT_THROW(DatasetBatcher(root, utils::path::glob(root, {".png"}),
                               ImageLoader::standardPreprocessing,
                               {{"0", 0}, {"1", 1}, {"2", 2}}, 0,
                               DatasetBatcher::KeywordArgs()),
@@ -227,7 +231,8 @@ TEST_P(TestDatasetBatcher, TestDatasetBatcherIndex) {
     }
     Eigen::MatrixXd expected(rows, data[0].size());
     for (int j = 0; j < rows; ++j) {
-      expected.row(j) = utils::flatten(data[i * GetParam().batchSize + j]);
+      expected.row(j) =
+          utils::matrix::flatten(data[i * GetParam().batchSize + j]);
     }
     ASSERT_EQ(expected.rows(), result.rows())
         << "Number of rows don't match on batch " << i << std::endl
@@ -270,7 +275,8 @@ TEST_P(TestDatasetBatcher, TestDatasetBatcherRangeBasedForLoop) {
     }
     Eigen::MatrixXd expected(rows, data[0].size());
     for (int j = 0; j < rows; ++j) {
-      expected.row(j) = utils::flatten(data[i * GetParam().batchSize + j]);
+      expected.row(j) =
+          utils::matrix::flatten(data[i * GetParam().batchSize + j]);
     }
     ASSERT_EQ(expected.rows(), result.rows())
         << "Number of rows don't match on batch " << i << std::endl
