@@ -4,6 +4,8 @@
 #include <vector>
 
 namespace exceptions {
+
+#pragma region Differentiable
 namespace differentiable {
 class BackwardBeforeForwardException : public std::exception {
   virtual const char *what() const throw() {
@@ -23,7 +25,9 @@ class BackwardCalledWithNoInputException : public std::exception {
   }
 };
 } // namespace differentiable
+#pragma endregion Differentiable
 
+#pragma region Activation functions
 namespace activation {
 class InvalidActivationException : public std::exception {
   std::string activation;
@@ -39,7 +43,9 @@ public:
   InvalidActivationException(std::string activation) : activation(activation){};
 };
 } // namespace activation
+#pragma endregion Activation functions
 
+#pragma region Loss
 namespace loss {
 class InvalidReductionException : public std::exception {
   virtual const char *what() const throw() {
@@ -47,7 +53,9 @@ class InvalidReductionException : public std::exception {
   }
 };
 } // namespace loss
+#pragma endregion Loss
 
+#pragma region Image loader
 namespace loader {
 class InvalidTrainTestSplitException : public std::exception {
   float split;
@@ -136,8 +144,11 @@ public:
   InvalidDataShapeAfterPreprocessingException(int rows) : rows(rows){};
 };
 } // namespace loader
+#pragma endregion Image loader
 
+#pragma region Utils
 namespace utils {
+#pragma region One hot encode
 namespace one_hot_encode {
 class InvalidLabelIndexException : public std::exception {
   virtual const char *what() const throw() {
@@ -145,7 +156,9 @@ class InvalidLabelIndexException : public std::exception {
   }
 };
 } // namespace one_hot_encode
+#pragma endregion One hot encode
 
+#pragma region Image
 namespace image {
 class InvalidImageFileException : public std::exception {
   std::string file;
@@ -162,7 +175,9 @@ public:
   InvalidImageFileException(const std::filesystem::path &file) : file(file){};
 };
 } // namespace image
+#pragma endregion Image
 
+#pragma region Normalise
 namespace normalise {
 class InvalidRangeException : public std::exception {
   virtual const char *what() const throw() {
@@ -170,8 +185,11 @@ class InvalidRangeException : public std::exception {
   }
 };
 } // namespace normalise
+#pragma endregion Normalise
 } // namespace utils
+#pragma endregion Utils
 
+#pragma region Load methods
 namespace load {
 class InvalidClassAttributeValue : public std::exception {
   virtual const char *what() const throw() {
@@ -179,7 +197,9 @@ class InvalidClassAttributeValue : public std::exception {
   }
 };
 } // namespace load
+#pragma endregion Load methods
 
+#pragma region Eigen
 namespace eigen {
 class InvalidShapeException : public std::exception {
   virtual const char *what() const throw() {
@@ -201,7 +221,9 @@ public:
   EmptyMatrixException(std::string variable) : variable(variable){};
 };
 } // namespace eigen
+#pragma endregion Eigen
 
+#pragma region JSON
 namespace json {
 class JSONTypeException : public std::exception {
   virtual const char *what() const throw() {
@@ -215,4 +237,5 @@ class JSONArray2DException : public std::exception {
   }
 };
 } // namespace json
+#pragma endregion JSON
 } // namespace exceptions

@@ -1,5 +1,5 @@
 #include "math.hpp"
-#include "../exceptions.hpp"
+#include "exceptions.hpp"
 
 Eigen::MatrixXi utils::math::oneHotEncode(const std::vector<int> &targets,
                                           int numClasses) {

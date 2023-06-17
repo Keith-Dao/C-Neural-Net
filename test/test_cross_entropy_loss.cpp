@@ -1,5 +1,5 @@
 #include "cross_entropy_loss.hpp"
-#include "exceptions.hpp"
+#include "utils/exceptions.hpp"
 #include <gtest/gtest.h>
 
 using namespace loss;

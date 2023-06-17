@@ -1,5 +1,5 @@
 #include "activation_functions.hpp"
-#include "exceptions.hpp"
+#include "utils/exceptions.hpp"
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
 

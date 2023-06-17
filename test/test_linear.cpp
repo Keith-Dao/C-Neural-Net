@@ -1,5 +1,5 @@
-#include "exceptions.hpp"
 #include "linear.hpp"
+#include "utils/exceptions.hpp"
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
 #include <iostream>

@@ -1,5 +1,5 @@
 #include "matrix.hpp"
-#include "../exceptions.hpp"
+#include "exceptions.hpp"
 
 Eigen::MatrixXd utils::matrix::fromJson(const json &values) {
   if (values.empty()) {

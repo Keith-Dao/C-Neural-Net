@@ -1,5 +1,5 @@
 #include "activation_functions.hpp"
-#include "exceptions.hpp"
+#include "utils/exceptions.hpp"
 
 using namespace activation_functions;
 
