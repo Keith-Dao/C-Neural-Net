@@ -1,6 +1,6 @@
-#include "exceptions.hpp"
 #include "fixtures.hpp"
 #include "utils/all.hpp"
+#include "utils/exceptions.hpp"
 #include <Eigen/Dense>
 #include <fstream>
 #include <gtest/gtest.h>

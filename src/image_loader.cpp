@@ -1,5 +1,5 @@
 #include "image_loader.hpp"
-#include "exceptions.hpp"
+#include "utils/exceptions.hpp"
 #include "utils/image.hpp"
 #include "utils/matrix.hpp"
 #include "utils/path.hpp"

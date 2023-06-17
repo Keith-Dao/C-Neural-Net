@@ -1,6 +1,6 @@
-#include "exceptions.hpp"
 #include "fixtures.hpp"
 #include "image_loader.hpp"
+#include "utils/exceptions.hpp"
 #include "utils/matrix.hpp"
 #include "utils/path.hpp"
 #include <gtest/gtest.h>
