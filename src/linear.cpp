@@ -81,8 +81,8 @@ Linear Linear::fromJson(const json &values) {
     throw exceptions::load::InvalidClassAttributeValue();
   }
 
-  Eigen::MatrixXd weight = utils::fromJson(values["weight"]),
-                  bias = utils::fromJson(json::array({values["bias"]}))
+  Eigen::MatrixXd weight = utils::matrix::fromJson(values["weight"]),
+                  bias = utils::matrix::fromJson(json::array({values["bias"]}))
                              .transpose();
   int outChannels = weight.rows(), inChannels = weight.cols();
   Linear layer(inChannels, outChannels);
@@ -96,9 +96,9 @@ Linear Linear::fromJson(const json &values) {
 #pragma region Save
 json Linear::toJson() {
   return {{"class", "Linear"},
-          {"weight", utils::toJson(this->weight)},
+          {"weight", utils::matrix::toJson(this->weight)},
           {"bias",
-           utils::toJson(
+           utils::matrix::toJson(
                this->bias.transpose())[0]}, // Needs to match the python output
           {"activation_function", this->activationFunction->getName()}};
 }

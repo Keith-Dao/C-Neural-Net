@@ -6,7 +6,8 @@
 using json = nlohmann::json;
 
 namespace utils {
-#pragma region Matrices
+#pragma region Matrix
+namespace matrix {
 /*
   Convert a matrix to a nested json array.
 */
@@ -28,7 +29,15 @@ template <typename T> json toJson(const Eigen::MatrixBase<T> &matrix) {
   Convert a nested json array to a matrix.
 */
 Eigen::MatrixXd fromJson(const json &values);
+/*
+  Flatten the matrix to be 1xN matrix.
+*/
+Eigen::MatrixXd flatten(const Eigen::MatrixXd &in);
+} // namespace matrix
+#pragma endregion Matrix
 
+#pragma region Math
+namespace math {
 /*
   Convert a vector of classes to a one-hot encoded matrix.
 */
@@ -63,29 +72,30 @@ Eigen::MatrixXd normalise(const Eigen::MatrixXd &data,
                           std::pair<float, float> from,
                           std::pair<float, float> to);
 
-/*
-  Flatten the matrix to be 1xN matrix.
-*/
-Eigen::MatrixXd flatten(const Eigen::MatrixXd &in);
-#pragma endregion Matrices
+} // namespace math
+#pragma endregion Math
 
 #pragma region Path
+namespace path {
 /*
   Recursively find all files with matching extensions
 */
 std::vector<std::filesystem::path> glob(const std::filesystem::path &path,
                                         std::vector<std::string> extensions);
+} // namespace path
 #pragma endregion Path
 
 #pragma region Image
+namespace image {
 /*
   Open the provided image path as an eigen matrix.
 */
-Eigen::MatrixXd openImageAsMatrix(std::filesystem::path path);
+Eigen::MatrixXd openAsMatrix(std::filesystem::path path);
 
 /*
   Normalise the image data matrix from [0, 255] to [-1, 1]
 */
-Eigen::MatrixXd normaliseImage(const Eigen::MatrixXd &data);
+Eigen::MatrixXd normalise(const Eigen::MatrixXd &data);
+} // namespace image
 #pragma endregion Image
 } // namespace utils
