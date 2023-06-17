@@ -1,6 +1,6 @@
 #include "cross_entropy_loss.hpp"
 #include "exceptions.hpp"
-#include "utils.hpp"
+#include "utils/math.hpp"
 
 using namespace loss;
 

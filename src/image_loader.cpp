@@ -1,6 +1,8 @@
 #include "image_loader.hpp"
 #include "exceptions.hpp"
-#include "utils.hpp"
+#include "utils/image.hpp"
+#include "utils/matrix.hpp"
+#include "utils/path.hpp"
 #include <random>
 
 using namespace loader;

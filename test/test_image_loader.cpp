@@ -1,7 +1,8 @@
 #include "exceptions.hpp"
 #include "fixtures.hpp"
 #include "image_loader.hpp"
-#include "utils.hpp"
+#include "utils/matrix.hpp"
+#include "utils/path.hpp"
 #include <gtest/gtest.h>
 
 using namespace loader;

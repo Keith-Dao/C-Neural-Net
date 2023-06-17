@@ -1,6 +1,6 @@
 #include "linear.hpp"
 #include "exceptions.hpp"
-#include "utils.hpp"
+#include "utils/matrix.hpp"
 
 using namespace linear;
 
