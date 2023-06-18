@@ -2,7 +2,9 @@
 #include "utils/exceptions.hpp"
 #include "utils/matrix.hpp"
 #include <Eigen/Dense>
+#include <Eigen/src/Core/NumTraits.h>
 #include <gtest/gtest.h>
+#include <limits>
 
 using namespace metrics;
 
@@ -66,3 +68,21 @@ TEST(Metrics, TestAddToConfusionMatrixWithInvalidInputs) {
          "mismatched.";
 }
 #pragma endregion Confusion matrix
+
+#pragma region Metrics
+#pragma region Accuracy
+TEST(Metrics, TestAccuracy) {
+  std::vector<Eigen::MatrixXi> confusionMatrices{
+      Eigen::MatrixXi{{5, 0, 0}, {0, 2, 0}, {0, 0, 10}},
+      Eigen::MatrixXi{{4, 4, 2}, {0, 2, 0}, {3, 2, 5}},
+      Eigen::MatrixXi{{20, 1, 60}, {29, 13, 2}, {32, 6, 34}}};
+  std::vector<float> expected{1, 0.5, 0.340101522843};
+
+  for (int i = 0; i < confusionMatrices.size(); ++i) {
+    ASSERT_TRUE(std::abs(expected[i] - accuracy(confusionMatrices[i])) <
+                Eigen::NumTraits<float>::dummy_precision())
+        << "Test " << i << " failed.";
+  }
+}
+#pragma endregion Accuracy
+#pragma endregion Metrics

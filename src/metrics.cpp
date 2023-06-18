@@ -24,3 +24,12 @@ void metrics::addToConfusionMatrix(Eigen::MatrixXi &confusionMatrix,
   }
 }
 #pragma endregion Confusion matrix
+
+#pragma region Metrics
+/*
+  The accuracy for the given confusion matrix.
+*/
+float metrics::accuracy(const Eigen::MatrixXi &confusionMatrix) {
+  return (float)confusionMatrix.diagonal().sum() / confusionMatrix.sum();
+}
+#pragma endregion Metrics
