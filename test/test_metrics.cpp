@@ -85,4 +85,36 @@ TEST(Metrics, TestAccuracy) {
   }
 }
 #pragma endregion Accuracy
+
+#pragma region Precision
+TEST(Metrics, TestPrecision) {
+  std::vector<Eigen::MatrixXi> confusionMatrices{
+      Eigen::MatrixXi{{3, 2}, {1, 4}},
+      Eigen::MatrixXi{{4, 4, 2}, {0, 2, 0}, {3, 2, 5}},
+      Eigen::MatrixXi{{1, 0, 0}, {0, 0, 0}, {0, 0, 0}},
+      Eigen::MatrixXi{{20, 1, 60}, {29, 13, 2}, {32, 6, 34}},
+      Eigen::MatrixXi{
+          {50, 3, 0, 0}, {26, 8, 0, 1}, {20, 2, 4, 0}, {12, 0, 0, 1}}};
+  std::vector<std::vector<float>> expected{
+      {0.6, 0.8},
+      {0.4, 1, 0.5},
+      {1, 0, 0},
+      {0.24691358024691357, 0.29545454545454547, 0.4722222222222222},
+      {0.9433962264150944, 0.22857142857142856, 0.15384615384615385,
+       0.07692307692307693}};
+
+  for (int i = 0; i < confusionMatrices.size(); ++i) {
+    std::vector<float> result = precision(confusionMatrices[i]);
+    ASSERT_EQ(expected[i].size(), result.size())
+        << "Precision result does not return the same size as expected, got:"
+        << result.size() << ", expected: " << expected[i].size();
+
+    for (int j = 0; j < expected[i].size(); ++j) {
+      ASSERT_TRUE(std::abs(expected[i][j] - result[j]) <
+                  Eigen::NumTraits<float>::dummy_precision())
+          << "Test " << i << " index " << j << " failed.";
+    }
+  }
+}
+#pragma endregion Precision
 #pragma endregion Metrics

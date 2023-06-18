@@ -26,10 +26,18 @@ void metrics::addToConfusionMatrix(Eigen::MatrixXi &confusionMatrix,
 #pragma endregion Confusion matrix
 
 #pragma region Metrics
-/*
-  The accuracy for the given confusion matrix.
-*/
 float metrics::accuracy(const Eigen::MatrixXi &confusionMatrix) {
   return (float)confusionMatrix.diagonal().sum() / confusionMatrix.sum();
+}
+
+std::vector<float> metrics::precision(const Eigen::MatrixXi &confusionMatrix) {
+  Eigen::MatrixXf correctPrediction =
+                      confusionMatrix.diagonal().template cast<float>(),
+                  actual =
+                      confusionMatrix.rowwise().sum().template cast<float>(),
+                  result = correctPrediction.binaryExpr(
+                      actual,
+                      [](float x, float y) { return y == 0 ? 0 : x / y; });
+  return std::vector<float>(result.data(), result.data() + result.size());
 }
 #pragma endregion Metrics

@@ -25,5 +25,10 @@ const std::unordered_set<std::string> SINGLE_VALUE_METRICS{"accuracy", "loss"};
   The accuracy for the given confusion matrix.
 */
 float accuracy(const Eigen::MatrixXi &confusionMatrix);
+
+/*
+  The precision for the given confusion matrix.
+*/
+std::vector<float> precision(const Eigen::MatrixXi &confusionMatrix);
 #pragma endregion Metrics
 } // namespace metrics
