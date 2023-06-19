@@ -30,5 +30,10 @@ float accuracy(const Eigen::MatrixXi &confusionMatrix);
   The precision for the given confusion matrix.
 */
 std::vector<float> precision(const Eigen::MatrixXi &confusionMatrix);
+
+/*
+  The recall for the given confusion matrix.
+*/
+std::vector<float> recall(const Eigen::MatrixXi &confusionMatrix);
 #pragma endregion Metrics
 } // namespace metrics

@@ -38,4 +38,15 @@ std::vector<float> metrics::precision(const Eigen::MatrixXi &confusionMatrix) {
                       [](float x, float y) { return y == 0 ? 0 : x / y; });
   return std::vector<float>(result.data(), result.data() + result.size());
 }
+
+std::vector<float> metrics::recall(const Eigen::MatrixXi &confusionMatrix) {
+  Eigen::MatrixXf correctPredictions = confusionMatrix.diagonal().cast<float>(),
+                  actual =
+                      confusionMatrix.colwise().sum().transpose().cast<float>(),
+                  result = correctPredictions.binaryExpr(
+                      actual,
+                      [](float x, float y) { return y == 0 ? 0 : x / y; });
+  return std::vector<float>(result.data(), result.data() + result.size());
+};
+
 #pragma endregion Metrics

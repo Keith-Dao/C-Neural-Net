@@ -106,8 +106,10 @@ TEST(Metrics, TestPrecision) {
   for (int i = 0; i < confusionMatrices.size(); ++i) {
     std::vector<float> result = precision(confusionMatrices[i]);
     ASSERT_EQ(expected[i].size(), result.size())
-        << "Precision result does not return the same size as expected, got:"
-        << result.size() << ", expected: " << expected[i].size();
+        << "Precision result does not return the same size as expected for "
+           "test "
+        << i << ", got: " << result.size()
+        << ", expected: " << expected[i].size();
 
     for (int j = 0; j < expected[i].size(); ++j) {
       ASSERT_TRUE(std::abs(expected[i][j] - result[j]) <
@@ -117,4 +119,36 @@ TEST(Metrics, TestPrecision) {
   }
 }
 #pragma endregion Precision
+
+#pragma region Recall
+TEST(Metrics, TestRecall) {
+  std::vector<Eigen::MatrixXi> confusionMatrices{
+      Eigen::MatrixXi{{3, 2}, {1, 4}},
+      Eigen::MatrixXi{{4, 4, 2}, {0, 2, 0}, {3, 2, 5}},
+      Eigen::MatrixXi{{1, 0, 0}, {0, 0, 0}, {0, 0, 0}},
+      Eigen::MatrixXi{{20, 1, 60}, {29, 13, 2}, {32, 6, 34}},
+      Eigen::MatrixXi{
+          {50, 3, 0, 0}, {26, 8, 0, 1}, {20, 2, 4, 0}, {12, 0, 0, 1}}};
+  std::vector<std::vector<float>> expected{
+      {0.75, 0.666666},
+      {0.5714285714285714, 0.25, 0.7142857142857143},
+      {1, 0, 0},
+      {0.24691358024691357, 0.65, 0.3541666666666667},
+      {0.46296296296296297, 0.6153846153846154, 1, 0.5}};
+
+  for (int i = 0; i < confusionMatrices.size(); ++i) {
+    std::vector<float> result = recall(confusionMatrices[i]);
+    ASSERT_EQ(expected[i].size(), result.size())
+        << "Recall result does not return the same size as expected for test "
+        << i << ", got: " << result.size()
+        << ", expected: " << expected[i].size();
+
+    for (int j = 0; j < expected[i].size(); ++j) {
+      ASSERT_TRUE(std::abs(expected[i][j] - result[j]) <
+                  Eigen::NumTraits<float>::dummy_precision())
+          << "Test " << i << " index " << j << " failed.";
+    }
+  }
+}
+#pragma endregion Recall
 #pragma endregion Metrics
