@@ -31,7 +31,7 @@ float metrics::accuracy(const Eigen::MatrixXi &confusionMatrix) {
 }
 
 std::vector<float> metrics::precision(const Eigen::MatrixXi &confusionMatrix) {
-  Eigen::MatrixXf correctPredictions = confusionMatrix.diagonal().cast<float>(),
+  Eigen::VectorXf correctPredictions = confusionMatrix.diagonal().cast<float>(),
                   predicted = confusionMatrix.rowwise().sum().cast<float>(),
                   result = correctPredictions.binaryExpr(
                       predicted,
@@ -40,9 +40,8 @@ std::vector<float> metrics::precision(const Eigen::MatrixXi &confusionMatrix) {
 }
 
 std::vector<float> metrics::recall(const Eigen::MatrixXi &confusionMatrix) {
-  Eigen::MatrixXf correctPredictions = confusionMatrix.diagonal().cast<float>(),
-                  actual =
-                      confusionMatrix.colwise().sum().transpose().cast<float>(),
+  Eigen::VectorXf correctPredictions = confusionMatrix.diagonal().cast<float>(),
+                  actual = confusionMatrix.colwise().sum().cast<float>(),
                   result = correctPredictions.binaryExpr(
                       actual,
                       [](float x, float y) { return y == 0 ? 0 : x / y; });
