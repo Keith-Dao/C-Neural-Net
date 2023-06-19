@@ -94,8 +94,7 @@ Eigen::MatrixXd CrossEntropyLoss::backward() {
     batchSize = 1;
   }
 
-  return (*this->probabilities - this->targets->template cast<double>()) /
-         batchSize;
+  return (*this->probabilities - this->targets->cast<double>()) / batchSize;
 }
 #pragma endregion Backward
 
