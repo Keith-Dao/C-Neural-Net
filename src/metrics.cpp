@@ -47,6 +47,19 @@ std::vector<float> metrics::recall(const Eigen::MatrixXi &confusionMatrix) {
                       actual,
                       [](float x, float y) { return y == 0 ? 0 : x / y; });
   return std::vector<float>(result.data(), result.data() + result.size());
-};
+}
 
+std::vector<float> metrics::f1Score(const Eigen::MatrixXi &confusionMatrix) {
+  int size = confusionMatrix.rows();
+  Eigen::VectorXf precision_ = Eigen::Map<Eigen::VectorXf, Eigen::Unaligned>(
+                      precision(confusionMatrix).data(), size),
+                  recall_ = Eigen::Map<Eigen::VectorXf, Eigen::Unaligned>(
+                      recall(confusionMatrix).data(), size),
+                  result = (2 * precision_.cwiseProduct(recall_))
+                               .binaryExpr((precision_ + recall_),
+                                           [](float x, float y) {
+                                             return y == 0 ? 0 : x / y;
+                                           });
+  return std::vector<float>(result.data(), result.data() + result.size());
+}
 #pragma endregion Metrics

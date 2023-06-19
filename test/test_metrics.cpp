@@ -151,4 +151,37 @@ TEST(Metrics, TestRecall) {
   }
 }
 #pragma endregion Recall
+
+#pragma region F1 score
+TEST(Metrics, F1Score) {
+  std::vector<Eigen::MatrixXi> confusionMatrices{
+      Eigen::MatrixXi{{3, 2}, {1, 4}},
+      Eigen::MatrixXi{{4, 4, 2}, {0, 2, 0}, {3, 2, 5}},
+      Eigen::MatrixXi{{1, 0, 0}, {0, 0, 0}, {0, 0, 0}},
+      Eigen::MatrixXi{{20, 1, 60}, {29, 13, 2}, {32, 6, 34}},
+      Eigen::MatrixXi{
+          {50, 3, 0, 0}, {26, 8, 0, 1}, {20, 2, 4, 0}, {12, 0, 0, 1}}};
+  std::vector<std::vector<float>> expected{
+      {0.66666667, 0.72727273},
+      {0.47058824, 0.4, 0.58823529},
+      {1, 0, 0},
+      {0.24691358, 0.40625, 0.4047619},
+      {0.6211180124223602, 0.3333333333333333, 0.2666666666666667,
+       0.13333333333333336}};
+
+  for (int i = 0; i < confusionMatrices.size(); ++i) {
+    std::vector<float> result = f1Score(confusionMatrices[i]);
+    ASSERT_EQ(expected[i].size(), result.size())
+        << "F1 score result does not return the same size as expected for test "
+        << i << ", got: " << result.size()
+        << ", expected: " << expected[i].size();
+
+    for (int j = 0; j < expected[i].size(); ++j) {
+      ASSERT_TRUE(std::abs(expected[i][j] - result[j]) <
+                  Eigen::NumTraits<float>::dummy_precision())
+          << "Test " << i << " index " << j << " failed.";
+    }
+  }
+}
+#pragma endregion F1 score
 #pragma endregion Metrics

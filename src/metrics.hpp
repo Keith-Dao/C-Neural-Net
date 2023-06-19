@@ -27,13 +27,18 @@ const std::unordered_set<std::string> SINGLE_VALUE_METRICS{"accuracy", "loss"};
 float accuracy(const Eigen::MatrixXi &confusionMatrix);
 
 /*
-  The precision for the given confusion matrix.
+  The precision for all the classes in the given confusion matrix.
 */
 std::vector<float> precision(const Eigen::MatrixXi &confusionMatrix);
 
 /*
-  The recall for the given confusion matrix.
+  The recall for all the classes in the given confusion matrix.
 */
 std::vector<float> recall(const Eigen::MatrixXi &confusionMatrix);
+
+/*
+  The f1 score for all the classes in the confusion matrix.
+*/
+std::vector<float> f1Score(const Eigen::MatrixXi &confusionMatrix);
 #pragma endregion Metrics
 } // namespace metrics
