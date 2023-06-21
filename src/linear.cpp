@@ -54,14 +54,14 @@ void Linear::setBias(Eigen::MatrixXd bias) {
     throw exceptions::eigen::InvalidShapeException();
   }
   this->bias = bias;
-};
+}
 #pragma endregion Bias
 
 #pragma region Activation function
 std::shared_ptr<activation_functions::ActivationFunction>
 Linear::getActivation() const {
   return this->activationFunction;
-};
+}
 
 void Linear::setActivation(std::string activation) {
   if (activation == "ReLU") {

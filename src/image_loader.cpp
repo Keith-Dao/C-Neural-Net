@@ -25,7 +25,7 @@ DatasetBatcher::DatasetBatcher(
     std::shuffle(this->data.begin(), this->data.end(),
                  std::default_random_engine{});
   }
-};
+}
 
 DatasetBatcher::DatasetBatcher(
     const std::filesystem::path &root,
@@ -33,7 +33,7 @@ DatasetBatcher::DatasetBatcher(
     const preprocessingFunctions &preprocessing,
     const std::unordered_map<std::string, int> &classesToNum, int batchSize)
     : DatasetBatcher(root, data, preprocessing, classesToNum, batchSize,
-                     KeywordArgs()){};
+                     KeywordArgs()) {}
 #pragma endregion Constructor
 
 #pragma region Iterators
@@ -130,14 +130,13 @@ ImageLoader::ImageLoader(const std::string &folderPath,
     this->classesToNum[this->classes[i]] = i;
   }
 }
-
 #pragma endregion Constructor
 
 #pragma region Properties
 #pragma region Classes
 std::vector<std::string> ImageLoader::getClasses() const {
   return this->classes;
-};
+}
 #pragma endregion Classes
 
 #pragma region Train files
