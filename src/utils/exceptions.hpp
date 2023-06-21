@@ -5,6 +5,24 @@
 
 namespace exceptions {
 
+#pragma region Activation functions
+namespace activation {
+class InvalidActivationException : public std::exception {
+  std::string activation;
+
+  virtual const char *what() const throw() {
+    std::string s = this->activation + " is not a valid activation function.";
+    char *result = new char[s.length() + 1];
+    std::strcpy(result, s.c_str());
+    return result;
+  }
+
+public:
+  InvalidActivationException(std::string activation) : activation(activation){};
+};
+} // namespace activation
+#pragma endregion Activation functions
+
 #pragma region Differentiable
 namespace differentiable {
 class BackwardBeforeForwardException : public std::exception {
@@ -27,33 +45,29 @@ class BackwardCalledWithNoInputException : public std::exception {
 } // namespace differentiable
 #pragma endregion Differentiable
 
-#pragma region Activation functions
-namespace activation {
-class InvalidActivationException : public std::exception {
-  std::string activation;
+#pragma region Eigen
+namespace eigen {
+class InvalidShapeException : public std::exception {
+  virtual const char *what() const throw() {
+    return "An invalid shape was provided.";
+  }
+};
+
+class EmptyMatrixException : public std::exception {
+  std::string variable;
 
   virtual const char *what() const throw() {
-    std::string s = this->activation + " is not a valid activation function.";
+    std::string s = this->variable + " cannot be empty.";
     char *result = new char[s.length() + 1];
     std::strcpy(result, s.c_str());
     return result;
   }
 
 public:
-  InvalidActivationException(std::string activation) : activation(activation){};
+  EmptyMatrixException(std::string variable) : variable(variable){};
 };
-} // namespace activation
-#pragma endregion Activation functions
-
-#pragma region Loss
-namespace loss {
-class InvalidReductionException : public std::exception {
-  virtual const char *what() const throw() {
-    return "The selected reduction is not valid.";
-  }
-};
-} // namespace loss
-#pragma endregion Loss
+} // namespace eigen
+#pragma endregion Eigen
 
 #pragma region Image loader
 namespace loader {
@@ -146,6 +160,42 @@ public:
 } // namespace loader
 #pragma endregion Image loader
 
+#pragma region JSON
+namespace json {
+class JSONTypeException : public std::exception {
+  virtual const char *what() const throw() {
+    return "An unexpected type was provided in the JSON data.";
+  }
+};
+
+class JSONArray2DException : public std::exception {
+  virtual const char *what() const throw() {
+    return "JSON data should be in the form of a 2D array.";
+  }
+};
+} // namespace json
+#pragma endregion JSON
+
+#pragma region Load methods
+namespace load {
+class InvalidClassAttributeValue : public std::exception {
+  virtual const char *what() const throw() {
+    return "Invalid value for class.";
+  }
+};
+} // namespace load
+#pragma endregion Load methods
+
+#pragma region Loss
+namespace loss {
+class InvalidReductionException : public std::exception {
+  virtual const char *what() const throw() {
+    return "The selected reduction is not valid.";
+  }
+};
+} // namespace loss
+#pragma endregion Loss
+
 #pragma region Metrics
 namespace metrics {
 class InvalidNumberOfClassesException : public std::exception {
@@ -224,54 +274,4 @@ class InvalidRangeException : public std::exception {
 #pragma endregion Normalise
 } // namespace utils
 #pragma endregion Utils
-
-#pragma region Load methods
-namespace load {
-class InvalidClassAttributeValue : public std::exception {
-  virtual const char *what() const throw() {
-    return "Invalid value for class.";
-  }
-};
-} // namespace load
-#pragma endregion Load methods
-
-#pragma region Eigen
-namespace eigen {
-class InvalidShapeException : public std::exception {
-  virtual const char *what() const throw() {
-    return "An invalid shape was provided.";
-  }
-};
-
-class EmptyMatrixException : public std::exception {
-  std::string variable;
-
-  virtual const char *what() const throw() {
-    std::string s = this->variable + " cannot be empty.";
-    char *result = new char[s.length() + 1];
-    std::strcpy(result, s.c_str());
-    return result;
-  }
-
-public:
-  EmptyMatrixException(std::string variable) : variable(variable){};
-};
-} // namespace eigen
-#pragma endregion Eigen
-
-#pragma region JSON
-namespace json {
-class JSONTypeException : public std::exception {
-  virtual const char *what() const throw() {
-    return "An unexpected type was provided in the JSON data.";
-  }
-};
-
-class JSONArray2DException : public std::exception {
-  virtual const char *what() const throw() {
-    return "JSON data should be in the form of a 2D array.";
-  }
-};
-} // namespace json
-#pragma endregion JSON
 } // namespace exceptions
