@@ -232,6 +232,24 @@ public:
 } // namespace metrics
 #pragma endregion Metrics
 
+#pragma region Model
+namespace model {
+class InvalidMetricException : public std::exception {
+  std::string metric;
+
+  virtual const char *what() const throw() {
+    std::string s = metric + " is not a valid metric.";
+    char *result = new char[s.length() + 1];
+    std::strcpy(result, s.c_str());
+    return result;
+  }
+
+public:
+  InvalidMetricException(std::string metric) : metric(metric){};
+};
+} // namespace model
+#pragma endregion Model
+
 #pragma region Utils
 namespace utils {
 #pragma region One hot encode
