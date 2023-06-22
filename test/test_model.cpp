@@ -90,6 +90,19 @@ TEST(Model, TestLayersWithEmptyVector) {
                exceptions::model::EmptyLayersVectorException);
 }
 #pragma endregion Layers
+
+#pragma region Loss
+TEST(Model, TestLoss) {
+  Model model = getModel();
+  loss::CrossEntropyLoss loss("mean");
+
+  ASSERT_NE(model.getLoss(), loss)
+      << "Loss should have different reduction methods.";
+  model.setLoss(loss);
+  ASSERT_EQ(model.getLoss(), loss)
+      << "Loss should have the same reduction methods.";
+}
+#pragma endregion Loss
 #pragma endregion Properties
 #pragma endregion Tests
 } // namespace test_model

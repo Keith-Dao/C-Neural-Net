@@ -62,6 +62,12 @@ void Model::setLayers(const std::vector<linear::Linear> &layers) {
 }
 #pragma endregion Layers
 
+#pragma region Loss
+loss::CrossEntropyLoss Model::getLoss() const { return this->loss; }
+
+void Model::setLoss(const loss::CrossEntropyLoss &loss) { this->loss = loss; }
+#pragma endregion Loss
+
 #pragma region Train metrics
 std::unordered_map<std::string, metricHistoryValue>
 Model::getTrainMetrics() const {

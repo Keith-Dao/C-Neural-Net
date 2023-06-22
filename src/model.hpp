@@ -62,6 +62,18 @@ public:
   void setLayers(const std::vector<linear::Linear> &layers);
 #pragma endregion Layers
 
+#pragma region Loss
+  /*
+    Gets the model's loss.
+  */
+  loss::CrossEntropyLoss getLoss() const;
+
+  /*
+    Sets the model's loss.
+  */
+  void setLoss(const loss::CrossEntropyLoss &loss);
+#pragma endregion Loss
+
 #pragma region Train metrics
   /*
     Get a copy of the train metrics.
