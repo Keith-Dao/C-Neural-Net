@@ -234,6 +234,20 @@ public:
 
 #pragma region Model
 namespace model {
+class InvalidTotalEpochException : public std::exception {
+  int totalEpochs;
+
+  virtual const char *what() const throw() {
+    std::string s = "Total epochs must be 0 or greater. Got: " +
+                    std::to_string(totalEpochs) + ".";
+    char *result = new char[s.length() + 1];
+    std::strcpy(result, s.c_str());
+    return result;
+  }
+
+public:
+  InvalidTotalEpochException(int totalEpochs) : totalEpochs(totalEpochs){};
+};
 class InvalidMetricException : public std::exception {
   std::string metric;
 

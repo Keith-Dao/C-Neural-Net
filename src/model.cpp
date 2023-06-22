@@ -23,6 +23,9 @@ Model::Model(std::vector<linear::Linear> layers, loss::CrossEntropyLoss loss,
              KeywordArgs kwargs)
     : layers(layers), loss(loss), totalEpochs(kwargs.totalEpochs),
       classes(kwargs.classes) {
+  if (this->totalEpochs < 0) {
+    throw exceptions::model::InvalidTotalEpochException(this->totalEpochs);
+  }
   this->setTrainMetrics(kwargs.trainMetrics);
   this->setValidationMetrics(kwargs.validationMetrics);
 }
