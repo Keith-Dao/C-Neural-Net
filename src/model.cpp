@@ -23,9 +23,7 @@ Model::Model(std::vector<linear::Linear> layers, loss::CrossEntropyLoss loss,
              KeywordArgs kwargs)
     : layers(layers), loss(loss), totalEpochs(kwargs.totalEpochs),
       classes(kwargs.classes) {
-  if (this->totalEpochs < 0) {
-    throw exceptions::model::InvalidTotalEpochException(this->totalEpochs);
-  }
+  this->setTotalEpochs(kwargs.totalEpochs);
   this->setTrainMetrics(kwargs.trainMetrics);
   this->setValidationMetrics(kwargs.validationMetrics);
 }
@@ -67,6 +65,17 @@ loss::CrossEntropyLoss Model::getLoss() const { return this->loss; }
 
 void Model::setLoss(const loss::CrossEntropyLoss &loss) { this->loss = loss; }
 #pragma endregion Loss
+
+#pragma region Total epochs
+int Model::getTotalEpochs() const { return this->totalEpochs; }
+
+void Model::setTotalEpochs(int totalEpochs) {
+  if (totalEpochs < 0) {
+    throw exceptions::model::InvalidTotalEpochException(totalEpochs);
+  }
+  this->totalEpochs = totalEpochs;
+}
+#pragma endregion Total epochs
 
 #pragma region Train metrics
 std::unordered_map<std::string, metricHistoryValue>

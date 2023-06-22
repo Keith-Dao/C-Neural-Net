@@ -41,7 +41,7 @@ public:
 #pragma region Properties
 #pragma region Evaluation mode
   /*
-    Gets the model's evaluation mode.
+    Get the model's evaluation mode.
   */
   bool getEval() const;
   /*
@@ -52,27 +52,39 @@ public:
 
 #pragma region Layers
   /*
-    Gets the model's layers
+    Get the model's layers
   */
   std::vector<linear::Linear> getLayers() const;
 
   /*
-    Sets the model's layers
+    Set the model's layers
   */
   void setLayers(const std::vector<linear::Linear> &layers);
 #pragma endregion Layers
 
 #pragma region Loss
   /*
-    Gets the model's loss.
+    Get the model's loss.
   */
   loss::CrossEntropyLoss getLoss() const;
 
   /*
-    Sets the model's loss.
+    Set the model's loss.
   */
   void setLoss(const loss::CrossEntropyLoss &loss);
 #pragma endregion Loss
+
+#pragma region Total epochs
+  /*
+    Get the model's total epochs
+  */
+  int getTotalEpochs() const;
+
+  /*
+    Set the model's total epochs
+  */
+  void setTotalEpochs(int totalEpochs);
+#pragma endregion Total epochs
 
 #pragma region Train metrics
   /*

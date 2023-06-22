@@ -91,6 +91,24 @@ TEST(Model, TestLayersWithEmptyVector) {
 }
 #pragma endregion Layers
 
+#pragma region Total epochs
+TEST(Model, TestTotalEpochs) {
+  Model model = getModel();
+  ASSERT_EQ(0, model.getTotalEpochs()) << "Total epochs should default to 0.";
+
+  model.setTotalEpochs(10);
+  ASSERT_EQ(10, model.getTotalEpochs())
+      << "Total epochs should have been changed to 10.";
+}
+
+TEST(Model, TestTotalEpochsWithInvalidValue) {
+  Model model = getModel();
+  EXPECT_THROW(model.setTotalEpochs(-1),
+               exceptions::model::InvalidTotalEpochException)
+      << "A negative value should throw the exception.";
+}
+#pragma endregion Total epochs
+
 #pragma region Loss
 TEST(Model, TestLoss) {
   Model model = getModel();
