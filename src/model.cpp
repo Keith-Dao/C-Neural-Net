@@ -35,6 +35,33 @@ Model::Model(std::vector<linear::Linear> layers, loss::CrossEntropyLoss loss)
 #pragma endregion Constructor
 
 #pragma region Properties
+#pragma region Evaluation mode
+bool Model::getEval() const { return this->eval; }
+
+void Model::setEval(bool eval) {
+  if (this->eval == eval) {
+    return;
+  }
+
+  for (linear::Linear &layer : this->layers) {
+    layer.setEval(eval);
+  }
+  this->eval = eval;
+}
+#pragma endregion Evaluation mode
+
+#pragma region Layers
+
+std::vector<linear::Linear> Model::getLayers() const { return this->layers; }
+
+void Model::setLayers(const std::vector<linear::Linear> &layers) {
+  if (layers.empty()) {
+    throw exceptions::model::EmptyLayersVectorException();
+  }
+  this->layers = layers;
+}
+#pragma endregion Layers
+
 #pragma region Train metrics
 std::unordered_map<std::string, metricHistoryValue>
 Model::getTrainMetrics() const {

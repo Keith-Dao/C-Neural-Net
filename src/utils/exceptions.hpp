@@ -261,6 +261,15 @@ class InvalidMetricException : public std::exception {
 public:
   InvalidMetricException(std::string metric) : metric(metric){};
 };
+
+class EmptyLayersVectorException : public std::exception {
+  virtual const char *what() const throw() {
+    return "Layers vector cannot be empty.";
+  }
+
+public:
+  EmptyLayersVectorException(){};
+};
 } // namespace model
 #pragma endregion Model
 

@@ -39,6 +39,29 @@ public:
   Model(std::vector<linear::Linear> layers, loss::CrossEntropyLoss loss);
 
 #pragma region Properties
+#pragma region Evaluation mode
+  /*
+    Gets the model's evaluation mode.
+  */
+  bool getEval() const;
+  /*
+    Set the model's evaluation mode.
+  */
+  void setEval(bool eval);
+#pragma endregion Evaluation mode
+
+#pragma region Layers
+  /*
+    Gets the model's layers
+  */
+  std::vector<linear::Linear> getLayers() const;
+
+  /*
+    Sets the model's layers
+  */
+  void setLayers(const std::vector<linear::Linear> &layers);
+#pragma endregion Layers
+
 #pragma region Train metrics
   /*
     Get a copy of the train metrics.
