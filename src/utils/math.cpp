@@ -29,3 +29,13 @@ Eigen::MatrixXd utils::math::normalise(const Eigen::MatrixXd &data,
   return (data.array() - fromMin) * (toMax - toMin) / (fromMax - fromMin) +
          toMin;
 }
+
+std::vector<int>
+utils::math::logitsToPrediction(const Eigen::MatrixXd &logits) {
+  Eigen::MatrixXd probabilities = utils::math::softmax(logits);
+  std::vector<int> indices(probabilities.rows());
+  for (int i = 0; i < probabilities.rows(); ++i) {
+    probabilities.row(i).maxCoeff(&indices[i]);
+  }
+  return indices;
+}
