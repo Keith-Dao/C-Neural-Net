@@ -1,6 +1,8 @@
 #include "model.hpp"
+#include "linear.hpp"
 #include "metrics.hpp"
 #include "utils/exceptions.hpp"
+#include "utils/math.hpp"
 #include <unordered_map>
 #include <vector>
 
@@ -146,3 +148,26 @@ Model::metricTypesToHistory(const std::vector<std::string> &metrics) {
   return result;
 }
 #pragma endregion Metrics
+
+#pragma region Forward pass
+Eigen::MatrixXd Model::forward(const Eigen::MatrixXd &input) {
+  Eigen::MatrixXd out = input;
+  for (linear::Linear &layer : this->layers) {
+    out = layer(out);
+  }
+  return out;
+}
+
+std::vector<std::string> Model::predict(const Eigen::MatrixXd &input) {
+  if (this->classes.empty()) {
+    throw exceptions::model::MissingClassesException();
+  }
+  std::vector<int> predictions =
+      utils::math::logitsToPrediction(this->forward(input));
+  std::vector<std::string> result(predictions.size());
+  for (int i = 0; i < predictions.size(); ++i) {
+    result[i] = this->classes[predictions[i]];
+  }
+  return result;
+}
+#pragma endregion Forward pass

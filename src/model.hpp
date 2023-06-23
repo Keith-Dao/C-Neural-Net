@@ -120,6 +120,17 @@ public:
 #pragma endregion Validation metrics
 #pragma endregion Properties
 
+#pragma region Forward pass
+  /*
+    Perform the forward pass.
+  */
+  Eigen::MatrixXd forward(const Eigen::MatrixXd &input);
+
+  /*
+    Perform the forward pass and predict the classes for the input.
+  */
+  std::vector<std::string> predict(const Eigen::MatrixXd &input);
+#pragma endregion Forward pass
 #pragma region Metrics
   /*
     Validate the given metric.

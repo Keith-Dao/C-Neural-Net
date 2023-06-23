@@ -30,6 +30,20 @@ Model::KeywordArgs getKwargs() {
 }
 
 Model getModel() { return Model(getLayers(), getLoss(), getKwargs()); }
+
+std::pair<Eigen::MatrixXd, std::vector<int>> getData() {
+  return std::make_pair(Eigen::MatrixXd{{4, -3, 2, 4},
+                                        {6, -3, 6, 1},
+                                        {5, 9, 8, 3},
+                                        {8, -10, 8, -7},
+                                        {0, 3, 7, 5},
+                                        {7, -6, 8, 8},
+                                        {1, -10, -7, 5},
+                                        {-6, 5, 4, -9},
+                                        {4, -3, 8, 6},
+                                        {5, -9, 2, 1}},
+                        std::vector<int>{0, 1, 1, 1, 1, 0, 1, 1, 1, 0});
+}
 #pragma endregion Fixtures
 
 #pragma region Tests
@@ -122,5 +136,33 @@ TEST(Model, TestLoss) {
 }
 #pragma endregion Loss
 #pragma endregion Properties
+
+#pragma region Forward pass
+TEST(Model, TestForward) {
+  Model model = getModel();
+  Eigen::MatrixXd x = getData().first,
+                  expected{{25., 25.}, {34., 34.}, {79., 79.}, {1., 1.},
+                           {49., 49.}, {55., 55.}, {0., 0.},   {0., 0.},
+                           {49., 49.}, {1., 1.}},
+                  result = model.forward(x);
+
+  ASSERT_TRUE(expected.isApprox(result)) << "Expected:\n"
+                                         << expected << "\nGot:\n"
+                                         << result;
+}
+
+TEST(Model, TestPredict) {
+  Model model = getModel();
+  Eigen::MatrixXd x{{0, 0, 0, 0}};
+  std::vector<std::string> expected{"0"};
+  ASSERT_EQ(expected, model.predict(x));
+}
+
+TEST(Model, TestPredictWithNodeClasses) {
+  Model model(getLayers(), getLoss());
+  Eigen::MatrixXd x{{0, 0, 0, 0}};
+  EXPECT_THROW(model.predict(x), exceptions::model::MissingClassesException);
+}
+#pragma endregion Forward pass
 #pragma endregion Tests
 } // namespace test_model

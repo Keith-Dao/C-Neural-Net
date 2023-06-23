@@ -266,9 +266,12 @@ class EmptyLayersVectorException : public std::exception {
   virtual const char *what() const throw() {
     return "Layers vector cannot be empty.";
   }
+};
 
-public:
-  EmptyLayersVectorException(){};
+class MissingClassesException : public std::exception {
+  virtual const char *what() const throw() {
+    return "Model is missing the classes.";
+  }
 };
 } // namespace model
 #pragma endregion Model
