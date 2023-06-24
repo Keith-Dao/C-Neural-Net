@@ -131,6 +131,27 @@ public:
   */
   std::vector<std::string> predict(const Eigen::MatrixXd &input);
 #pragma endregion Forward pass
+
+#pragma region Train
+  /*
+    Perform the forward pass and store the predictions in the given confusion
+    matrix.
+  */
+  float getLossWithConfusionMatrix(const Eigen::MatrixXd &input,
+                                   Eigen::MatrixXi &confusionMatrix,
+                                   const std::vector<int> &labels);
+  // TODO: Implement the remaining methods
+#pragma endregion Train
+
+#pragma region Test
+  /*
+    Perform test on the model with the given data loader, returning the loss and
+    confusion matrix.
+  */
+  std::pair<float, Eigen::MatrixXi> test(loader::DatasetBatcher loader,
+                                         std::string indicatorDescription = "");
+#pragma endregion Test
+
 #pragma region Metrics
   /*
     Validate the given metric.

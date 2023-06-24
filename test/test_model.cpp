@@ -1,8 +1,11 @@
 #include "cross_entropy_loss.hpp"
+#include "image_loader.hpp"
 #include "linear.hpp"
 #include "model.hpp"
 #include "utils/exceptions.hpp"
 #include <gtest/gtest.h>
+#include <unordered_set>
+#include <utility>
 #include <vector>
 
 using namespace model;
@@ -44,6 +47,67 @@ std::pair<Eigen::MatrixXd, std::vector<int>> getData() {
                                         {5, -9, 2, 1}},
                         std::vector<int>{0, 1, 1, 1, 1, 0, 1, 1, 1, 0});
 }
+
+struct MockDatasetBatcher : public loader::DatasetBatcher {
+  Eigen::MatrixXd X;
+  std::vector<int> y;
+  int batchSize;
+
+  MockDatasetBatcher(const Eigen::MatrixXd &X, const std::vector<int> &y,
+                     int batchSize)
+      : X(X), y(y), batchSize(batchSize), loader::DatasetBatcher("", {}, {}, {},
+                                                                 batchSize){};
+
+  int getSize() {
+    return (this->X.size() + this->batchSize - 1) / this->batchSize;
+  }
+
+  loader::minibatch operator[](int i) const {
+    int end = std::min(y.size(), (unsigned long)i + this->batchSize);
+    Eigen::MatrixXd X(end - i, this->X.cols());
+    for (int j = i; j < end; ++j) {
+      X.row(j - i) = this->X.row(j);
+    }
+    std::vector<int> y(this->y.begin() + i * this->batchSize,
+                       this->y.begin() + end);
+    return std::make_pair(X, y);
+  };
+};
+
+struct MockLoader {
+  Eigen::MatrixXd trainX, valX;
+  std::vector<int> trainY, valY, classes;
+
+  MockLoader(float split) {
+    auto [X, y] = getData();
+    int trainSize = X.rows() * split;
+    this->trainX = Eigen::MatrixXd(trainSize, X.cols());
+    for (int i = 0; i < trainSize; ++i) {
+      this->trainX.row(i) = X.row(i);
+    }
+    this->valX = Eigen::MatrixXd(X.rows() - trainSize, X.cols());
+    for (int i = trainSize; i < X.rows(); ++i) {
+      this->valX.row(i - trainSize) = X.row(i);
+    }
+
+    this->trainY = std::vector<int>(y.begin(), y.begin() + trainSize);
+    this->valY = std::vector<int>(y.begin() + trainSize, y.end());
+
+    std::unordered_set<int> classes(y.begin(), y.end());
+    this->classes = std::vector<int>(classes.begin(), classes.end());
+  };
+
+  MockDatasetBatcher operator()(std::string type, int batchSize) {
+    if (type == "train") {
+      return MockDatasetBatcher(this->trainX, this->trainY, batchSize);
+    }
+    if (type == "test") {
+      return MockDatasetBatcher(this->valX, this->valY, batchSize);
+    }
+    throw "Invalid type";
+  }
+};
+
 #pragma endregion Fixtures
 
 #pragma region Tests
@@ -164,5 +228,14 @@ TEST(Model, TestPredictWithNodeClasses) {
   EXPECT_THROW(model.predict(x), exceptions::model::MissingClassesException);
 }
 #pragma endregion Forward pass
+
+#pragma region Test
+TEST(Model, TestTestWithNoClasses) {
+  Model model(getLayers(), getLoss());
+  MockLoader loader(1);
+  EXPECT_THROW(model.test(loader("train", 1)),
+               exceptions::model::MissingClassesException);
+}
+#pragma endregion Test
 #pragma endregion Tests
 } // namespace test_model

@@ -3,6 +3,9 @@
 #include "metrics.hpp"
 #include "utils/exceptions.hpp"
 #include "utils/math.hpp"
+#include <indicators/cursor_control.hpp>
+#include <indicators/progress_bar.hpp>
+#include <indicators/setting.hpp>
 #include <unordered_map>
 #include <vector>
 
@@ -171,3 +174,58 @@ std::vector<std::string> Model::predict(const Eigen::MatrixXd &input) {
   return result;
 }
 #pragma endregion Forward pass
+
+#pragma region Train
+float Model::getLossWithConfusionMatrix(const Eigen::MatrixXd &input,
+                                        Eigen::MatrixXi &confusionMatrix,
+                                        const std::vector<int> &labels) {
+  Eigen::MatrixXd logits = this->forward(input);
+  metrics::addToConfusionMatrix(
+      confusionMatrix, utils::math::logitsToPrediction(logits), labels);
+  return this->loss(logits, labels);
+}
+#pragma endregion Train
+
+#pragma region Test
+std::pair<float, Eigen::MatrixXi>
+Model::test(loader::DatasetBatcher loader, std::string indicatorDescription) {
+  if (this->classes.empty()) {
+    throw exceptions::model::MissingClassesException();
+  }
+
+  bool evalMode = this->eval;
+  this->setEval(true);
+
+  // Set up indicator
+  indicators::show_console_cursor(false);
+  indicators::ProgressBar bar{
+      indicators::option::BarWidth{50},
+      indicators::option::Start{"["},
+      indicators::option::Fill{"█"},
+      indicators::option::Lead{"█"},
+      indicators::option::Remainder{"-"},
+      indicators::option::End{"]"},
+      indicators::option::PrefixText{indicatorDescription},
+      indicators::option::ForegroundColor{indicators::Color::white},
+      indicators::option::ShowElapsedTime{true},
+      indicators::option::ShowRemainingTime{true},
+      indicators::option::ShowPercentage{true},
+      indicators::option::MaxProgress{loader.size()}};
+
+  // Perform forward and backward pass
+  Eigen::MatrixXi confusionMatrix =
+      metrics::getNewConfusionMatrix(this->classes.size());
+  float loss = 0;
+  for (const auto &[data, labels] : loader) {
+    loss += this->getLossWithConfusionMatrix(data, confusionMatrix, labels);
+    bar.tick();
+  }
+  loss /= loader.size();
+
+  // Tear down indicator
+  indicators::show_console_cursor(true);
+
+  this->setEval(evalMode);
+  return std::make_pair(loss, confusionMatrix);
+}
+#pragma endregion Test
