@@ -33,3 +33,7 @@ target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})
 # Tabulate
 find_package(tabulate REQUIRED)
 target_link_libraries(${PROJECT_NAME} ${TABULATE_LIBRARIES})
+
+# Termcolor
+find_package(termcolor REQUIRED)
+target_link_libraries(${PROJECT_NAME} ${TERMCOLOR_LIBRARIES})

@@ -95,3 +95,13 @@ jobs:
             cmake -B build -DCMAKE_INSTALL_PREFIX:PATH=${{ github.workspace }}/install/dependencies
             cd build 
             sudo make install
+
+      - name: Install Termcolor
+        if: steps.cache-dependencies.outputs.cache-hit != 'true'
+          run: |
+            wget -O termcolor.zip "https://github.com/ikalnytskyi/termcolor/archive/refs/tags/v2.1.0.zip" 
+            unzip termcolor.zip 
+            cd termcolor-2.1.0
+            cmake -B build -DCMAKE_INSTALL_PREFIX:PATH=${{ github.workspace }}/install/dependencies
+            cd build 
+            sudo make install
