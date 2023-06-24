@@ -1,5 +1,6 @@
 #pragma once
 #include "cross_entropy_loss.hpp"
+#include "image_loader.hpp"
 #include "linear.hpp"
 #include <variant>
 #include <vector>
@@ -120,6 +121,14 @@ public:
 #pragma endregion Validation metrics
 #pragma endregion Properties
 
+#pragma region Load
+// TODO
+#pragma endregion Load
+
+#pragma region Save
+// TODO
+#pragma endregion Save
+
 #pragma region Forward pass
   /*
     Perform the forward pass.
@@ -140,7 +149,20 @@ public:
   float getLossWithConfusionMatrix(const Eigen::MatrixXd &input,
                                    Eigen::MatrixXi &confusionMatrix,
                                    const std::vector<int> &labels);
-  // TODO: Implement the remaining methods
+
+private:
+  /*
+    Perform the training step for one minibatch.
+  */
+  float trainStep(const Eigen::MatrixXd &data, const std::vector<int> &labels,
+                  double learningRate, Eigen::MatrixXi &confusionMatrix);
+
+public:
+  /*
+    Train the model for the given number of epochs.
+  */
+  void train(const loader::ImageLoader &loader, double learningRate,
+             int batchSize, int epochs);
 #pragma endregion Train
 
 #pragma region Test
@@ -148,8 +170,9 @@ public:
     Perform test on the model with the given data loader, returning the loss and
     confusion matrix.
   */
-  std::pair<float, Eigen::MatrixXi> test(loader::DatasetBatcher loader,
-                                         std::string indicatorDescription = "");
+  std::pair<float, Eigen::MatrixXi>
+  test(const std::shared_ptr<loader::DatasetBatcher> loader,
+       const std::string &indicatorDescription = "");
 #pragma endregion Test
 
 #pragma region Metrics
@@ -172,6 +195,16 @@ public:
   */
   static std::unordered_map<std::string, metricHistoryValue>
   metricTypesToHistory(const std::vector<std::string> &metrics);
+
+  // TODO: Implement the remaining methods.
 #pragma endregion Metrics
+
+#pragma region Visualisation
+// TODO
+#pragma endregion Visualisation
+
+#pragma region Builtins
+// TODO
+#pragma endregion Builtins
 };
 } // namespace model

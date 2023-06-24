@@ -3,7 +3,10 @@
 #include "linear.hpp"
 #include "model.hpp"
 #include "utils/exceptions.hpp"
+#include <Eigen/src/Core/NumTraits.h>
 #include <gtest/gtest.h>
+#include <memory>
+#include <string>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -58,25 +61,26 @@ struct MockDatasetBatcher : public loader::DatasetBatcher {
       : X(X), y(y), batchSize(batchSize), loader::DatasetBatcher("", {}, {}, {},
                                                                  batchSize){};
 
-  int getSize() {
-    return (this->X.size() + this->batchSize - 1) / this->batchSize;
+  int size() const override {
+    return (this->X.rows() + this->batchSize - 1) / this->batchSize;
   }
 
-  loader::minibatch operator[](int i) const {
-    int end = std::min(y.size(), (unsigned long)i + this->batchSize);
-    Eigen::MatrixXd X(end - i, this->X.cols());
-    for (int j = i; j < end; ++j) {
-      X.row(j - i) = this->X.row(j);
+  loader::minibatch operator[](int i) const override {
+    int start = i * this->batchSize,
+        end =
+            std::min(this->y.size(), (unsigned long)(i + 1) * this->batchSize);
+    Eigen::MatrixXd X(end - start, this->X.cols());
+    for (int j = start; j < end; ++j) {
+      X.row(j - start) = this->X.row(j);
     }
-    std::vector<int> y(this->y.begin() + i * this->batchSize,
-                       this->y.begin() + end);
+    std::vector<int> y(this->y.begin() + start, this->y.begin() + end);
     return std::make_pair(X, y);
   };
 };
 
-struct MockLoader {
+struct MockLoader : public loader::ImageLoader {
   Eigen::MatrixXd trainX, valX;
-  std::vector<int> trainY, valY, classes;
+  std::vector<int> trainY, valY, labels;
 
   MockLoader(float split) {
     auto [X, y] = getData();
@@ -94,17 +98,23 @@ struct MockLoader {
     this->valY = std::vector<int>(y.begin() + trainSize, y.end());
 
     std::unordered_set<int> classes(y.begin(), y.end());
-    this->classes = std::vector<int>(classes.begin(), classes.end());
+    this->labels = std::vector<int>(classes.begin(), classes.end());
+    this->classes = std::vector<std::string>(this->labels.size());
+    for (int i = 0; i < this->labels.size(); ++i) {
+      this->classes[i] = std::to_string(this->labels[i]);
+    }
   };
 
-  MockDatasetBatcher operator()(std::string type, int batchSize) {
-    if (type == "train") {
-      return MockDatasetBatcher(this->trainX, this->trainY, batchSize);
+  std::shared_ptr<loader::DatasetBatcher>
+  getBatcher(std::string type, int batchSize,
+             const loader::DatasetBatcher::KeywordArgs &kwargs =
+                 loader::DatasetBatcher::KeywordArgs()) const override {
+    if (type != "train" && type != "test") {
+      throw "Invalid type";
     }
-    if (type == "test") {
-      return MockDatasetBatcher(this->valX, this->valY, batchSize);
-    }
-    throw "Invalid type";
+    return std::make_shared<MockDatasetBatcher>(MockDatasetBatcher(
+        type == "train" ? this->trainX : this->valX,
+        type == "train" ? this->trainY : this->valY, batchSize));
   }
 };
 
@@ -228,6 +238,112 @@ TEST(Model, TestPredictWithNodeClasses) {
   EXPECT_THROW(model.predict(x), exceptions::model::MissingClassesException);
 }
 #pragma endregion Forward pass
+
+#pragma region Train
+TEST(Model, TestTrainNoValidation) {
+  int epochs = 1;
+  Model model = getModel();
+  MockLoader loader(1);
+  model.train(loader, 1e-4, 1, epochs);
+  ASSERT_EQ(epochs, model.getTotalEpochs());
+  // TODO: Check metrics
+
+  std::vector<Eigen::MatrixXd> weights{
+      Eigen::MatrixXd{
+          {0.999998755067, 1.000002096106, 1.000000522309, 0.999998187911},
+          {0.999998755067, 1.000002096106, 1.000000522309, 0.999998187911},
+          {0.999998755067, 1.000002096106, 1.000000522309, 0.999998187911}},
+      Eigen::MatrixXd{{0.998065222731, 0.998065222731, 0.998065222731},
+                      {1.001934777269, 1.001934777269, 1.001934777269}}};
+  std::vector<Eigen::VectorXd> biases{
+      Eigen::VectorXd{{0.9999999267982, 0.9999999267982, 0.9999999267982}},
+      Eigen::VectorXd{{0.999912134981, 1.000087865019}}};
+  for (int i = 0; i < weights.size(); ++i) {
+    ASSERT_TRUE(weights[i].isApprox(model.getLayers()[i].getWeight()))
+        << "Weights of layer " << i << " does not match.";
+    ASSERT_TRUE(biases[i].isApprox(model.getLayers()[i].getBias()))
+        << "Bias of layer " << i << " does not match.";
+  }
+}
+
+TEST(Model, TestTrainWithValidation) {
+  int epochs = 1;
+  Model model = getModel();
+  MockLoader loader(0.7);
+  model.train(loader, 1e-4, 1, epochs);
+  ASSERT_EQ(epochs, model.getTotalEpochs());
+  // TODO: Check metrics
+
+  std::vector<Eigen::MatrixXd> weights{
+      Eigen::MatrixXd{
+          {0.999999277295, 1.000000688537, 1.00000001873, 0.999997713475},
+          {0.999999277295, 1.000000688537, 1.00000001873, 0.999997713475},
+          {0.999999277295, 1.000000688537, 1.00000001873, 0.999997713475}},
+      Eigen::MatrixXd{{0.998819881654, 0.998819881654, 0.998819881654},
+                      {1.001180118346, 1.001180118346, 1.001180118346}}};
+  std::vector<Eigen::VectorXd> biases{
+      Eigen::VectorXd{{1.000000008979, 1.000000008979, 1.000000008979}},
+      Eigen::VectorXd{{0.999909294313, 1.000090705687}}};
+  for (int i = 0; i < weights.size(); ++i) {
+    ASSERT_TRUE(weights[i].isApprox(model.getLayers()[i].getWeight()))
+        << "Weights of layer " << i << " does not match.";
+    ASSERT_TRUE(biases[i].isApprox(model.getLayers()[i].getBias()))
+        << "Bias of layer " << i << " does not match.";
+  }
+}
+
+TEST(Model, TestTrainWithValidationMultipleEpoch) {
+  int epochs = 3;
+  Model model = getModel();
+  MockLoader loader(0.7);
+  model.train(loader, 1e-4, 1, epochs);
+  ASSERT_EQ(epochs, model.getTotalEpochs());
+  // TODO: Check metrics
+
+  std::vector<Eigen::MatrixXd> weights{
+      Eigen::MatrixXd{
+          {0.999999463368, 1.000004564799, 1.000004417718, 0.999989087074},
+          {0.999999463368, 1.000004564799, 1.000004417718, 0.999989087074},
+          {0.999999463368, 1.000004564799, 1.000004417718, 0.999989087074}},
+      Eigen::MatrixXd{{0.997116223774, 0.997116223774, 0.997116223774},
+                      {1.002883776226, 1.002883776226, 1.002883776226}}};
+  std::vector<Eigen::VectorXd> biases{
+      Eigen::VectorXd{{1.000000421266, 1.000000421266, 1.000000421266}},
+      Eigen::VectorXd{{0.999763917669, 1.000236082331}}};
+  for (int i = 0; i < weights.size(); ++i) {
+    ASSERT_TRUE(weights[i].isApprox(model.getLayers()[i].getWeight()))
+        << "Weights of layer " << i << " does not match.";
+    ASSERT_TRUE(biases[i].isApprox(model.getLayers()[i].getBias()))
+        << "Bias of layer " << i << " does not match.";
+  }
+}
+
+TEST(Model, TestTrainWithValidationLargerBatchSize) {
+  int epochs = 1;
+  Model model = getModel();
+  MockLoader loader(0.7);
+  model.train(loader, 1e-4, 3, epochs);
+  ASSERT_EQ(epochs, model.getTotalEpochs());
+  // TODO: Check metrics
+
+  std::vector<Eigen::MatrixXd> weights{
+      Eigen::MatrixXd{
+          {1.000000065579, 0.999999892849, 1.000000853661, 0.999998408936},
+          {1.000000065579, 0.999999892849, 1.000000853661, 0.999998408936},
+          {1.000000065579, 0.999999892849, 1.000000853661, 0.999998408936}},
+      Eigen::MatrixXd{{0.998776001136, 0.998776001136, 0.998776001136},
+                      {1.001223998864, 1.001223998864, 1.001223998864}}};
+  std::vector<Eigen::VectorXd> biases{
+      Eigen::VectorXd{{1.000000123572, 1.000000123572, 1.000000123572}},
+      Eigen::VectorXd{{0.999907388883, 1.000092611117}}};
+  for (int i = 0; i < weights.size(); ++i) {
+    ASSERT_TRUE(weights[i].isApprox(model.getLayers()[i].getWeight()))
+        << "Weights of layer " << i << " does not match.";
+    ASSERT_TRUE(biases[i].isApprox(model.getLayers()[i].getBias()))
+        << "Bias of layer " << i << " does not match.";
+  }
+}
+#pragma endregion Train
 
 #pragma region Test
 TEST(Model, TestTestWithNoClasses) {

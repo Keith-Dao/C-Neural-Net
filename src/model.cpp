@@ -1,11 +1,15 @@
 #include "model.hpp"
+#include "image_loader.hpp"
 #include "linear.hpp"
 #include "metrics.hpp"
 #include "utils/exceptions.hpp"
+#include "utils/indicator.hpp"
 #include "utils/math.hpp"
 #include <indicators/cursor_control.hpp>
 #include <indicators/progress_bar.hpp>
 #include <indicators/setting.hpp>
+#include <memory>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -180,15 +184,75 @@ float Model::getLossWithConfusionMatrix(const Eigen::MatrixXd &input,
                                         Eigen::MatrixXi &confusionMatrix,
                                         const std::vector<int> &labels) {
   Eigen::MatrixXd logits = this->forward(input);
+  std::cout << " here" << logits.rows() << ", " << labels.size() << std::endl;
   metrics::addToConfusionMatrix(
       confusionMatrix, utils::math::logitsToPrediction(logits), labels);
   return this->loss(logits, labels);
 }
+
+float Model::trainStep(const Eigen::MatrixXd &data,
+                       const std::vector<int> &labels, double learningRate,
+                       Eigen::MatrixXi &confusionMatrix) {
+  std::cout << data.rows() << ", " << labels.size() << std::endl;
+  float loss = this->getLossWithConfusionMatrix(data, confusionMatrix, labels);
+  Eigen::MatrixXd grad = this->loss.backward();
+  for (auto it = this->layers.rbegin(); it != this->layers.rend(); ++it) {
+    grad = it->update(grad, learningRate);
+  }
+  return loss;
+}
+
+void Model::train(const loader::ImageLoader &loader, double learningRate,
+                  int batchSize, int epochs) {
+  this->classes = loader.getClasses();
+  for (int epoch = 1; epoch < epochs + 1; ++epoch) {
+    // Training
+    {
+      std::shared_ptr<loader::DatasetBatcher> trainingData =
+          loader("train", batchSize);
+      Eigen::MatrixXi confusionMatrix =
+          metrics::getNewConfusionMatrix(this->classes.size());
+      float loss = 0;
+
+      indicators::show_console_cursor(false);
+      ProgressBar bar = utils::indicators::getDefaultProgressBar();
+      bar.set_option(indicators::option::PrefixText{
+          "Training epoch " + std::to_string(epoch) + "/" +
+          std::to_string(epochs) + ": "});
+      bar.set_option(indicators::option::MaxProgress{trainingData->size()});
+
+      for (const auto &[data, labels] : *trainingData) {
+        loss += this->trainStep(data, labels, learningRate, confusionMatrix);
+        bar.tick();
+      }
+      loss /= trainingData->size();
+      // TODO: Store and print metrics
+      indicators::show_console_cursor(true);
+    }
+
+    // Validation
+    {
+      std::shared_ptr<loader::DatasetBatcher> validationData =
+          loader("test", batchSize);
+      if (validationData->size() == 0) {
+        continue;
+      }
+
+      auto [loss, confusionMatrix] = this->test(
+          validationData, "Validation epoch " + std::to_string(epoch) + "/" +
+                              std::to_string(epochs) + ": ");
+      // TODO: Store and print metrics
+    }
+  }
+  this->totalEpochs += epochs;
+}
+
 #pragma endregion Train
 
 #pragma region Test
 std::pair<float, Eigen::MatrixXi>
-Model::test(loader::DatasetBatcher batcher, std::string indicatorDescription) {
+Model::test(const std::shared_ptr<loader::DatasetBatcher> batcher,
+            const std::string &indicatorDescription) {
   if (this->classes.empty()) {
     throw exceptions::model::MissingClassesException();
   }
@@ -200,17 +264,17 @@ Model::test(loader::DatasetBatcher batcher, std::string indicatorDescription) {
   indicators::show_console_cursor(false);
   indicators::ProgressBar bar = utils::indicators::getDefaultProgressBar();
   bar.set_option(indicators::option::PrefixText{indicatorDescription});
-  bar.set_option(indicators::option::MaxProgress{batcher.size()});
+  bar.set_option(indicators::option::MaxProgress{batcher->size()});
 
   // Perform forward and backward pass
   Eigen::MatrixXi confusionMatrix =
       metrics::getNewConfusionMatrix(this->classes.size());
   float loss = 0;
-  for (const auto &[data, labels] : batcher) {
+  for (const auto &[data, labels] : *batcher) {
     loss += this->getLossWithConfusionMatrix(data, confusionMatrix, labels);
     bar.tick();
   }
-  loss /= batcher.size();
+  loss /= batcher->size();
 
   // Tear down indicator
   indicators::show_console_cursor(true);
