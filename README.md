@@ -16,6 +16,7 @@ The following libraries are required.
 | matplot++  | 1.1.0   | https://github.com/alandefreitas/matplotplusplus/releases/tag/v1.1.0 |
 | indicators | 2.3     | https://github.com/p-ranav/indicators/releases/tag/v2.3              |
 | OpenCV     | 4.7.0   | https://github.com/opencv/opencv/releases/tag/4.7.0                  |
+| Tabulate   | 1.5     | https://github.com/p-ranav/tabulate/releases/tag/v1.5                |
 
 The following are also required.
 

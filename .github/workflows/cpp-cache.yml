@@ -85,3 +85,13 @@ jobs:
           cmake -B build -DCMAKE_INSTALL_PREFIX:PATH=${{ github.workspace }}/install/dependencies
           cd build 
           sudo make install
+
+      - name: Install Tabulate
+        if: steps.cache-dependencies.outputs.cache-hit != 'true'
+          run: |
+            wget -O tabulate.zip "https://github.com/p-ranav/tabulate/archive/refs/tags/v1.5.zip" 
+            unzip tabulate.zip 
+            cd tabulate-1.5
+            cmake -B build -DCMAKE_INSTALL_PREFIX:PATH=${{ github.workspace }}/install/dependencies
+            cd build 
+            sudo make install

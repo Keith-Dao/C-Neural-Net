@@ -27,5 +27,9 @@ target_link_libraries(${PROJECT_NAME} ${INDICATORS_LIBRARIES})
 
 # OpenCV
 find_package(OpenCV REQUIRED)
-include_directories( ${OpenCV_INCLUDE_DIRS} )
-target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )
+include_directories(${OpenCV_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})
+
+# Tabulate
+find_package(tabulate REQUIRED)
+target_link_libraries(${PROJECT_NAME} ${TABULATE_LIBRARIES})
