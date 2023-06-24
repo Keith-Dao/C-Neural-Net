@@ -188,7 +188,7 @@ float Model::getLossWithConfusionMatrix(const Eigen::MatrixXd &input,
 
 #pragma region Test
 std::pair<float, Eigen::MatrixXi>
-Model::test(loader::DatasetBatcher loader, std::string indicatorDescription) {
+Model::test(loader::DatasetBatcher batcher, std::string indicatorDescription) {
   if (this->classes.empty()) {
     throw exceptions::model::MissingClassesException();
   }
@@ -198,29 +198,19 @@ Model::test(loader::DatasetBatcher loader, std::string indicatorDescription) {
 
   // Set up indicator
   indicators::show_console_cursor(false);
-  indicators::ProgressBar bar{
-      indicators::option::BarWidth{50},
-      indicators::option::Start{"["},
-      indicators::option::Fill{"█"},
-      indicators::option::Lead{"█"},
-      indicators::option::Remainder{"-"},
-      indicators::option::End{"]"},
-      indicators::option::PrefixText{indicatorDescription},
-      indicators::option::ForegroundColor{indicators::Color::white},
-      indicators::option::ShowElapsedTime{true},
-      indicators::option::ShowRemainingTime{true},
-      indicators::option::ShowPercentage{true},
-      indicators::option::MaxProgress{loader.size()}};
+  indicators::ProgressBar bar = utils::indicators::getDefaultProgressBar();
+  bar.set_option(indicators::option::PrefixText{indicatorDescription});
+  bar.set_option(indicators::option::MaxProgress{batcher.size()});
 
   // Perform forward and backward pass
   Eigen::MatrixXi confusionMatrix =
       metrics::getNewConfusionMatrix(this->classes.size());
   float loss = 0;
-  for (const auto &[data, labels] : loader) {
+  for (const auto &[data, labels] : batcher) {
     loss += this->getLossWithConfusionMatrix(data, confusionMatrix, labels);
     bar.tick();
   }
-  loss /= loader.size();
+  loss /= batcher.size();
 
   // Tear down indicator
   indicators::show_console_cursor(true);
