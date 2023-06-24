@@ -155,7 +155,7 @@ std::vector<std::filesystem::path> ImageLoader::getTestFiles() const {
 #pragma region Batcher
 DatasetBatcher
 ImageLoader::getBatcher(std::string dataset, int batchSize,
-                        const DatasetBatcher::KeywordArgs kwargs) {
+                        const DatasetBatcher::KeywordArgs kwargs) const {
   if (dataset != "train" && dataset != "test") {
     throw exceptions::loader::InvalidDatasetException(dataset);
   }
@@ -168,7 +168,7 @@ ImageLoader::getBatcher(std::string dataset, int batchSize,
 #pragma region Builtins
 DatasetBatcher
 ImageLoader::operator()(std::string dataset, int batchSize,
-                        const DatasetBatcher::KeywordArgs kwargs) {
+                        const DatasetBatcher::KeywordArgs kwargs) const {
   return this->getBatcher(dataset, batchSize, kwargs);
 }
 #pragma endregion Builtins

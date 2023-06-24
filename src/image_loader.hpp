@@ -153,18 +153,18 @@ public:
   /*
     Get the dataset batcher for the selected dataset.
   */
-  DatasetBatcher getBatcher(
-      std::string dataset, int batchSize,
-      const DatasetBatcher::KeywordArgs kwargs = DatasetBatcher::KeywordArgs());
+  DatasetBatcher getBatcher(std::string dataset, int batchSize,
+                            const DatasetBatcher::KeywordArgs kwargs =
+                                DatasetBatcher::KeywordArgs()) const;
 #pragma endregion Batcher
 
 #pragma region Builtins
   /*
     Get the dataset batcher for the selected dataset.
   */
-  DatasetBatcher operator()(
-      std::string dataset, int batchSize,
-      const DatasetBatcher::KeywordArgs kwargs = DatasetBatcher::KeywordArgs());
+  DatasetBatcher operator()(std::string dataset, int batchSize,
+                            const DatasetBatcher::KeywordArgs kwargs =
+                                DatasetBatcher::KeywordArgs()) const;
 #pragma endregion Builtins
 };
 #pragma endregion Image loader
