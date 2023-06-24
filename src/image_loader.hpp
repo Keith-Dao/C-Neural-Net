@@ -16,9 +16,9 @@ template <typename Batcher> struct DatasetIterator {
   using pointer = value_type const *;
   using difference_type = ptrdiff_t;
 
-  DatasetIterator(const Batcher &batcher, int i) : batcher(batcher), i(i) {
-    if (i != batcher.size()) {
-      this->value = this->batcher[this->i];
+  DatasetIterator(const Batcher *batcher, int i) : batcher(batcher), i(i) {
+    if (i != batcher->size()) {
+      this->value = (*this->batcher)[this->i];
     }
   }
 
@@ -27,8 +27,8 @@ template <typename Batcher> struct DatasetIterator {
 
   // Prefix increment
   DatasetIterator &operator++() {
-    if (++this->i < this->batcher.size()) {
-      this->value = this->batcher[this->i];
+    if (++this->i < this->batcher->size()) {
+      this->value = (*this->batcher)[this->i];
     }
     return *this;
   }
@@ -48,7 +48,7 @@ template <typename Batcher> struct DatasetIterator {
   };
 
 private:
-  Batcher batcher;
+  const Batcher *batcher;
   value_type value;
   int i, end;
 };
@@ -68,6 +68,7 @@ public:
 
   using Iterator = DatasetIterator<DatasetBatcher>;
 
+  DatasetBatcher(){};
   DatasetBatcher(const std::filesystem::path &root,
                  const std::vector<std::filesystem::path> &data,
                  const preprocessingFunctions &preprocessing,
@@ -84,12 +85,12 @@ public:
   /*
     Iterator at the start of the batches.
   */
-  Iterator begin();
+  Iterator begin() const;
 
   /*
     Iterator at the end of the batches.
   */
-  Iterator end();
+  Iterator end() const;
 #pragma endregion Iterators
 
 #pragma region Properties
@@ -97,7 +98,7 @@ public:
   /*
     The number of batches.
   */
-  int size() const;
+  virtual int size() const;
 #pragma endregion Size
 #pragma endregion Properties
 
@@ -105,7 +106,7 @@ public:
   /*
     Get processed data and labels at batch i (0-based).
   */
-  minibatch operator[](int i) const;
+  virtual minibatch operator[](int i) const;
 #pragma endregion Builtins
 };
 #pragma endregion Dataset batcher
@@ -115,12 +116,15 @@ class ImageLoader {
   std::filesystem::path root;
   std::vector<std::filesystem::path> trainFiles, testFiles;
   preprocessingFunctions preprocessing;
-  std::vector<std::string> classes;
   std::unordered_map<std::string, int> classesToNum;
+
+protected:
+  std::vector<std::string> classes;
 
 public:
   static const preprocessingFunctions standardPreprocessing;
 
+  ImageLoader(){};
   ImageLoader(const std::string &folderPath,
               const preprocessingFunctions &preprocessing,
               std::vector<std::string> fileFormats, float trainTestSplit = 1,
@@ -153,18 +157,20 @@ public:
   /*
     Get the dataset batcher for the selected dataset.
   */
-  DatasetBatcher getBatcher(std::string dataset, int batchSize,
-                            const DatasetBatcher::KeywordArgs kwargs =
-                                DatasetBatcher::KeywordArgs()) const;
+  virtual std::shared_ptr<DatasetBatcher>
+  getBatcher(std::string dataset, int batchSize,
+             const DatasetBatcher::KeywordArgs &kwargs =
+                 DatasetBatcher::KeywordArgs()) const;
 #pragma endregion Batcher
 
 #pragma region Builtins
   /*
     Get the dataset batcher for the selected dataset.
   */
-  DatasetBatcher operator()(std::string dataset, int batchSize,
-                            const DatasetBatcher::KeywordArgs kwargs =
-                                DatasetBatcher::KeywordArgs()) const;
+  std::shared_ptr<DatasetBatcher>
+  operator()(std::string dataset, int batchSize,
+             const DatasetBatcher::KeywordArgs &kwargs =
+                 DatasetBatcher::KeywordArgs()) const;
 #pragma endregion Builtins
 };
 #pragma endregion Image loader

@@ -94,11 +94,11 @@ TEST_P(TestImageLoader, TestImageLoaderGetBatcher) {
       std::make_pair("train", loader.getTrainFiles()),
       std::make_pair("test", loader.getTestFiles())};
   for (auto [datasetName, datasetFiles] : datasets) {
-    DatasetBatcher datasetBatcher =
+    std::shared_ptr<DatasetBatcher> datasetBatcher =
         loader.getBatcher(datasetName, batchSize, kwargs);
     for (int i = 0; i < (datasetFiles.size() + batchSize - 1) / batchSize;
          ++i) {
-      auto [result, resultLabels] = datasetBatcher[i];
+      auto [result, resultLabels] = (*datasetBatcher)[i];
 
       // Find the order in which the files have been loaded.
       std::vector<int> indexes;
