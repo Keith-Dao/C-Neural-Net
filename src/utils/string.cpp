@@ -24,3 +24,8 @@ std::string utils::string::join(const std::vector<std::string> &strings,
   result += strings.back();
   return result;
 }
+std::string utils::string::floatToString(float num, int precision) {
+  std::stringstream stream;
+  stream << std::fixed << std::setprecision(precision) << num;
+  return stream.str();
+}

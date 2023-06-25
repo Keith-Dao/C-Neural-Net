@@ -284,5 +284,15 @@ TEST(StringUtils, TestJoin) {
   EXPECT_EQ(string::join({}, " "), "")
       << "Join failed when no strings are provided.";
 }
+
+TEST(StringUtils, TestFloatToNum) {
+  std::string expected = "1.234";
+  EXPECT_EQ(expected, string::floatToString(1.2341, 3));
+  EXPECT_EQ(expected, string::floatToString(1.2335, 3));
+
+  double x = 1.15478;
+  expected = "1.154780";
+  EXPECT_EQ(expected, string::floatToString(x, 6));
+}
 #pragma endregion String
 } // namespace test_utils
