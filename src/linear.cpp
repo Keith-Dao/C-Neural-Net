@@ -152,8 +152,8 @@ bool Linear::operator==(const Linear &other) const {
   return typeid(*this) == typeid(other) &&
          this->inChannels == other.inChannels &&
          this->outChannels == other.outChannels &&
-         this->weight.isApprox(other.getWeight()) &&
-         this->bias.isApprox(other.getBias()) &&
-         *this->activationFunction == *other.getActivation();
+         this->weight.isApprox(other.weight) &&
+         this->bias.isApprox(other.bias) &&
+         *this->activationFunction == *other.activationFunction;
 }
 #pragma endregion Builtins

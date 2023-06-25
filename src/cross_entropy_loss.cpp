@@ -100,7 +100,6 @@ Eigen::MatrixXd CrossEntropyLoss::backward() {
 
 #pragma region Builtins
 bool CrossEntropyLoss::operator==(const CrossEntropyLoss &other) const {
-  return typeid(*this) == typeid(other) &&
-         this->reduction == other.getReduction();
+  return typeid(*this) == typeid(other) && this->reduction == other.reduction;
 }
 #pragma endregion Builtins
