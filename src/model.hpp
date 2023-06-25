@@ -215,7 +215,10 @@ public:
 #pragma endregion Visualisation
 
 #pragma region Builtins
-// TODO
+  /*
+    Perform the forward pass.
+  */
+  Eigen::MatrixXd operator()(Eigen::MatrixXd input);
 #pragma endregion Builtins
 };
 } // namespace model

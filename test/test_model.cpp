@@ -418,7 +418,6 @@ TEST(Model, TestTrainWithValidationLargerBatchSize) {
   }
 
   // Check parameters
-
   std::vector<Eigen::MatrixXd> weights{
       Eigen::MatrixXd{
           {1.000000065579, 0.999999892849, 1.000000853661, 0.999998408936},
@@ -446,5 +445,20 @@ TEST(Model, TestTestWithNoClasses) {
                exceptions::model::MissingClassesException);
 }
 #pragma endregion Test
+
+#pragma region Builtins
+TEST(Model, TestCall) {
+  Model model = getModel();
+  Eigen::MatrixXd x = getData().first,
+                  expected{{25., 25.}, {34., 34.}, {79., 79.}, {1., 1.},
+                           {49., 49.}, {55., 55.}, {0., 0.},   {0., 0.},
+                           {49., 49.}, {1., 1.}},
+                  result = model(x);
+
+  ASSERT_TRUE(expected.isApprox(result)) << "Expected:\n"
+                                         << expected << "\nGot:\n"
+                                         << result;
+}
+#pragma endregion Builtins
 #pragma endregion Tests
 } // namespace test_model

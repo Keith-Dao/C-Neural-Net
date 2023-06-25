@@ -379,3 +379,9 @@ void Model::printMetrics(
   }
 }
 #pragma endregion Metrics
+
+#pragma region Builtins
+Eigen::MatrixXd Model::operator()(Eigen::MatrixXd input) {
+  return this->forward(input);
+}
+#pragma endregion Builtins
