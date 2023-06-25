@@ -459,6 +459,25 @@ TEST(Model, TestCall) {
                                          << expected << "\nGot:\n"
                                          << result;
 }
+
+TEST(Model, TestEqual) {
+  Model model = getModel(), other = getModel();
+  ASSERT_EQ(model, other) << "Models should be the same.";
+
+  std::vector<linear::Linear> layers = getLayers();
+  layers[0].setBias(Eigen::VectorXd::Zero(layers[0].outChannels));
+  other = Model(layers, getLoss(), getKwargs());
+  ASSERT_NE(model, other) << "Layers are different.";
+
+  layers = getLayers();
+  layers.emplace_back(3, 2, "ReLU");
+  other = Model(layers, getLoss(), getKwargs());
+  ASSERT_NE(model, other) << "Number of layers are different.";
+
+  loss::CrossEntropyLoss loss("mean");
+  other = Model(getLayers(), loss, getKwargs());
+  ASSERT_NE(model, other) << "Loss is different.";
+}
 #pragma endregion Builtins
 #pragma endregion Tests
 } // namespace test_model

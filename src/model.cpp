@@ -384,4 +384,9 @@ void Model::printMetrics(
 Eigen::MatrixXd Model::operator()(Eigen::MatrixXd input) {
   return this->forward(input);
 }
+
+bool Model::operator==(const Model &other) const {
+  return typeid(*this) == typeid(other) && this->layers == other.layers &&
+         this->loss == other.loss;
+}
 #pragma endregion Builtins

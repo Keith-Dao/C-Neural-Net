@@ -219,6 +219,8 @@ public:
     Perform the forward pass.
   */
   Eigen::MatrixXd operator()(Eigen::MatrixXd input);
+
+  bool operator==(const Model &other) const;
 #pragma endregion Builtins
 };
 } // namespace model
