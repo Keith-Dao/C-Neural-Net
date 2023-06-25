@@ -11,3 +11,16 @@ std::vector<std::string> utils::string::split(const std::string &s,
   result.push_back(s.substr(start));
   return result;
 }
+
+std::string utils::string::join(const std::vector<std::string> &strings,
+                                const std::string &joiner) {
+  if (strings.empty()) {
+    return "";
+  }
+  std::string result;
+  for (int i = 0; i < strings.size() - 1; ++i) {
+    result += strings[i] + joiner;
+  }
+  result += strings.back();
+  return result;
+}

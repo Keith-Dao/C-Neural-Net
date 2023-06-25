@@ -273,5 +273,16 @@ TEST(StringUtils, TestSplit) {
         << "Split failed on test " << i;
   }
 }
+
+TEST(StringUtils, TestJoin) {
+  std::vector<std::string> expected{"abc 123 bd", "abc. 123. bd"},
+      delimiters{" ", ". "}, strings{"abc", "123", "bd"};
+  for (int i = 0; i < expected.size(); ++i) {
+    EXPECT_EQ(string::join(strings, delimiters[i]), expected[i])
+        << "Join failed on test " << i;
+  }
+  EXPECT_EQ(string::join({}, " "), "")
+      << "Join failed when no strings are provided.";
+}
 #pragma endregion String
 } // namespace test_utils
