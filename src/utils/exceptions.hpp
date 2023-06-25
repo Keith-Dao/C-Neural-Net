@@ -1,6 +1,7 @@
 #pragma once
 #include <cstring>
 #include <filesystem>
+#include <string>
 #include <vector>
 
 namespace exceptions {
@@ -248,6 +249,7 @@ class InvalidTotalEpochException : public std::exception {
 public:
   InvalidTotalEpochException(int totalEpochs) : totalEpochs(totalEpochs){};
 };
+
 class InvalidMetricException : public std::exception {
   std::string metric;
 
@@ -272,6 +274,26 @@ class MissingClassesException : public std::exception {
   virtual const char *what() const throw() {
     return "Model is missing the classes.";
   }
+};
+
+class ClassHistoryMismatchException : public std::exception {
+  int classSize, historySize;
+  std::string metric;
+
+  virtual const char *what() const throw() {
+    std::string s =
+        "The number of classes (" + std::to_string(this->classSize) +
+        ") does not match the number of elements for \"" + this->metric +
+        "\" (" + std::to_string(this->historySize) + ").";
+    char *result = new char[s.length() + 1];
+    std::strcpy(result, s.c_str());
+    return result;
+  }
+
+public:
+  ClassHistoryMismatchException(int classSize, int historySize,
+                                const std::string &metric)
+      : classSize(classSize), historySize(historySize), metric(metric){};
 };
 } // namespace model
 #pragma endregion Model

@@ -5,13 +5,13 @@
 #include "utils/exceptions.hpp"
 #include "utils/indicator.hpp"
 #include "utils/math.hpp"
+#include "utils/string.hpp"
 #include <indicators/cursor_control.hpp>
+#include <indicators/font_style.hpp>
 #include <indicators/progress_bar.hpp>
 #include <indicators/setting.hpp>
-#include <memory>
-#include <string>
-#include <unordered_map>
-#include <vector>
+#include <tabulate/row.hpp>
+#include <tabulate/table.hpp>
 
 using namespace model;
 
@@ -121,41 +121,6 @@ void Model::setValidationMetrics(std::vector<std::string> metrics) {
 #pragma endregion Validation metrics
 #pragma endregion Properties
 
-#pragma region Metrics
-void Model::validateMetric(const std::string &metric) {
-  if (metric != "loss" && !metrics::METRICS.contains(metric)) {
-    throw exceptions::model::InvalidMetricException(metric);
-  }
-}
-
-void Model::validateMetrics(const std::vector<std::string> &metrics) {
-  for (const std::string &metric : metrics) {
-    Model::validateMetric(metric);
-  }
-}
-
-void Model::validateMetrics(
-    const std::unordered_map<std::string, metricHistoryValue> &metrics) {
-  for (const auto &[metric, _] : metrics) {
-    Model::validateMetric(metric);
-  }
-}
-
-std::unordered_map<std::string, metricHistoryValue>
-Model::metricTypesToHistory(const std::vector<std::string> &metrics) {
-  std::unordered_map<std::string, metricHistoryValue> result;
-  Model::validateMetrics(metrics);
-  for (const std::string &metric : metrics) {
-    if (metrics::SINGLE_VALUE_METRICS.contains(metric)) {
-      result[metric] = std::vector<float>();
-    } else {
-      result[metric] = std::vector<std::vector<float>>();
-    }
-  }
-  return result;
-}
-#pragma endregion Metrics
-
 #pragma region Forward pass
 Eigen::MatrixXd Model::forward(const Eigen::MatrixXd &input) {
   Eigen::MatrixXd out = input;
@@ -226,7 +191,8 @@ void Model::train(const loader::ImageLoader &loader, double learningRate,
         bar.tick();
       }
       loss /= trainingData->size();
-      // TODO: Store and print metrics
+      Model::storeMetrics(this->trainMetrics, confusionMatrix, loss);
+      Model::printMetrics(this->trainMetrics, this->classes);
       indicators::show_console_cursor(true);
     }
 
@@ -241,7 +207,8 @@ void Model::train(const loader::ImageLoader &loader, double learningRate,
       auto [loss, confusionMatrix] = this->test(
           validationData, "Validation epoch " + std::to_string(epoch) + "/" +
                               std::to_string(epochs) + ": ");
-      // TODO: Store and print metrics
+      Model::storeMetrics(this->validationMetrics, confusionMatrix, loss);
+      Model::printMetrics(this->validationMetrics, this->classes);
     }
   }
   this->totalEpochs += epochs;
@@ -283,3 +250,132 @@ Model::test(const std::shared_ptr<loader::DatasetBatcher> batcher,
   return std::make_pair(loss, confusionMatrix);
 }
 #pragma endregion Test
+
+#pragma region Metrics
+void Model::validateMetric(const std::string &metric) {
+  if (metric != "loss" && !metrics::METRICS.contains(metric)) {
+    throw exceptions::model::InvalidMetricException(metric);
+  }
+}
+
+void Model::validateMetrics(const std::vector<std::string> &metrics) {
+  for (const std::string &metric : metrics) {
+    Model::validateMetric(metric);
+  }
+}
+
+void Model::validateMetrics(
+    const std::unordered_map<std::string, metricHistoryValue> &metrics) {
+  for (const auto &[metric, _] : metrics) {
+    Model::validateMetric(metric);
+  }
+}
+
+std::unordered_map<std::string, metricHistoryValue>
+Model::metricTypesToHistory(const std::vector<std::string> &metrics) {
+  std::unordered_map<std::string, metricHistoryValue> result;
+  Model::validateMetrics(metrics);
+  for (const std::string &metric : metrics) {
+    result[metric] = {};
+  }
+  return result;
+}
+
+void Model::storeMetrics(
+    std::unordered_map<std::string, metricHistoryValue> &metrics,
+    Eigen::MatrixXi &confusionMatrix, float loss) {
+  for (auto &[metric, history] : metrics) {
+    if (metric == "loss") {
+      history.push_back(loss);
+    } else {
+      history.push_back(metrics::METRICS.at(metric)(confusionMatrix));
+    }
+  }
+}
+
+void Model::printMetrics(
+    const std::unordered_map<std::string, metricHistoryValue> &metrics,
+    const std::vector<std::string> &classes) {
+  tabulate::Table::Row_t multiclassHeaders{"Class"}, singularHeaders,
+      singularData;
+  std::vector<std::vector<std::string>> multiclassData{classes};
+  int precision = 4;
+
+  // Get the data
+  for (const auto &[metric, history] : metrics) {
+    std::string header =
+        utils::string::join(utils::string::split(metric, "_"), " ");
+    header[0] = std::toupper(header[0]);
+
+    if (metrics::SINGLE_VALUE_METRICS.contains(metric)) {
+      singularHeaders.push_back(header);
+      singularData.push_back(utils::string::floatToString(
+          std::get<float>(history.back()), precision));
+    } else {
+      multiclassHeaders.push_back(header);
+      std::vector<std::string> values;
+      for (const float &value : std::get<std::vector<float>>(history.back())) {
+        values.push_back(utils::string::floatToString(value, precision));
+      }
+      multiclassData.push_back(values);
+    }
+  }
+
+  if (!singularHeaders.empty()) {
+    tabulate::Table table;
+
+    // Add rows
+    table.add_row(singularHeaders);
+    table.add_row(singularData);
+
+    // Style table
+    table.format()
+        .border(" ")
+        .corner(" ")
+        .font_align(tabulate::FontAlign::right)
+        .hide_border_top()
+        .hide_border_bottom();
+    table.row(0)
+        .format()
+        .font_style({tabulate::FontStyle::bold})
+        .show_border_top();
+    table.row(1).format().border_top("-").show_border_top();
+
+    std::cout << table << std::endl;
+  }
+
+  if (multiclassHeaders.size() > 1) {
+    tabulate::Table table;
+
+    // Add rows
+    table.add_row(multiclassHeaders);
+    for (int i = 0; i < multiclassData.size(); ++i) {
+      if (classes.size() != multiclassData[i].size()) {
+        throw exceptions::model::ClassHistoryMismatchException(
+            classes.size(), multiclassData[i].size(),
+            std::get<std::string>(multiclassHeaders[i]));
+      }
+    }
+
+    for (int i = 0; i < classes.size(); ++i) {
+      tabulate::Table::Row_t row;
+      for (const std::vector<std::string> &data : multiclassData) {
+        row.push_back(data[i]);
+      }
+      table.add_row(row);
+    }
+
+    // Style table
+    table.format()
+        .border(" ")
+        .corner(" ")
+        .font_align(tabulate::FontAlign::right)
+        .hide_border_top()
+        .hide_border_bottom();
+    table.row(0).format().font_style({tabulate::FontStyle::bold});
+    table.row(1).format().border_top("-").show_border_top();
+
+    std::cout << table << std::endl;
+  }
+}
+#pragma endregion Metrics

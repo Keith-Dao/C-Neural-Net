@@ -6,8 +6,7 @@
 #include <vector>
 
 namespace model {
-typedef std::variant<std::vector<float>, std::vector<std::vector<float>>>
-    metricHistoryValue;
+typedef std::vector<std::variant<float, std::vector<float>>> metricHistoryValue;
 
 class Model {
   bool eval = false;
@@ -196,7 +195,19 @@ public:
   static std::unordered_map<std::string, metricHistoryValue>
   metricTypesToHistory(const std::vector<std::string> &metrics);
 
-  // TODO: Implement the remaining methods.
+  /*
+    Store the metrics.
+  */
+  static void
+  storeMetrics(std::unordered_map<std::string, metricHistoryValue> &metrics,
+               Eigen::MatrixXi &confusionMatrix, float loss);
+
+  /*
+    Print the tracked metrics.
+  */
+  static void printMetrics(
+      const std::unordered_map<std::string, metricHistoryValue> &metrics,
+      const std::vector<std::string> &classes);
 #pragma endregion Metrics
 
 #pragma region Visualisation

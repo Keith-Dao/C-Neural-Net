@@ -246,8 +246,24 @@ TEST(Model, TestTrainNoValidation) {
   MockLoader loader(1);
   model.train(loader, 1e-4, 1, epochs);
   ASSERT_EQ(epochs, model.getTotalEpochs());
-  // TODO: Check metrics
 
+  // Check loss history
+  std::vector<float> lossHistory{0.6935848934440013};
+  ASSERT_EQ(lossHistory.size(), model.getTrainMetrics()["loss"].size())
+      << "Train loss history size does not match.";
+  for (int i = 0; i < lossHistory.size(); ++i) {
+    ASSERT_TRUE(std::abs(lossHistory[i] -
+                         std::get<float>(model.getTrainMetrics()["loss"][i])) <
+                Eigen::NumTraits<float>::dummy_precision())
+        << "Train loss at index " << i
+        << " does not match. Expected: " << lossHistory[i]
+        << ", got: " << std::get<float>(model.getTrainMetrics()["loss"][i]);
+  }
+  lossHistory = {};
+  ASSERT_EQ(lossHistory.size(), model.getValidationMetrics()["loss"].size())
+      << "Validation loss history size does not match.";
+
+  // Check parameters
   std::vector<Eigen::MatrixXd> weights{
       Eigen::MatrixXd{
           {0.999998755067, 1.000002096106, 1.000000522309, 0.999998187911},
@@ -272,8 +288,33 @@ TEST(Model, TestTrainWithValidation) {
   MockLoader loader(0.7);
   model.train(loader, 1e-4, 1, epochs);
   ASSERT_EQ(epochs, model.getTotalEpochs());
-  // TODO: Check metrics
 
+  // Check loss history
+  std::vector<float> lossHistory{0.7016281735019937};
+  ASSERT_EQ(lossHistory.size(), model.getTrainMetrics()["loss"].size())
+      << "Train loss history size does not match.";
+  for (int i = 0; i < lossHistory.size(); ++i) {
+    ASSERT_TRUE(std::abs(lossHistory[i] -
+                         std::get<float>(model.getTrainMetrics()["loss"][i])) <
+                Eigen::NumTraits<float>::dummy_precision())
+        << "Train loss at index " << i
+        << " does not match. Expected: " << lossHistory[i]
+        << ", got: " << std::get<float>(model.getTrainMetrics()["loss"][i]);
+  }
+  lossHistory = {0.6748015101206345};
+  ASSERT_EQ(lossHistory.size(), model.getValidationMetrics()["loss"].size())
+      << "Validation loss history size does not match.";
+  for (int i = 0; i < lossHistory.size(); ++i) {
+    ASSERT_TRUE(
+        std::abs(lossHistory[i] -
+                 std::get<float>(model.getValidationMetrics()["loss"][i])) <
+        Eigen::NumTraits<float>::dummy_precision())
+        << "Validation loss at index " << i
+        << " does not match. Expected: " << lossHistory[i] << ", got: "
+        << std::get<float>(model.getValidationMetrics()["loss"][i]);
+  }
+
+  // Check parameters
   std::vector<Eigen::MatrixXd> weights{
       Eigen::MatrixXd{
           {0.999999277295, 1.000000688537, 1.00000001873, 0.999997713475},
@@ -298,8 +339,34 @@ TEST(Model, TestTrainWithValidationMultipleEpoch) {
   MockLoader loader(0.7);
   model.train(loader, 1e-4, 1, epochs);
   ASSERT_EQ(epochs, model.getTotalEpochs());
-  // TODO: Check metrics
 
+  // Check loss history
+  std::vector<float> lossHistory{0.7016281735019942, 0.6905228054354886,
+                                 0.6832302979740018};
+  ASSERT_EQ(lossHistory.size(), model.getTrainMetrics()["loss"].size())
+      << "Train loss history size does not match.";
+  for (int i = 0; i < lossHistory.size(); ++i) {
+    ASSERT_TRUE(std::abs(lossHistory[i] -
+                         std::get<float>(model.getTrainMetrics()["loss"][i])) <
+                Eigen::NumTraits<float>::dummy_precision())
+        << "Train loss at index " << i
+        << " does not match. Expected: " << lossHistory[i]
+        << ", got: " << std::get<float>(model.getTrainMetrics()["loss"][i]);
+  }
+  lossHistory = {0.6748015101206345, 0.6608838491713995, 0.6502008469335846};
+  ASSERT_EQ(lossHistory.size(), model.getValidationMetrics()["loss"].size())
+      << "Validation loss history size does not match.";
+  for (int i = 0; i < lossHistory.size(); ++i) {
+    ASSERT_TRUE(
+        std::abs(lossHistory[i] -
+                 std::get<float>(model.getValidationMetrics()["loss"][i])) <
+        Eigen::NumTraits<float>::dummy_precision())
+        << "Validation loss at index " << i
+        << " does not match. Expected: " << lossHistory[i] << ", got: "
+        << std::get<float>(model.getValidationMetrics()["loss"][i]);
+  }
+
+  // Check parameters
   std::vector<Eigen::MatrixXd> weights{
       Eigen::MatrixXd{
           {0.999999463368, 1.000004564799, 1.000004417718, 0.999989087074},
@@ -324,7 +391,33 @@ TEST(Model, TestTrainWithValidationLargerBatchSize) {
   MockLoader loader(0.7);
   model.train(loader, 1e-4, 3, epochs);
   ASSERT_EQ(epochs, model.getTotalEpochs());
-  // TODO: Check metrics
+
+  // Check loss history
+  std::vector<float> lossHistory{1.62205669796401};
+  ASSERT_EQ(lossHistory.size(), model.getTrainMetrics()["loss"].size())
+      << "Train loss history size does not match.";
+  for (int i = 0; i < lossHistory.size(); ++i) {
+    ASSERT_TRUE(std::abs(lossHistory[i] -
+                         std::get<float>(model.getTrainMetrics()["loss"][i])) <
+                Eigen::NumTraits<float>::dummy_precision())
+        << "Train loss at index " << i
+        << " does not match. Expected: " << lossHistory[i]
+        << ", got: " << std::get<float>(model.getTrainMetrics()["loss"][i]);
+  }
+  lossHistory = {2.02241995571785};
+  ASSERT_EQ(lossHistory.size(), model.getValidationMetrics()["loss"].size())
+      << "Validation loss history size does not match.";
+  for (int i = 0; i < lossHistory.size(); ++i) {
+    ASSERT_TRUE(
+        std::abs(lossHistory[i] -
+                 std::get<float>(model.getValidationMetrics()["loss"][i])) <
+        Eigen::NumTraits<float>::dummy_precision())
+        << "Validation loss at index " << i
+        << " does not match. Expected: " << lossHistory[i] << ", got: "
+        << std::get<float>(model.getValidationMetrics()["loss"][i]);
+  }
+
+  // Check parameters
 
   std::vector<Eigen::MatrixXd> weights{
       Eigen::MatrixXd{
