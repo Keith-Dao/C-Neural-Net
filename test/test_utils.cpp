@@ -1,7 +1,7 @@
 #include "fixtures.hpp"
 #include "utils/all.hpp"
 #include "utils/exceptions.hpp"
-#include "utils/math.hpp"
+#include "utils/string.hpp"
 #include <Eigen/Dense>
 #include <fstream>
 #include <gtest/gtest.h>
@@ -263,4 +263,15 @@ TEST(ImageUtils, TestNormaliseImage) {
 }
 #pragma endregion Normalise
 #pragma endregion Image
+
+#pragma region String
+TEST(StringUtils, TestSplit) {
+  std::vector<std::string> strings{"abc 123 bd", "abc. 123. bd"},
+      delimiters{" ", ". "}, expected{"abc", "123", "bd"};
+  for (int i = 0; i < strings.size(); ++i) {
+    EXPECT_EQ(string::split(strings[i], delimiters[i]), expected)
+        << "Split failed on test " << i;
+  }
+}
+#pragma endregion String
 } // namespace test_utils
