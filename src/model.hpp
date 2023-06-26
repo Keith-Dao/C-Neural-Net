@@ -2,8 +2,11 @@
 #include "cross_entropy_loss.hpp"
 #include "image_loader.hpp"
 #include "linear.hpp"
+#include <nlohmann/json.hpp>
 #include <variant>
 #include <vector>
+
+using json = nlohmann::json;
 
 namespace model {
 typedef std::vector<std::variant<float, std::vector<float>>> metricHistoryValue;
@@ -125,7 +128,21 @@ public:
 #pragma endregion Load
 
 #pragma region Save
-// TODO
+  /*
+    Get all the relevant attributes in a serialisable format.
+
+    Attributes:
+            - layers -- list of the serialised layers in sequential order
+            - loss -- the loss function for the model
+            - total_epochs -- the total number of epochs the model has trained
+                for
+            - train_metrics -- the history of the training metrics for the
+                model
+            - validation_metrics -- the history of the validation metrics for
+                the model
+
+  */
+  json toJson() const;
 #pragma endregion Save
 
 #pragma region Forward pass

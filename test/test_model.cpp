@@ -6,12 +6,14 @@
 #include <Eigen/src/Core/NumTraits.h>
 #include <gtest/gtest.h>
 #include <memory>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <unordered_set>
 #include <utility>
 #include <vector>
 
 using namespace model;
+using json = nlohmann::json;
 
 namespace test_model {
 #pragma region Fixtures
@@ -210,6 +212,28 @@ TEST(Model, TestLoss) {
 }
 #pragma endregion Loss
 #pragma endregion Properties
+
+#pragma region Save
+TEST(Model, TestToJson) {
+  Model model = getModel();
+  json expected{{"class", "Model"},
+                {"layers",
+                 {{{"class", "Linear"},
+                   {"weight", {{1, 1, 1, 1}, {1, 1, 1, 1}, {1, 1, 1, 1}}},
+                   {"bias", {1, 1, 1}},
+                   {"activation_function", "NoActivation"}},
+                  {{"class", "Linear"},
+                   {"weight", {{1, 1, 1}, {1, 1, 1}}},
+                   {"bias", {1, 1}},
+                   {"activation_function", "ReLU"}}}},
+                {"loss", {{"class", "CrossEntropyLoss"}, {"reduction", "sum"}}},
+                {"total_epochs", 0},
+                {"train_metrics", {{"loss", json::array()}}},
+                {"validation_metrics", {{"loss", json::array()}}},
+                {"classes", {"0", "1"}}};
+  ASSERT_EQ(expected, model.toJson());
+}
+#pragma endregion Save
 
 #pragma region Forward pass
 TEST(Model, TestForward) {

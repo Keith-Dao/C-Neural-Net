@@ -121,6 +121,43 @@ void Model::setValidationMetrics(std::vector<std::string> metrics) {
 #pragma endregion Validation metrics
 #pragma endregion Properties
 
+#pragma region Save
+json Model::toJson() const {
+  auto metricsHistoryToJson =
+      [](const std::unordered_map<std::string, metricHistoryValue> &metrics) {
+        json result;
+        for (const auto &[metric, history] : metrics) {
+          json data = json::array();
+          if (metrics::SINGLE_VALUE_METRICS.contains(metric)) {
+            for (const auto &x : history) {
+              data.push_back(std::get<float>(x));
+            }
+          } else {
+            for (const auto &x : history) {
+              data.push_back(std::get<std::vector<float>>(x));
+            }
+          }
+          result[metric] = data;
+        }
+        return result;
+      };
+
+  json layers = json::array();
+  for (const linear::Linear &layer : this->layers) {
+    layers.push_back(layer.toJson());
+  }
+
+  return {{"class", "Model"},
+          {"layers", layers},
+          {"loss", this->loss.toJson()},
+          {"total_epochs", this->totalEpochs},
+          {"train_metrics", metricsHistoryToJson(this->trainMetrics)},
+          {"validation_metrics", metricsHistoryToJson(this->validationMetrics)},
+          {"classes", this->classes}};
+}
+
+#pragma endregion Save
+
 #pragma region Forward pass
 Eigen::MatrixXd Model::forward(const Eigen::MatrixXd &input) {
   Eigen::MatrixXd out = input;
@@ -213,7 +250,6 @@ void Model::train(const loader::ImageLoader &loader, double learningRate,
   }
   this->totalEpochs += epochs;
 }
-
 #pragma endregion Train
 
 #pragma region Test
