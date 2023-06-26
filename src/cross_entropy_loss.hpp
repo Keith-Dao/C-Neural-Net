@@ -48,7 +48,7 @@ public:
       Attributes includes:
           - reduction -- the reduction method used
     */
-  json toJson();
+  json toJson() const;
 #pragma endregion Save
 
 #pragma region Forward

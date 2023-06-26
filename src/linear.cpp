@@ -94,7 +94,7 @@ Linear Linear::fromJson(const json &values) {
 #pragma endregion Load
 
 #pragma region Save
-json Linear::toJson() {
+json Linear::toJson() const {
   return {{"class", "Linear"},
           {"weight", utils::matrix::toJson(this->weight)},
           {"bias",

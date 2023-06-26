@@ -49,7 +49,7 @@ CrossEntropyLoss CrossEntropyLoss::fromJson(const json &values) {
     Attributes includes:
         - reduction -- the reduction method used
   */
-json CrossEntropyLoss::toJson() {
+json CrossEntropyLoss::toJson() const {
   return {{"class", "CrossEntropyLoss"}, {"reduction", this->reduction}};
 };
 #pragma endregion Save

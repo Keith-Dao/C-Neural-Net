@@ -89,7 +89,7 @@ public:
         - activation_function -- name of the activation function as a
                                   string
   */
-  json toJson();
+  json toJson() const;
 #pragma endregion Save
 
 #pragma region Forward pass
