@@ -8,16 +8,10 @@
 #include <opencv2/imgcodecs.hpp>
 
 namespace test_filesystem {
-class FileSystemFixture : public ::testing::Test {
+
+class BaseFileSystemFixture : public ::testing::Test {
 protected:
   std::filesystem::path root;
-  std::vector<Eigen::MatrixXd> data{
-      Eigen::MatrixXd{{1, 4, 5}, {2, 5, 6}, {6, 5, 6}},
-      Eigen::MatrixXd{{4, 5, 1}, {5, 8, 4}, {8, 5, 9}},
-      Eigen::MatrixXd{{3, 8, 9}, {6, 5, 8}, {6, 4, 1}}};
-  std::vector<int> labels{0, 0, 1};
-  std::vector<std::string> classes{"0", "1", "2"};
-  std::unordered_map<std::string, int> dataIndex;
 
   void SetUp() override {
     std::filesystem::path tempRoot(testing::TempDir());
@@ -27,6 +21,22 @@ protected:
     }
     this->root = tempRoot / tempDir;
     std::filesystem::create_directory(this->root);
+  }
+
+  void TearDown() override { std::filesystem::remove_all(this->root); }
+};
+class FileSystemWithImageDataFixture : public BaseFileSystemFixture {
+protected:
+  std::vector<Eigen::MatrixXd> data{
+      Eigen::MatrixXd{{1, 4, 5}, {2, 5, 6}, {6, 5, 6}},
+      Eigen::MatrixXd{{4, 5, 1}, {5, 8, 4}, {8, 5, 9}},
+      Eigen::MatrixXd{{3, 8, 9}, {6, 5, 8}, {6, 4, 1}}};
+  std::vector<int> labels{0, 0, 1};
+  std::vector<std::string> classes{"0", "1", "2"};
+  std::unordered_map<std::string, int> dataIndex;
+
+  void SetUp() override {
+    BaseFileSystemFixture::SetUp();
     std::filesystem::create_directory(this->root / "0");
     std::filesystem::create_directory(this->root / "0" / "a");
     std::filesystem::create_directory(this->root / "0" / "b");
@@ -54,7 +64,5 @@ protected:
       }
     }
   }
-
-  void TearDown() override { std::filesystem::remove_all(this->root); }
 };
 } // namespace test_filesystem
