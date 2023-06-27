@@ -42,6 +42,18 @@ public:
   Model(std::vector<linear::Linear> layers, loss::CrossEntropyLoss loss);
 
 #pragma region Properties
+#pragma region Classes
+  /*
+    Get the model's classes.
+  */
+  std::vector<std::string> getClasses() const;
+
+  /*
+    Set the model's classes.
+  */
+  void setClasses(std::vector<std::string> classes);
+#pragma endregion Classes
+
 #pragma region Evaluation mode
   /*
     Get the model's evaluation mode.

@@ -160,6 +160,19 @@ TEST(Model, TestInitWithInvalidTotalEpochs) {
 #pragma endregion Init
 
 #pragma region Properties
+#pragma region Classes
+TEST(Model, TestClasses) {
+  Model model = getModel();
+  std::vector<std::string> classes = getKwargs().classes;
+  EXPECT_EQ(classes, model.getClasses())
+      << "Classes were not set during construction.";
+
+  classes = {"a", "b", "c"};
+  model.setClasses(classes);
+  EXPECT_EQ(classes, model.getClasses()) << "Classes were not updated.";
+}
+#pragma endregion Classes
+
 #pragma region Evaluation mode
 TEST(Model, TestEvaluationMode) {
   Model model = getModel();

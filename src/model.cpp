@@ -43,6 +43,14 @@ Model::Model(std::vector<linear::Linear> layers, loss::CrossEntropyLoss loss)
 #pragma endregion Constructor
 
 #pragma region Properties
+#pragma region Classes
+std::vector<std::string> Model::getClasses() const { return this->classes; };
+
+void Model::setClasses(std::vector<std::string> classes) {
+  this->classes = classes;
+}
+#pragma endregion Classes
+
 #pragma region Evaluation mode
 bool Model::getEval() const { return this->eval; }
 
