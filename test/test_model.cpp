@@ -293,6 +293,26 @@ TEST(Model, TestLoad) {
   EXPECT_EQ(validationMetrics, model.getValidationMetrics());
   EXPECT_EQ(classes, model.getClasses());
 }
+
+TEST_F(ModelJsonFile, TestLoad) {
+  Model expected = getModel(), model = Model::load(this->expected);
+  EXPECT_EQ(expected.getLayers(), model.getLayers());
+  EXPECT_EQ(expected.getLoss(), model.getLoss());
+  EXPECT_EQ(expected.getTotalEpochs(), model.getTotalEpochs());
+  EXPECT_EQ(expected.getTrainMetrics(), model.getTrainMetrics());
+  EXPECT_EQ(expected.getValidationMetrics(), model.getValidationMetrics());
+  EXPECT_EQ(expected.getClasses(), model.getClasses());
+}
+
+TEST_F(ModelJsonFile, TestLoadInvalidFormat) {
+  Model model = getModel();
+  std::vector<std::string> extensions{".test", ".txt", ".pkl"};
+  for (const std::string &extension : extensions) {
+    std::filesystem::path path = this->root / ("model." + extension);
+    EXPECT_THROW(model.load(path), exceptions::model::InvalidExtensionException)
+        << "Exception did not throw for " << extension;
+  }
+}
 #pragma endregion Load
 
 #pragma region Save

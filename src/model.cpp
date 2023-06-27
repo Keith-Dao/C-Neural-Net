@@ -169,6 +169,17 @@ Model Model::fromJson(const json &values) {
 
   return Model(layers, loss, kwargs);
 }
+
+Model Model::load(std::string path) {
+  std::filesystem::path filePath(path);
+  if (filePath.extension() != ".json") {
+    throw exceptions::model::InvalidExtensionException(filePath.extension());
+  }
+
+  json values;
+  std::ifstream(filePath) >> values;
+  return Model::fromJson(values);
+}
 #pragma endregion Load
 
 #pragma region Save

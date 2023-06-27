@@ -140,6 +140,11 @@ public:
     Create a model instance from the given attributes.
   */
   static Model fromJson(const json &data);
+
+  /*
+    Load a model from the given file.
+  */
+  static Model load(std::string path);
 #pragma endregion Load
 
 #pragma region Save
