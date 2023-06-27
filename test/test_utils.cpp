@@ -221,7 +221,7 @@ TEST(MathUtils, TestLogitsToPrediction) {
 
 #pragma region Path
 #pragma region Glob
-using UtilsGlob = test_filesystem::FileSystemFixture;
+using UtilsGlob = test_filesystem::FileSystemWithImageDataFixture;
 TEST_F(UtilsGlob, TestGlob) {
   std::vector<std::filesystem::path> expected = {root / "0" / "a" / "0.png",
                                                  root / "0" / "a" / "4.png",
@@ -241,7 +241,7 @@ TEST_F(UtilsGlob, TestGlob) {
 #pragma endregion Path
 
 #pragma region Image
-using TestImageUtils = test_filesystem::FileSystemFixture;
+using TestImageUtils = test_filesystem::FileSystemWithImageDataFixture;
 #pragma region Open image
 TEST_F(TestImageUtils, TestOpenImageAsMatrix) {
   ASSERT_TRUE(data[0].isApprox(image::openAsMatrix(root / "0" / "a" / "0.png")))

@@ -295,6 +295,21 @@ public:
                                 const std::string &metric)
       : classSize(classSize), historySize(historySize), metric(metric){};
 };
+
+class InvalidExtensionException : public std::exception {
+  std::string extension;
+
+  virtual const char *what() const throw() {
+    std::string s = "File format \"" + this->extension + "\" is not supported.";
+    char *result = new char[s.length() + 1];
+    std::strcpy(result, s.c_str());
+    return result;
+  }
+
+public:
+  InvalidExtensionException(const std::string &extension)
+      : extension(extension){};
+};
 } // namespace model
 #pragma endregion Model
 

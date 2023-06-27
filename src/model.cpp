@@ -6,6 +6,7 @@
 #include "utils/indicator.hpp"
 #include "utils/math.hpp"
 #include "utils/string.hpp"
+#include <fstream>
 #include <indicators/cursor_control.hpp>
 #include <indicators/font_style.hpp>
 #include <indicators/progress_bar.hpp>
@@ -156,6 +157,16 @@ json Model::toJson() const {
           {"classes", this->classes}};
 }
 
+void Model::save(std::string path) const {
+  std::filesystem::path savePath(path);
+  if (savePath.extension() != ".json") {
+    throw exceptions::model::InvalidExtensionException(savePath.extension());
+  }
+
+  std::ofstream file(savePath);
+  file << this->toJson().dump();
+  file.close();
+}
 #pragma endregion Save
 
 #pragma region Forward pass

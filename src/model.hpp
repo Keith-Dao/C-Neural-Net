@@ -143,6 +143,11 @@ public:
 
   */
   json toJson() const;
+
+  /*
+    Save the model attributes to the provided path.
+  */
+  void save(std::string path) const;
 #pragma endregion Save
 
 #pragma region Forward pass

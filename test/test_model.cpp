@@ -1,10 +1,13 @@
 #include "cross_entropy_loss.hpp"
+#include "fixtures.hpp"
 #include "image_loader.hpp"
 #include "linear.hpp"
 #include "model.hpp"
 #include "utils/exceptions.hpp"
 #include <Eigen/src/Core/NumTraits.h>
+#include <fstream>
 #include <gtest/gtest.h>
+#include <iterator>
 #include <memory>
 #include <nlohmann/json.hpp>
 #include <string>
@@ -120,6 +123,27 @@ struct MockLoader : public loader::ImageLoader {
   }
 };
 
+class ModelJsonFile : public test_filesystem::BaseFileSystemFixture {
+protected:
+  std::filesystem::path expected;
+
+  void SetUp() override {
+    test_filesystem::BaseFileSystemFixture::SetUp();
+    this->expected = this->root / "true_model.json";
+    std::ofstream file(this->expected);
+    file << "{\"class\": \"Model\", \"layers\": [{\"class\": \"Linear\", "
+            "\"weight\": [[1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0], [1.0, "
+            "1.0, 1.0, 1.0]], \"bias\": [1.0, 1.0, 1.0], "
+            "\"activation_function\": \"NoActivation\"}, {\"class\": "
+            "\"Linear\", \"weight\": [[1.0, 1.0, 1.0], [1.0, 1.0, 1.0]], "
+            "\"bias\": [1.0, 1.0], \"activation_function\": \"ReLU\"}], "
+            "\"loss\": {\"class\": \"CrossEntropyLoss\", \"reduction\": "
+            "\"sum\"}, \"total_epochs\": 0, \"train_metrics\": {\"loss\": []}, "
+            "\"validation_metrics\": {\"loss\": []}, \"classes\": [\"0\", "
+            "\"1\"]}";
+    file.close();
+  }
+};
 #pragma endregion Fixtures
 
 #pragma region Tests
@@ -232,6 +256,28 @@ TEST(Model, TestToJson) {
                 {"validation_metrics", {{"loss", json::array()}}},
                 {"classes", {"0", "1"}}};
   ASSERT_EQ(expected, model.toJson());
+}
+
+TEST_F(ModelJsonFile, TestSave) {
+  Model model = getModel();
+  std::filesystem::path savePath = this->root / "model.json";
+  model.save(savePath);
+
+  json expected, result;
+  std::ifstream(this->expected) >> expected;
+  std::ifstream(savePath) >> result;
+  ASSERT_EQ(expected, result);
+}
+
+TEST_F(ModelJsonFile, TestSaveInvalidFormat) {
+  Model model = getModel();
+  std::vector<std::string> extensions{".test", ".txt", ".pkl"};
+  for (const std::string &extension : extensions) {
+    std::filesystem::path savePath = this->root / ("model." + extension);
+    EXPECT_THROW(model.save(savePath),
+                 exceptions::model::InvalidExtensionException)
+        << "Exception did not throw for " << extension;
+  }
 }
 #pragma endregion Save
 

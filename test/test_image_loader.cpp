@@ -11,7 +11,7 @@ using namespace loader;
 #define BATCH_SIZE 1
 
 namespace test_image_loader {
-using ImageLoaderFileSystem = test_filesystem::FileSystemFixture;
+using ImageLoaderFileSystem = test_filesystem::FileSystemWithImageDataFixture;
 #pragma region Image loader
 class TestImageLoader
     : public ImageLoaderFileSystem,
