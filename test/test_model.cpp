@@ -11,6 +11,7 @@
 #include <memory>
 #include <nlohmann/json.hpp>
 #include <string>
+#include <unordered_map>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -249,6 +250,50 @@ TEST(Model, TestLoss) {
 }
 #pragma endregion Loss
 #pragma endregion Properties
+
+#pragma region Load
+TEST(Model, TestLoad) {
+  std::vector<linear::Linear> layers = getLayers();
+  loss::CrossEntropyLoss loss = getLoss();
+  std::vector<std::string> classes = {"0", "1"};
+  int totalEpochs = 10;
+  std::unordered_map<std::string, metricHistoryValue> trainMetrics{
+      {"loss", {(float)1, (float)2, (float)3}},
+      {"recall",
+       {(std::vector<float>){1, 2, 3}, (std::vector<float>){4, 5, 6},
+        (std::vector<float>){7, 8, 9}}}},
+      validationMetrics{
+          {"loss", {(float)3, (float)2, (float)1}},
+          {"recall",
+           {(std::vector<float>){9, 8, 7}, (std::vector<float>){6, 5, 4},
+            (std::vector<float>){3, 2, 1}}}};
+
+  json attributes;
+  attributes["class"] = "Model";
+  attributes["layers"] = json::array();
+  for (const linear::Linear &layer : layers) {
+    attributes["layers"].push_back(layer.toJson());
+  }
+  attributes["loss"] = loss.toJson();
+  attributes["total_epochs"] = totalEpochs;
+  attributes["classes"] = classes;
+  attributes["train_metrics"] = json::object();
+  attributes["train_metrics"]["loss"] = json::array({1.0, 2.0, 3.0});
+  attributes["train_metrics"]["recall"] =
+      json::array({{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0}});
+  attributes["validation_metrics"]["loss"] = json::array({3.0, 2.0, 1.0});
+  attributes["validation_metrics"]["recall"] =
+      json::array({{9.0, 8.0, 7.0}, {6.0, 5.0, 4.0}, {3.0, 2.0, 1.0}});
+
+  Model model = Model::fromJson(attributes);
+  EXPECT_EQ(layers, model.getLayers());
+  EXPECT_EQ(loss, model.getLoss());
+  EXPECT_EQ(totalEpochs, model.getTotalEpochs());
+  EXPECT_EQ(trainMetrics, model.getTrainMetrics());
+  EXPECT_EQ(validationMetrics, model.getValidationMetrics());
+  EXPECT_EQ(classes, model.getClasses());
+}
+#pragma endregion Load
 
 #pragma region Save
 TEST(Model, TestToJson) {

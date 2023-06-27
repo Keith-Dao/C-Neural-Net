@@ -136,7 +136,10 @@ public:
 #pragma endregion Properties
 
 #pragma region Load
-// TODO
+  /*
+    Create a model instance from the given attributes.
+  */
+  static Model fromJson(const json &data);
 #pragma endregion Load
 
 #pragma region Save

@@ -130,6 +130,47 @@ void Model::setValidationMetrics(std::vector<std::string> metrics) {
 #pragma endregion Validation metrics
 #pragma endregion Properties
 
+#pragma region Load
+Model Model::fromJson(const json &values) {
+  if (values["class"] != "Model") {
+    throw exceptions::load::InvalidClassAttributeValue();
+  }
+
+  std::vector<linear::Linear> layers;
+  for (const json &layerData : values["layers"]) {
+    layers.push_back(linear::Linear::fromJson(layerData));
+  }
+
+  loss::CrossEntropyLoss loss =
+      loss::CrossEntropyLoss::fromJson(values["loss"]);
+
+  KeywordArgs kwargs;
+  kwargs.classes = values["classes"];
+  kwargs.totalEpochs = values["total_epochs"];
+  auto jsonToMetricsHistory = [](const json &data) {
+    std::unordered_map<std::string, metricHistoryValue> result;
+    for (const auto &[metric, history] : data.items()) {
+      metricHistoryValue row;
+      if (metrics::SINGLE_VALUE_METRICS.contains(metric)) {
+        for (const auto &x : history) {
+          row.push_back((float)x);
+        }
+      } else {
+        for (const auto &x : history) {
+          row.push_back((std::vector<float>)(x));
+        }
+      }
+      result[metric] = row;
+    }
+    return result;
+  };
+  kwargs.trainMetrics = jsonToMetricsHistory(values["train_metrics"]);
+  kwargs.validationMetrics = jsonToMetricsHistory(values["validation_metrics"]);
+
+  return Model(layers, loss, kwargs);
+}
+#pragma endregion Load
+
 #pragma region Save
 json Model::toJson() const {
   auto metricsHistoryToJson =
