@@ -310,6 +310,20 @@ public:
   InvalidExtensionException(const std::string &extension)
       : extension(extension){};
 };
+
+class InvalidPlottingMetricException : public std::exception {
+  std::string metric;
+
+  virtual const char *what() const throw() {
+    std::string s = "Plotting \"" + this->metric + "\" is not supported.";
+    char *result = new char[s.length() + 1];
+    std::strcpy(result, s.c_str());
+    return result;
+  }
+
+public:
+  InvalidPlottingMetricException(const std::string &metric) : metric(metric){};
+};
 } // namespace model
 #pragma endregion Model
 

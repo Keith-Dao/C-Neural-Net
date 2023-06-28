@@ -505,7 +505,7 @@ void Model::plotMetric(
     const std::unordered_map<std::string, metricHistoryValue> &metrics,
     const std::string &metric, matplot::axes_handle &axis) const {
   if (!metrics::SINGLE_VALUE_METRICS.contains(metric)) {
-    throw ""; // TODO: Add actual exception.
+    throw exceptions::model::InvalidPlottingMetricException(metric);
   }
 
   if (!metrics.contains(metric) or metrics.at(metric).empty()) {
