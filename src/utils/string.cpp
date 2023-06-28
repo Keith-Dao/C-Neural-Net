@@ -13,16 +13,16 @@ std::vector<std::string> utils::string::split(const std::string &s,
   return result;
 }
 
-std::string utils::string::join(const std::vector<std::string> &strings,
+std::string utils::string::join(const std::vector<std::string> &words,
                                 const std::string &joiner) {
-  if (strings.empty()) {
+  if (words.empty()) {
     return "";
   }
   std::string result;
-  for (int i = 0; i < strings.size() - 1; ++i) {
-    result += strings[i] + joiner;
+  for (int i = 0; i < words.size() - 1; ++i) {
+    result += words[i] + joiner;
   }
-  result += strings.back();
+  result += words.back();
   return result;
 }
 std::string utils::string::floatToString(float num, int precision) {
@@ -34,4 +34,20 @@ std::string utils::string::floatToString(float num, int precision) {
 std::string utils::string::capitalise(std::string word) {
   word[0] = std::toupper(word[0]);
   return word;
+}
+
+std::string
+utils::string::joinWithDifferentLast(std::vector<std::string> words,
+                                     const std::string &connector,
+                                     const std::string &lastConnector) {
+  if (words.empty()) {
+    return "";
+  }
+
+  std::string last = words.back();
+  words.pop_back();
+  if (words.empty()) {
+    return last;
+  }
+  return utils::string::join(words, connector) + lastConnector + last;
 }

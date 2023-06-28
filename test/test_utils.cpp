@@ -303,5 +303,17 @@ TEST(StringUtils, TestCapitalise) {
         << input << " failed to capitalise.";
   }
 }
+
+TEST(StringUtils, TestJoinWithDifferentLast) {
+  std::vector<std::vector<std::string>> words{
+      {"a", "b", "c"}, {"a"}, {"a", "b"}, {}};
+  std::string connector = ",", lastConnector = ".";
+  std::vector<std::string> expected{"a,b.c", "a", "a.b", ""};
+
+  for (int i = 0; i < words.size(); ++i) {
+    EXPECT_EQ(expected[i], string::joinWithDifferentLast(words[i], connector,
+                                                         lastConnector));
+  }
+}
 #pragma endregion String
 } // namespace test_utils
