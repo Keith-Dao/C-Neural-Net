@@ -2,6 +2,7 @@
 #include "image_loader.hpp"
 #include "linear.hpp"
 #include "metrics.hpp"
+#include "utils/cli.hpp"
 #include "utils/exceptions.hpp"
 #include "utils/indicator.hpp"
 #include "utils/math.hpp"
@@ -546,6 +547,29 @@ void Model::generateHistoryGraph(const std::string &metric) const {
   matplot::title(metricName);
 
   matplot::grid(matplot::on);
+}
+
+void Model::displayHistoryGraphs() const {
+  std::vector<std::string> visualizableMetrics;
+  for (const std::string &metric : metrics::SINGLE_VALUE_METRICS) {
+    if (this->trainMetrics.contains(metric) ||
+        this->validationMetrics.contains(metric)) {
+      visualizableMetrics.push_back(metric);
+    }
+  }
+
+  std::string graphedMetrics =
+      utils::string::joinWithDifferentLast(visualizableMetrics, ", ", " and ");
+  std::string showGraph;
+  std::cout << "Would you like to view the history graphs for "
+            << graphedMetrics << "? [y/n]: " << std::flush;
+  std::cin >> showGraph;
+  if (!utils::cli::isYes(showGraph)) {
+    return;
+  }
+  for (const std::string &metric : visualizableMetrics) {
+    this->generateHistoryGraph(metric);
+  }
 }
 #pragma endregion Visualisation
 
