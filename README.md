@@ -8,14 +8,16 @@ For the complete technical overview see [link](https://github.com/Keith-Dao/Neur
 
 The following libraries are required.
 
-| Library    | Version | Link                                                                 |
-| ---------- | ------- | -------------------------------------------------------------------- |
-| Eigen      | 3.4.0   | https://gitlab.com/libeigen/eigen/-/releases/3.4.0                   |
-| JSON       | 3.11.2  | https://github.com/nlohmann/json/releases/tag/v3.11.2                |
-| yaml-cpp   | 0.6.3   | https://github.com/jbeder/yaml-cpp/releases/tag/yaml-cpp-0.6.3       |
-| matplot++  | 1.1.0   | https://github.com/alandefreitas/matplotplusplus/releases/tag/v1.1.0 |
-| indicators | 2.3     | https://github.com/p-ranav/indicators/releases/tag/v2.3              |
-| OpenCV     | 4.7.0   | https://github.com/opencv/opencv/releases/tag/4.7.0                  |
+| Library    | Version | Link                                                                  |
+| ---------- | ------- | --------------------------------------------------------------------- |
+| Eigen      | 3.4.0   | https://gitlab.com/libeigen/eigen/-/releases/3.4.0                    |
+| JSON       | 3.11.2  | https://github.com/nlohmann/json/releases/tag/v3.11.2                 |
+| yaml-cpp   | 0.6.3   | https://github.com/jbeder/yaml-cpp/releases/tag/yaml-cpp-0.6.3        |
+| matplot++  | 1.1.0   | https://github.com/alandefreitas/matplotplusplus/releases/tag/v1.1.0  |
+| indicators | 2.3     | https://github.com/p-ranav/indicators/releases/tag/v2.3               |
+| OpenCV     | 4.7.0   | https://github.com/opencv/opencv/releases/tag/4.7.0                   |
+| tabulate   | 1.5     | https://github.com/p-ranav/tabulate/releases/tag/v1.5                 |
+| Termcolor  | 2.1.0   | https://github.com/ikalnytskyi/termcolor/archive/refs/tags/v2.1.0.zip |
 
 The following are also required.
 

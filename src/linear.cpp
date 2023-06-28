@@ -54,14 +54,14 @@ void Linear::setBias(Eigen::MatrixXd bias) {
     throw exceptions::eigen::InvalidShapeException();
   }
   this->bias = bias;
-};
+}
 #pragma endregion Bias
 
 #pragma region Activation function
 std::shared_ptr<activation_functions::ActivationFunction>
 Linear::getActivation() const {
   return this->activationFunction;
-};
+}
 
 void Linear::setActivation(std::string activation) {
   if (activation == "ReLU") {
@@ -94,7 +94,7 @@ Linear Linear::fromJson(const json &values) {
 #pragma endregion Load
 
 #pragma region Save
-json Linear::toJson() {
+json Linear::toJson() const {
   return {{"class", "Linear"},
           {"weight", utils::matrix::toJson(this->weight)},
           {"bias",
@@ -152,8 +152,8 @@ bool Linear::operator==(const Linear &other) const {
   return typeid(*this) == typeid(other) &&
          this->inChannels == other.inChannels &&
          this->outChannels == other.outChannels &&
-         this->weight.isApprox(other.getWeight()) &&
-         this->bias.isApprox(other.getBias()) &&
-         *this->activationFunction == *other.getActivation();
+         this->weight.isApprox(other.weight) &&
+         this->bias.isApprox(other.bias) &&
+         *this->activationFunction == *other.activationFunction;
 }
 #pragma endregion Builtins

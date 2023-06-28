@@ -36,4 +36,8 @@ Eigen::MatrixXd normalise(const Eigen::MatrixXd &data,
                           std::pair<float, float> from,
                           std::pair<float, float> to);
 
+/*
+  Converts logits to its prediction.
+*/
+std::vector<int> logitsToPrediction(const Eigen::MatrixXd &logits);
 } // namespace utils::math

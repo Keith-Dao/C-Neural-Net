@@ -49,7 +49,7 @@ CrossEntropyLoss CrossEntropyLoss::fromJson(const json &values) {
     Attributes includes:
         - reduction -- the reduction method used
   */
-json CrossEntropyLoss::toJson() {
+json CrossEntropyLoss::toJson() const {
   return {{"class", "CrossEntropyLoss"}, {"reduction", this->reduction}};
 };
 #pragma endregion Save
@@ -100,7 +100,6 @@ Eigen::MatrixXd CrossEntropyLoss::backward() {
 
 #pragma region Builtins
 bool CrossEntropyLoss::operator==(const CrossEntropyLoss &other) const {
-  return typeid(*this) == typeid(other) &&
-         this->reduction == other.getReduction();
-};
+  return typeid(*this) == typeid(other) && this->reduction == other.reduction;
+}
 #pragma endregion Builtins

@@ -1,6 +1,8 @@
 #pragma once
 #include <Eigen/Dense>
+#include <functional>
 #include <unordered_set>
+#include <variant>
 
 namespace metrics {
 #pragma region Confusion matrix
@@ -19,8 +21,6 @@ void addToConfusionMatrix(Eigen::MatrixXi &confusionMatrix,
 #pragma endregion Confusion matrix
 
 #pragma region Metrics
-const std::unordered_set<std::string> SINGLE_VALUE_METRICS{"accuracy", "loss"};
-
 /*
   The accuracy for the given confusion matrix.
 */
@@ -40,5 +40,14 @@ std::vector<float> recall(const Eigen::MatrixXi &confusionMatrix);
   The f1 score for all the classes in the confusion matrix.
 */
 std::vector<float> f1Score(const Eigen::MatrixXi &confusionMatrix);
+
+const std::unordered_set<std::string> SINGLE_VALUE_METRICS{"accuracy", "loss"};
+const std::unordered_map<
+    std::string,
+    std::function<std::variant<float, std::vector<float>>(Eigen::MatrixXi)>>
+    METRICS{{"accuracy", accuracy},
+            {"precision", precision},
+            {"recall", recall},
+            {"f1_score", f1Score}};
 #pragma endregion Metrics
 } // namespace metrics

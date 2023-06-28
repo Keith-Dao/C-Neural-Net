@@ -3,6 +3,7 @@
 #include "utils/image.hpp"
 #include "utils/matrix.hpp"
 #include "utils/path.hpp"
+#include <memory>
 #include <random>
 
 using namespace loader;
@@ -25,7 +26,7 @@ DatasetBatcher::DatasetBatcher(
     std::shuffle(this->data.begin(), this->data.end(),
                  std::default_random_engine{});
   }
-};
+}
 
 DatasetBatcher::DatasetBatcher(
     const std::filesystem::path &root,
@@ -33,14 +34,16 @@ DatasetBatcher::DatasetBatcher(
     const preprocessingFunctions &preprocessing,
     const std::unordered_map<std::string, int> &classesToNum, int batchSize)
     : DatasetBatcher(root, data, preprocessing, classesToNum, batchSize,
-                     KeywordArgs()){};
+                     KeywordArgs()) {}
 #pragma endregion Constructor
 
 #pragma region Iterators
-DatasetBatcher::Iterator DatasetBatcher::begin() { return Iterator(*this, 0); }
+DatasetBatcher::Iterator DatasetBatcher::begin() const {
+  return Iterator(this, 0);
+}
 
-DatasetBatcher::Iterator DatasetBatcher::end() {
-  return Iterator(*this, this->size());
+DatasetBatcher::Iterator DatasetBatcher::end() const {
+  return Iterator(this, this->size());
 }
 #pragma endregion Iterators
 
@@ -130,14 +133,13 @@ ImageLoader::ImageLoader(const std::string &folderPath,
     this->classesToNum[this->classes[i]] = i;
   }
 }
-
 #pragma endregion Constructor
 
 #pragma region Properties
 #pragma region Classes
 std::vector<std::string> ImageLoader::getClasses() const {
   return this->classes;
-};
+}
 #pragma endregion Classes
 
 #pragma region Train files
@@ -154,22 +156,22 @@ std::vector<std::filesystem::path> ImageLoader::getTestFiles() const {
 #pragma endregion Properties
 
 #pragma region Batcher
-DatasetBatcher
+std::shared_ptr<DatasetBatcher>
 ImageLoader::getBatcher(std::string dataset, int batchSize,
-                        const DatasetBatcher::KeywordArgs kwargs) {
+                        const DatasetBatcher::KeywordArgs &kwargs) const {
   if (dataset != "train" && dataset != "test") {
     throw exceptions::loader::InvalidDatasetException(dataset);
   }
-  return DatasetBatcher(
+  return std::make_shared<DatasetBatcher>(DatasetBatcher(
       this->root, dataset == "train" ? this->trainFiles : this->testFiles,
-      this->preprocessing, this->classesToNum, batchSize, kwargs);
+      this->preprocessing, this->classesToNum, batchSize, kwargs));
 };
 #pragma endregion Batcher
 
 #pragma region Builtins
-DatasetBatcher
+std::shared_ptr<DatasetBatcher>
 ImageLoader::operator()(std::string dataset, int batchSize,
-                        const DatasetBatcher::KeywordArgs kwargs) {
+                        const DatasetBatcher::KeywordArgs &kwargs) const {
   return this->getBatcher(dataset, batchSize, kwargs);
 }
 #pragma endregion Builtins

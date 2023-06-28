@@ -1,6 +1,7 @@
 #include "fixtures.hpp"
 #include "utils/all.hpp"
 #include "utils/exceptions.hpp"
+#include "utils/string.hpp"
 #include <Eigen/Dense>
 #include <fstream>
 #include <gtest/gtest.h>
@@ -99,7 +100,7 @@ TEST(MatrixUtils, TestFlatten) {
 
 #pragma region Math
 #pragma region One hot encode
-TEST(MatrixUtils, TestOneHotEncode) {
+TEST(MathUtils, TestOneHotEncode) {
   std::vector<int> labels{0, 1, 2};
   int classes = 3;
   Eigen::MatrixXi encoded{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
@@ -118,7 +119,7 @@ TEST(MatrixUtils, TestOneHotEncode) {
       << "Last one hot encode failed.";
 }
 
-TEST(MatrixUtils, TestOneHotEncodeWithInvalidLabels) {
+TEST(MathUtils, TestOneHotEncodeWithInvalidLabels) {
   std::vector<int> labels{0, 1, 3};
   int classes = 3;
   EXPECT_THROW(math::oneHotEncode(labels, classes),
@@ -127,7 +128,7 @@ TEST(MatrixUtils, TestOneHotEncodeWithInvalidLabels) {
 #pragma endregion One hot encode
 
 #pragma region Softmax
-TEST(MatrixUtils, TestSoftmax) {
+TEST(MathUtils, TestSoftmax) {
   Eigen::MatrixXi x{{1, 1, 1}};
   Eigen::MatrixXd trueP{{0.33333333333333, 0.33333333333333, 0.33333333333333}};
   ASSERT_TRUE(trueP.isApprox(math::softmax(x))) << "First softmax failed.";
@@ -143,7 +144,7 @@ TEST(MatrixUtils, TestSoftmax) {
 #pragma endregion Softmax
 
 #pragma region Log softmax
-TEST(MatrixUtils, TestLogSoftmax) {
+TEST(MathUtils, TestLogSoftmax) {
   Eigen::MatrixXi x{{1, 1, 1}};
   Eigen::MatrixXd trueP{{-1.098612288668, -1.098612288668, -1.098612288668}};
   ASSERT_TRUE(trueP.isApprox(math::logSoftmax(x)))
@@ -167,7 +168,7 @@ TEST(MatrixUtils, TestLogSoftmax) {
 #pragma endregion Log softmax
 
 #pragma region Normalise
-TEST(MatrixUtils, TestNormalise) {
+TEST(MathUtils, TestNormalise) {
   Eigen::MatrixXd data{{0, 127.5, 255}}, expected{{0, 0.5, 1}};
   std::pair<float, float> from{0, 255}, to{0, 1};
   EXPECT_TRUE(expected.isApprox(math::normalise(data, from, to)))
@@ -189,7 +190,7 @@ TEST(MatrixUtils, TestNormalise) {
       << "Last normalise failed.";
 }
 
-TEST(MatrixUtils, TestNormaliseWithInvalidRange) {
+TEST(MathUtils, TestNormaliseWithInvalidRange) {
   Eigen::MatrixXd data{{0, 127.5, 255}};
   std::pair<float, float> from{0, -1}, to{0, 1};
   EXPECT_THROW(math::normalise(data, from, to),
@@ -202,11 +203,25 @@ TEST(MatrixUtils, TestNormaliseWithInvalidRange) {
       << "Second normalise did not throw.";
 }
 #pragma endregion Normalise
+
+#pragma region Logits to prediction
+TEST(MathUtils, TestLogitsToPrediction) {
+  std::vector<Eigen::MatrixXd> logits{Eigen::MatrixXd{{1, 2, 3}},
+                                      Eigen::MatrixXd{{5, 2, 1}, {2, 24, 1}}};
+  std::vector<std::vector<int>> expected{{2}, {0, 1}};
+  for (int i = 0; i < logits.size(); ++i) {
+    std::vector<int> predictions = math::logitsToPrediction(logits[i]);
+    ASSERT_EQ(expected[i].size(), predictions.size())
+        << "Sizes did not match on test " << i;
+    ASSERT_EQ(expected[i], predictions) << "Values did not match on test " << i;
+  }
+}
+#pragma endregion Logits to prediction
 #pragma endregion Math
 
 #pragma region Path
 #pragma region Glob
-using UtilsGlob = test_filesystem::FileSystemFixture;
+using UtilsGlob = test_filesystem::FileSystemWithImageDataFixture;
 TEST_F(UtilsGlob, TestGlob) {
   std::vector<std::filesystem::path> expected = {root / "0" / "a" / "0.png",
                                                  root / "0" / "a" / "4.png",
@@ -226,7 +241,7 @@ TEST_F(UtilsGlob, TestGlob) {
 #pragma endregion Path
 
 #pragma region Image
-using TestImageUtils = test_filesystem::FileSystemFixture;
+using TestImageUtils = test_filesystem::FileSystemWithImageDataFixture;
 #pragma region Open image
 TEST_F(TestImageUtils, TestOpenImageAsMatrix) {
   ASSERT_TRUE(data[0].isApprox(image::openAsMatrix(root / "0" / "a" / "0.png")))
@@ -248,4 +263,57 @@ TEST(ImageUtils, TestNormaliseImage) {
 }
 #pragma endregion Normalise
 #pragma endregion Image
+
+#pragma region String
+TEST(StringUtils, TestSplit) {
+  std::vector<std::string> strings{"abc 123 bd", "abc. 123. bd"},
+      delimiters{" ", ". "}, expected{"abc", "123", "bd"};
+  for (int i = 0; i < strings.size(); ++i) {
+    EXPECT_EQ(string::split(strings[i], delimiters[i]), expected)
+        << "Split failed on test " << i;
+  }
+}
+
+TEST(StringUtils, TestJoin) {
+  std::vector<std::string> expected{"abc 123 bd", "abc. 123. bd"},
+      delimiters{" ", ". "}, strings{"abc", "123", "bd"};
+  for (int i = 0; i < expected.size(); ++i) {
+    EXPECT_EQ(string::join(strings, delimiters[i]), expected[i])
+        << "Join failed on test " << i;
+  }
+  EXPECT_EQ(string::join({}, " "), "")
+      << "Join failed when no strings are provided.";
+}
+
+TEST(StringUtils, TestFloatToNum) {
+  std::string expected = "1.234";
+  EXPECT_EQ(expected, string::floatToString(1.2341, 3));
+  EXPECT_EQ(expected, string::floatToString(1.2335, 3));
+
+  double x = 1.15478;
+  expected = "1.154780";
+  EXPECT_EQ(expected, string::floatToString(x, 6));
+}
+
+TEST(StringUtils, TestCapitalise) {
+  std::string expected = "ABC";
+  std::vector<std::string> inputs{"ABC", "aBC"};
+  for (const std::string &input : inputs) {
+    EXPECT_EQ(expected, string::capitalise(input))
+        << input << " failed to capitalise.";
+  }
+}
+
+TEST(StringUtils, TestJoinWithDifferentLast) {
+  std::vector<std::vector<std::string>> words{
+      {"a", "b", "c"}, {"a"}, {"a", "b"}, {}};
+  std::string connector = ",", lastConnector = ".";
+  std::vector<std::string> expected{"a,b.c", "a", "a.b", ""};
+
+  for (int i = 0; i < words.size(); ++i) {
+    EXPECT_EQ(expected[i], string::joinWithDifferentLast(words[i], connector,
+                                                         lastConnector));
+  }
+}
+#pragma endregion String
 } // namespace test_utils
