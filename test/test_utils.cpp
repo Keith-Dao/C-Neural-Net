@@ -294,5 +294,14 @@ TEST(StringUtils, TestFloatToNum) {
   expected = "1.154780";
   EXPECT_EQ(expected, string::floatToString(x, 6));
 }
+
+TEST(StringUtils, TestCapitalise) {
+  std::string expected = "ABC";
+  std::vector<std::string> inputs{"ABC", "aBC"};
+  for (const std::string &input : inputs) {
+    EXPECT_EQ(expected, string::capitalise(input))
+        << input << " failed to capitalise.";
+  }
+}
 #pragma endregion String
 } // namespace test_utils

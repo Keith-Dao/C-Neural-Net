@@ -410,9 +410,8 @@ void Model::printMetrics(
 
   // Get the data
   for (const auto &[metric, history] : metrics) {
-    std::string header =
-        utils::string::join(utils::string::split(metric, "_"), " ");
-    header[0] = std::toupper(header[0]);
+    std::string header = utils::string::capitalise(
+        utils::string::join(utils::string::split(metric, "_"), " "));
 
     if (metrics::SINGLE_VALUE_METRICS.contains(metric)) {
       singularHeaders.push_back(header);

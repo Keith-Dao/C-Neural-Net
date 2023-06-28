@@ -1,4 +1,5 @@
 #include "string.hpp"
+#include <cctype>
 
 std::vector<std::string> utils::string::split(const std::string &s,
                                               const std::string &delimiter) {
@@ -28,4 +29,9 @@ std::string utils::string::floatToString(float num, int precision) {
   std::stringstream stream;
   stream << std::fixed << std::setprecision(precision) << num;
   return stream.str();
+}
+
+std::string utils::string::capitalise(std::string word) {
+  word[0] = std::toupper(word[0]);
+  return word;
 }

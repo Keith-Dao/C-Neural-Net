@@ -22,4 +22,9 @@ std::string join(const std::vector<std::string> &strings,
   Convert a float to a set precision string.
 */
 std::string floatToString(float num, int precision);
+
+/*
+  Capitalise the first letter of the given word.
+*/
+std::string capitalise(std::string word);
 } // namespace utils::string
