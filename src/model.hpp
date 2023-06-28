@@ -2,6 +2,8 @@
 #include "cross_entropy_loss.hpp"
 #include "image_loader.hpp"
 #include "linear.hpp"
+#include <matplot/core/axes_object.h>
+#include <matplot/matplot.h>
 #include <nlohmann/json.hpp>
 #include <variant>
 #include <vector>
@@ -253,7 +255,25 @@ public:
 #pragma endregion Metrics
 
 #pragma region Visualisation
-// TODO
+private:
+  /*
+    Plot the metric on the provided axis.
+  */
+  void
+  plotMetric(const std::string &dataset,
+             const std::unordered_map<std::string, metricHistoryValue> &metrics,
+             const std::string &metric, matplot::axes_handle &axis) const;
+
+  /*
+    Generate the model's history data for the chosen metric.
+  */
+  void generateHistoryGraph(const std::string &metric) const;
+
+public:
+  /*
+    Generate and display the model's history graphs.
+  */
+  void displayHistoryGraphs() const;
 #pragma endregion Visualisation
 
 #pragma region Builtins

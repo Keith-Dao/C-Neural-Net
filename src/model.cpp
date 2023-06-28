@@ -6,11 +6,18 @@
 #include "utils/indicator.hpp"
 #include "utils/math.hpp"
 #include "utils/string.hpp"
+#include <cctype>
 #include <fstream>
 #include <indicators/cursor_control.hpp>
 #include <indicators/font_style.hpp>
 #include <indicators/progress_bar.hpp>
 #include <indicators/setting.hpp>
+#include <matplot/freestanding/axes_functions.h>
+#include <matplot/freestanding/axes_lim.h>
+#include <matplot/freestanding/plot.h>
+#include <matplot/util/common.h>
+#include <matplot/util/handle_types.h>
+#include <matplot/util/keywords.h>
 #include <tabulate/row.hpp>
 #include <tabulate/table.hpp>
 
@@ -490,6 +497,57 @@ void Model::printMetrics(
   }
 }
 #pragma endregion Metrics
+
+#pragma region Visualisation
+void Model::plotMetric(
+    const std::string &dataset,
+    const std::unordered_map<std::string, metricHistoryValue> &metrics,
+    const std::string &metric, matplot::axes_handle &axis) const {
+  if (!metrics::SINGLE_VALUE_METRICS.contains(metric)) {
+    throw ""; // TODO: Add actual exception.
+  }
+
+  if (!metrics.contains(metric) or metrics.at(metric).empty()) {
+    return;
+  }
+
+  matplot::axes(axis);
+  std::vector<float> history;
+  for (auto value : metrics.at(metric)) {
+    history.push_back(std::get<float>(value));
+  }
+  auto x = matplot::iota(1, history.size() + 1);
+  matplot::plot(x, history, ".-")
+      ->display_name(utils::string::capitalise(dataset));
+}
+
+void Model::generateHistoryGraph(const std::string &metric) const {
+  if (!metrics::SINGLE_VALUE_METRICS.contains(metric)) {
+    return;
+  }
+
+  matplot::figure_handle fig = matplot::figure(false);
+  matplot::axes_handle axis = fig->current_axes();
+  this->plotMetric("train", this->trainMetrics, metric, axis);
+  matplot::hold(matplot::on);
+  this->plotMetric("validation", this->validationMetrics, metric, axis);
+  matplot::hold(matplot::off);
+
+  matplot::xlabel("Epoch");
+  matplot::xlim({0, (double)this->totalEpochs + 1});
+  if (this->totalEpochs < 10) {
+    // Force integer ticks on small x-axis
+    matplot::xticks(matplot::iota(0, this->totalEpochs));
+  }
+
+  std::string metricName = utils::string::capitalise(
+      utils::string::join(utils::string::split(metric, "_"), " "));
+  matplot::ylabel(metricName);
+  matplot::title(metricName);
+
+  matplot::grid(matplot::on);
+}
+#pragma endregion Visualisation
 
 #pragma region Builtins
 Eigen::MatrixXd Model::operator()(Eigen::MatrixXd input) {
