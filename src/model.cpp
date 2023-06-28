@@ -444,6 +444,7 @@ void Model::printMetrics(
     table.row(0)
         .format()
         .font_style({tabulate::FontStyle::bold})
+        .font_align(tabulate::FontAlign::center)
         .show_border_top();
     table.row(1).format().border_top("-").show_border_top();
 
@@ -478,7 +479,11 @@ void Model::printMetrics(
         .font_align(tabulate::FontAlign::right)
         .hide_border_top()
         .hide_border_bottom();
-    table.row(0).format().font_style({tabulate::FontStyle::bold});
+    table.row(0)
+        .format()
+        .font_style({tabulate::FontStyle::bold})
+        .font_align(tabulate::FontAlign::center)
+        .show_border_top();
     table.row(1).format().border_top("-").show_border_top();
 
     std::cout << table << std::endl;
