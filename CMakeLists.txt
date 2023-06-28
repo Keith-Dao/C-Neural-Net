@@ -5,7 +5,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 enable_testing()
 
 # Project
-project(NerualNetwork VERSION 1.0)
+project(NeuralNetwork VERSION 1.0)
 
 # Files
 add_executable(${PROJECT_NAME} main.cpp)
