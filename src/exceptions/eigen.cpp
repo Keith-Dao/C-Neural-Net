@@ -1,6 +1,9 @@
 #include "eigen.hpp"
 
-const char *exceptions::eigen::InvalidShapeException::what() const throw() {
+using namespace exceptions::eigen;
+
+#pragma region InvalidShapeException
+const char *InvalidShapeException::what() const throw() {
   auto pairToString = [](const std::pair<int, int> &pair) {
     return "(" + std::to_string(pair.first) + ", " +
            std::to_string(pair.second) + ")";
@@ -13,10 +16,13 @@ const char *exceptions::eigen::InvalidShapeException::what() const throw() {
   std::strcpy(result, s.c_str());
   return result;
 }
+#pragma endregion InvalidShapeException
 
-const char *exceptions::eigen::EmptyMatrixException::what() const throw() {
+#pragma region EmptyMatrixException
+const char *EmptyMatrixException::what() const throw() {
   std::string s = this->variable + " cannot be empty.";
   char *result = new char[s.length() + 1];
   std::strcpy(result, s.c_str());
   return result;
 }
+#pragma endregion EmptyMatrixException

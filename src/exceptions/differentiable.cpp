@@ -1,19 +1,21 @@
 #include "differentiable.hpp"
 
-const char *
-exceptions::differentiable::BackwardBeforeForwardException::what() const
-    throw() {
+using namespace exceptions::differentiable;
+
+#pragma region BackwardBeforeForwardException
+const char *BackwardBeforeForwardException::what() const throw() {
   return "backward was called before forward.";
 }
+#pragma endregion BackwardBeforeForwardException
 
-const char *
-exceptions::differentiable::BackwardCalledInEvalModeException::what() const
-    throw() {
+#pragma region BackwardCalledInEvalModeException
+const char *BackwardCalledInEvalModeException::what() const throw() {
   return "backward cannot be called when set in evaluation mode.";
 }
+#pragma endregion BackwardCalledInEvalModeException
 
-const char *
-exceptions::differentiable::BackwardCalledWithNoInputException::what() const
-    throw() {
+#pragma region BackwardCalledWithNoInputException
+const char *BackwardCalledWithNoInputException::what() const throw() {
   return "backward cannot be called without a stored input.";
 }
+#pragma endregion BackwardCalledWithNoInputException
