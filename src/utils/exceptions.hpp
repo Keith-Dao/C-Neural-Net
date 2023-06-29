@@ -6,24 +6,6 @@
 
 namespace exceptions {
 
-#pragma region Activation functions
-namespace activation {
-class InvalidActivationException : public std::exception {
-  std::string activation;
-
-  virtual const char *what() const throw() {
-    std::string s = this->activation + " is not a valid activation function.";
-    char *result = new char[s.length() + 1];
-    std::strcpy(result, s.c_str());
-    return result;
-  }
-
-public:
-  InvalidActivationException(std::string activation) : activation(activation){};
-};
-} // namespace activation
-#pragma endregion Activation functions
-
 #pragma region Differentiable
 namespace differentiable {
 class BackwardBeforeForwardException : public std::exception {

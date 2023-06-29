@@ -1,4 +1,5 @@
 #include "linear.hpp"
+#include "exceptions/activation_functions.hpp"
 #include "utils/exceptions.hpp"
 #include "utils/matrix.hpp"
 

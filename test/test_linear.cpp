@@ -1,3 +1,4 @@
+#include "exceptions/activation_functions.hpp"
 #include "linear.hpp"
 #include "utils/exceptions.hpp"
 #include <Eigen/Dense>
@@ -159,6 +160,13 @@ class TestLinear : public testing::TestWithParam<FixtureData> {};
 #pragma endregion Fixture
 
 #pragma region Tests
+#pragma region Init
+TEST(Linear, TestInitWithInvalidActivationFunction) {
+  EXPECT_THROW(Linear(1, 2, "INVALID"),
+               exceptions::activation::InvalidActivationException);
+}
+#pragma endregion Init
+
 #pragma region Properties
 #pragma region Evaluation mode
 TEST(Linear, TestEval) {
