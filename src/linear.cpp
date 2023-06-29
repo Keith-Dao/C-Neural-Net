@@ -1,5 +1,6 @@
 #include "linear.hpp"
 #include "exceptions/activation_functions.hpp"
+#include "exceptions/differentiable.hpp"
 #include "utils/exceptions.hpp"
 #include "utils/matrix.hpp"
 

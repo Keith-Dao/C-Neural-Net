@@ -1,4 +1,5 @@
 #include "exceptions/activation_functions.hpp"
+#include "exceptions/differentiable.hpp"
 #include "linear.hpp"
 #include "utils/exceptions.hpp"
 #include <Eigen/Dense>

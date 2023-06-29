@@ -1,5 +1,5 @@
 #include "activation_functions.hpp"
-#include "utils/exceptions.hpp"
+#include "exceptions/differentiable.hpp"
 
 using namespace activation_functions;
 
