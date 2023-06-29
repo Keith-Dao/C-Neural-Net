@@ -3,8 +3,11 @@
 #include "utils/image.hpp"
 #include "utils/matrix.hpp"
 #include "utils/path.hpp"
+#include <Eigen/Dense>
+#include <algorithm>
 #include <memory>
 #include <random>
+#include <stdexcept>
 
 using namespace loader;
 

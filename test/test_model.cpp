@@ -4,16 +4,21 @@
 #include "image_loader.hpp"
 #include "linear.hpp"
 #include "model.hpp"
-#include <Eigen/src/Core/NumTraits.h>
+#include <Eigen/Dense>
+#include <algorithm>
+#include <bits/std_abs.h>
+#include <filesystem>
 #include <fstream>
 #include <gtest/gtest.h>
-#include <iterator>
+#include <initializer_list>
+#include <map>
 #include <memory>
 #include <nlohmann/json.hpp>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
+#include <variant>
 #include <vector>
 
 using namespace model;

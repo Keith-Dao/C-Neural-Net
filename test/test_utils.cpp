@@ -1,12 +1,22 @@
 #include "exceptions/json.hpp"
 #include "exceptions/utils.hpp"
 #include "fixtures.hpp"
-#include "utils/all.hpp"
+#include "utils/image.hpp"
+#include "utils/math.hpp"
+#include "utils/matrix.hpp"
+#include "utils/path.hpp"
 #include "utils/string.hpp"
 #include <Eigen/Dense>
+#include <algorithm>
+#include <filesystem>
 #include <fstream>
 #include <gtest/gtest.h>
+#include <initializer_list>
+#include <map>
 #include <nlohmann/json.hpp>
+#include <string>
+#include <utility>
+#include <vector>
 
 using namespace utils;
 using json = nlohmann::json;

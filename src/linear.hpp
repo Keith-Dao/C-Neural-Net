@@ -1,8 +1,13 @@
 #pragma once
-#include "activation_functions.hpp"
 #include <Eigen/Dense>
-#include <nlohmann/json.hpp>
+#include <memory>
+#include <nlohmann/json_fwd.hpp>
+#include <string>
+#include <tuple>
 
+namespace activation_functions {
+class ActivationFunction;
+}
 using json = nlohmann::json;
 
 namespace linear {

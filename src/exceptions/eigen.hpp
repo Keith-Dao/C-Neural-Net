@@ -1,7 +1,10 @@
 #pragma once
-#include <Eigen/Dense>
 #include <exception>
 #include <string>
+#include <utility>
+namespace Eigen {
+template <typename Derived> class MatrixBase;
+}
 
 namespace exceptions::eigen {
 class InvalidShapeException : public std::exception {

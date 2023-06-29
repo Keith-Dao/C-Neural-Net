@@ -4,6 +4,11 @@
 #include "exceptions/load.hpp"
 #include "exceptions/loss.hpp"
 #include "utils/math.hpp"
+#include <Eigen/Dense>
+#include <map>
+#include <nlohmann/json.hpp>
+#include <typeinfo>
+#include <utility>
 
 using namespace loss;
 

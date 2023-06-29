@@ -1,6 +1,8 @@
 #pragma once
 #include <Eigen/Dense>
 #include <memory>
+#include <string>
+#include <typeinfo>
 
 namespace activation_functions {
 #pragma region ActivationFunction Abstract class

@@ -1,8 +1,11 @@
 #pragma once
 #include <Eigen/Dense>
+#include <functional>
 #include <memory>
-#include <nlohmann/json.hpp>
 #include <nlohmann/json_fwd.hpp>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 using json = nlohmann::json;
 

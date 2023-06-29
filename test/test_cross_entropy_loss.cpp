@@ -4,9 +4,18 @@
 #include "exceptions/load.hpp"
 #include "exceptions/loss.hpp"
 #include "exceptions/utils.hpp"
+#include <Eigen/Dense>
+#include <algorithm>
 #include <gtest/gtest.h>
+#include <iosfwd>
+#include <map>
+#include <nlohmann/json.hpp>
+#include <string>
+#include <tuple>
+#include <vector>
 
 using namespace loss;
+using json = nlohmann::json;
 
 namespace test_loss {
 #pragma region Fixture

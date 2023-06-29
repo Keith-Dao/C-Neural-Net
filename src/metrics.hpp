@@ -1,8 +1,11 @@
 #pragma once
 #include <Eigen/Dense>
 #include <functional>
+#include <string>
+#include <unordered_map>
 #include <unordered_set>
 #include <variant>
+#include <vector>
 
 namespace metrics {
 #pragma region Confusion matrix

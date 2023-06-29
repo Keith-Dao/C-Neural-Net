@@ -3,7 +3,19 @@
 #include "image_loader.hpp"
 #include "utils/matrix.hpp"
 #include "utils/path.hpp"
+#include <Eigen/Dense>
+#include <algorithm>
+#include <filesystem>
+#include <functional>
 #include <gtest/gtest.h>
+#include <memory>
+#include <ostream>
+#include <stdexcept>
+#include <string>
+#include <tuple>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 using namespace loader;
 

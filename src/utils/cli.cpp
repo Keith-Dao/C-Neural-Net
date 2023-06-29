@@ -1,4 +1,6 @@
 #include "cli.hpp"
+#include <cctype>
+#include <iostream>
 
 bool utils::cli::isYes(std::string response) {
   if (!response.empty()) {

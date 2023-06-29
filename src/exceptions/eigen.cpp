@@ -1,4 +1,5 @@
 #include "eigen.hpp"
+#include <cstring>
 
 using namespace exceptions::eigen;
 

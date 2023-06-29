@@ -1,6 +1,10 @@
 #pragma once
 #include <Eigen/Dense>
 #include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
+namespace Eigen {
+template <typename Derived> class MatrixBase;
+}
 
 using json = nlohmann::json;
 

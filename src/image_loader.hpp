@@ -1,7 +1,14 @@
 #pragma once
 #include <Eigen/Dense>
-#include <algorithm>
 #include <filesystem>
+#include <functional>
+#include <iterator>
+#include <memory>
+#include <stddef.h>
+#include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 namespace loader {
 typedef std::vector<std::function<Eigen::MatrixXd(Eigen::MatrixXd)>>

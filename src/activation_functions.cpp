@@ -1,5 +1,7 @@
 #include "activation_functions.hpp"
 #include "exceptions/differentiable.hpp"
+#include <Eigen/Dense>
+#include <algorithm>
 
 using namespace activation_functions;
 

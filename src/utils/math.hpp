@@ -1,5 +1,10 @@
 #pragma once
 #include <Eigen/Dense>
+#include <utility>
+#include <vector>
+namespace Eigen {
+template <typename Derived> class MatrixBase;
+}
 
 namespace utils::math {
 /*

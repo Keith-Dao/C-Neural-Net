@@ -1,9 +1,10 @@
 #include "image.hpp"
 #include "../exceptions/utils.hpp"
 #include "math.hpp"
-#include <opencv2/core.hpp>
+#include <Eigen/Dense>
 #include <opencv2/core/eigen.hpp>
 #include <opencv2/imgcodecs.hpp>
+#include <utility>
 
 Eigen::MatrixXd utils::image::openAsMatrix(std::filesystem::path path) {
   Eigen::MatrixXd result;

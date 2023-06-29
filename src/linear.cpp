@@ -1,9 +1,17 @@
 #include "linear.hpp"
+#include "activation_functions.hpp"
 #include "exceptions/activation_functions.hpp"
 #include "exceptions/differentiable.hpp"
 #include "exceptions/eigen.hpp"
 #include "exceptions/load.hpp"
 #include "utils/matrix.hpp"
+#include <Eigen/Dense>
+#include <algorithm>
+#include <map>
+#include <math.h>
+#include <nlohmann/json.hpp>
+#include <typeinfo>
+#include <utility>
 
 using namespace linear;
 
