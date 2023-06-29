@@ -1,6 +1,17 @@
 #include "linear.hpp"
-#include "utils/exceptions.hpp"
+#include "activation_functions.hpp"
+#include "exceptions/activation_functions.hpp"
+#include "exceptions/differentiable.hpp"
+#include "exceptions/eigen.hpp"
+#include "exceptions/load.hpp"
 #include "utils/matrix.hpp"
+#include <Eigen/Dense>
+#include <algorithm>
+#include <map>
+#include <math.h>
+#include <nlohmann/json.hpp>
+#include <typeinfo>
+#include <utility>
 
 using namespace linear;
 
@@ -40,7 +51,7 @@ Eigen::MatrixXd Linear::getWeight() const { return this->weight; }
 void Linear::setWeight(Eigen::MatrixXd weight) {
   if (this->weight.rows() != weight.rows() ||
       this->weight.cols() != weight.cols()) {
-    throw exceptions::eigen::InvalidShapeException();
+    throw exceptions::eigen::InvalidShapeException(this->weight, weight);
   }
   this->weight = weight;
 }
@@ -51,7 +62,7 @@ Eigen::MatrixXd Linear::getBias() const { return this->bias; };
 
 void Linear::setBias(Eigen::MatrixXd bias) {
   if (this->bias.rows() != bias.rows() || this->bias.cols() != bias.cols()) {
-    throw exceptions::eigen::InvalidShapeException();
+    throw exceptions::eigen::InvalidShapeException(this->bias, bias);
   }
   this->bias = bias;
 }

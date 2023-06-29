@@ -1,12 +1,22 @@
 #pragma once
 #include "cross_entropy_loss.hpp"
-#include "image_loader.hpp"
 #include "linear.hpp"
-#include <matplot/core/axes_object.h>
-#include <matplot/matplot.h>
-#include <nlohmann/json.hpp>
+#include <Eigen/Dense>
+#include <matplot/freestanding/axes_functions.h>
+#include <memory>
+#include <nlohmann/json_fwd.hpp>
+#include <string>
+#include <unordered_map>
+#include <utility>
 #include <variant>
 #include <vector>
+
+namespace loader {
+class DatasetBatcher;
+}
+namespace loader {
+class ImageLoader;
+}
 
 using json = nlohmann::json;
 

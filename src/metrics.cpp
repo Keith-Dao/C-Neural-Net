@@ -1,5 +1,7 @@
 #include "metrics.hpp"
-#include "utils/exceptions.hpp"
+#include "exceptions/metrics.hpp"
+#include <Eigen/Dense>
+#include <algorithm>
 
 using namespace metrics;
 

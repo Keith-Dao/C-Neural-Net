@@ -1,9 +1,18 @@
+#include "activation_functions.hpp"
+#include "exceptions/activation_functions.hpp"
+#include "exceptions/differentiable.hpp"
+#include "exceptions/eigen.hpp"
+#include "exceptions/load.hpp"
 #include "linear.hpp"
-#include "utils/exceptions.hpp"
 #include <Eigen/Dense>
+#include <algorithm>
 #include <gtest/gtest.h>
 #include <iostream>
+#include <map>
+#include <memory>
 #include <nlohmann/json.hpp>
+#include <string>
+#include <tuple>
 
 using namespace linear;
 using json = nlohmann::json;
@@ -159,6 +168,13 @@ class TestLinear : public testing::TestWithParam<FixtureData> {};
 #pragma endregion Fixture
 
 #pragma region Tests
+#pragma region Init
+TEST(Linear, TestInitWithInvalidActivationFunction) {
+  EXPECT_THROW(Linear(1, 2, "INVALID"),
+               exceptions::activation::InvalidActivationException);
+}
+#pragma endregion Init
+
 #pragma region Properties
 #pragma region Evaluation mode
 TEST(Linear, TestEval) {

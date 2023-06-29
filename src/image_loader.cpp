@@ -1,10 +1,13 @@
 #include "image_loader.hpp"
-#include "utils/exceptions.hpp"
+#include "exceptions/image_loader.hpp"
 #include "utils/image.hpp"
 #include "utils/matrix.hpp"
 #include "utils/path.hpp"
+#include <Eigen/Dense>
+#include <algorithm>
 #include <memory>
 #include <random>
+#include <stdexcept>
 
 using namespace loader;
 

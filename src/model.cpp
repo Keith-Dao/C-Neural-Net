@@ -1,26 +1,32 @@
 #include "model.hpp"
+#include "exceptions/load.hpp"
+#include "exceptions/model.hpp"
 #include "image_loader.hpp"
 #include "linear.hpp"
 #include "metrics.hpp"
 #include "utils/cli.hpp"
-#include "utils/exceptions.hpp"
 #include "utils/indicator.hpp"
 #include "utils/math.hpp"
 #include "utils/string.hpp"
-#include <cctype>
-#include <fstream>
+#include <Eigen/Dense>
+#include <filesystem>
+#include <functional>
 #include <indicators/cursor_control.hpp>
-#include <indicators/font_style.hpp>
 #include <indicators/progress_bar.hpp>
 #include <indicators/setting.hpp>
+#include <initializer_list>
+#include <iostream>
+#include <map>
 #include <matplot/freestanding/axes_functions.h>
 #include <matplot/freestanding/axes_lim.h>
 #include <matplot/freestanding/plot.h>
 #include <matplot/util/common.h>
 #include <matplot/util/handle_types.h>
 #include <matplot/util/keywords.h>
-#include <tabulate/row.hpp>
+#include <nlohmann/json.hpp>
 #include <tabulate/table.hpp>
+#include <typeinfo>
+#include <unordered_set>
 
 using namespace model;
 

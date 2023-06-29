@@ -1,8 +1,21 @@
 #include "cross_entropy_loss.hpp"
-#include "utils/exceptions.hpp"
+#include "exceptions/differentiable.hpp"
+#include "exceptions/eigen.hpp"
+#include "exceptions/load.hpp"
+#include "exceptions/loss.hpp"
+#include "exceptions/utils.hpp"
+#include <Eigen/Dense>
+#include <algorithm>
 #include <gtest/gtest.h>
+#include <iosfwd>
+#include <map>
+#include <nlohmann/json.hpp>
+#include <string>
+#include <tuple>
+#include <vector>
 
 using namespace loss;
+using json = nlohmann::json;
 
 namespace test_loss {
 #pragma region Fixture
