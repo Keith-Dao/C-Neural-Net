@@ -17,3 +17,11 @@ target_link_libraries(${PROJECT_NAME} src)
 
 # Testing
 add_subdirectory(test)
+
+# Include what you use
+SET(USE_IWYU OFF CACHE BOOL "Use include-what-you-use")
+if (${USE_IWYU})
+    message("Building with incude-what-you-use.")
+    find_program(iwyu_path NAMES include-what-you-use iwyu REQUIRED)
+    set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${iwyu_path})
+endif()
