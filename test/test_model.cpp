@@ -1,9 +1,9 @@
 #include "cross_entropy_loss.hpp"
+#include "exceptions/model.hpp"
 #include "fixtures.hpp"
 #include "image_loader.hpp"
 #include "linear.hpp"
 #include "model.hpp"
-#include "utils/exceptions.hpp"
 #include <Eigen/src/Core/NumTraits.h>
 #include <fstream>
 #include <gtest/gtest.h>
