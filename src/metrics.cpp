@@ -1,5 +1,5 @@
 #include "metrics.hpp"
-#include "utils/exceptions.hpp"
+#include "exceptions/metrics.hpp"
 
 using namespace metrics;
 

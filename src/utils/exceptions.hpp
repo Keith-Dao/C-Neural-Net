@@ -5,42 +5,6 @@
 #include <vector>
 
 namespace exceptions {
-#pragma region Metrics
-namespace metrics {
-class InvalidNumberOfClassesException : public std::exception {
-  int numClasses;
-
-  virtual const char *what() const throw() {
-    std::string s = "The number of classes must be > 0. Got: " +
-                    std::to_string(numClasses) + ".";
-    char *result = new char[s.length() + 1];
-    std::strcpy(result, s.c_str());
-    return result;
-  }
-
-public:
-  InvalidNumberOfClassesException(int numClasses) : numClasses(numClasses){};
-};
-
-class InvalidDatasetException : public std::exception {
-  int predictionSize, actualSize;
-
-  virtual const char *what() const throw() {
-    std::string s = "The length of predictions (" +
-                    std::to_string(predictionSize) + ") and actual (" +
-                    std::to_string(actualSize) + ") does not match.";
-    char *result = new char[s.length() + 1];
-    std::strcpy(result, s.c_str());
-    return result;
-  }
-
-public:
-  InvalidDatasetException(int predictionSize, int actualSize)
-      : predictionSize(predictionSize), actualSize(actualSize){};
-};
-} // namespace metrics
-#pragma endregion Metrics
-
 #pragma region Model
 namespace model {
 class InvalidTotalEpochException : public std::exception {

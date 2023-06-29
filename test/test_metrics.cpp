@@ -1,5 +1,5 @@
+#include "exceptions/metrics.hpp"
 #include "metrics.hpp"
-#include "utils/exceptions.hpp"
 #include "utils/matrix.hpp"
 #include <Eigen/Dense>
 #include <Eigen/src/Core/NumTraits.h>
