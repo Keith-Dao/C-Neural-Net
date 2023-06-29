@@ -1,3 +1,4 @@
+#include "exceptions/json.hpp"
 #include "fixtures.hpp"
 #include "utils/all.hpp"
 #include "utils/exceptions.hpp"

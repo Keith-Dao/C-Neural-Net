@@ -5,22 +5,6 @@
 #include <vector>
 
 namespace exceptions {
-#pragma region JSON
-namespace json {
-class JSONTypeException : public std::exception {
-  virtual const char *what() const throw() {
-    return "An unexpected type was provided in the JSON data.";
-  }
-};
-
-class JSONArray2DException : public std::exception {
-  virtual const char *what() const throw() {
-    return "JSON data should be in the form of a 2D array.";
-  }
-};
-} // namespace json
-#pragma endregion JSON
-
 #pragma region Load methods
 namespace load {
 class InvalidClassAttributeValue : public std::exception {
