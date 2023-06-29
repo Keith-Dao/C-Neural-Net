@@ -2,7 +2,7 @@
 #include "exceptions/differentiable.hpp"
 #include "exceptions/eigen.hpp"
 #include "exceptions/load.hpp"
-#include "utils/exceptions.hpp"
+#include "exceptions/loss.hpp"
 #include "utils/math.hpp"
 
 using namespace loss;

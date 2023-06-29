@@ -5,16 +5,6 @@
 #include <vector>
 
 namespace exceptions {
-#pragma region Loss
-namespace loss {
-class InvalidReductionException : public std::exception {
-  virtual const char *what() const throw() {
-    return "The selected reduction is not valid.";
-  }
-};
-} // namespace loss
-#pragma endregion Loss
-
 #pragma region Metrics
 namespace metrics {
 class InvalidNumberOfClassesException : public std::exception {
