@@ -1,8 +1,8 @@
 #include "exceptions/activation_functions.hpp"
 #include "exceptions/differentiable.hpp"
 #include "exceptions/eigen.hpp"
+#include "exceptions/load.hpp"
 #include "linear.hpp"
-#include "utils/exceptions.hpp"
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
 #include <iostream>

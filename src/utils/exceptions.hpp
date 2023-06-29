@@ -5,16 +5,6 @@
 #include <vector>
 
 namespace exceptions {
-#pragma region Load methods
-namespace load {
-class InvalidClassAttributeValue : public std::exception {
-  virtual const char *what() const throw() {
-    return "Invalid value for class.";
-  }
-};
-} // namespace load
-#pragma endregion Load methods
-
 #pragma region Loss
 namespace loss {
 class InvalidReductionException : public std::exception {

@@ -1,4 +1,5 @@
 #include "model.hpp"
+#include "exceptions/load.hpp"
 #include "image_loader.hpp"
 #include "linear.hpp"
 #include "metrics.hpp"

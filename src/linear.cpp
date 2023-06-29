@@ -2,7 +2,7 @@
 #include "exceptions/activation_functions.hpp"
 #include "exceptions/differentiable.hpp"
 #include "exceptions/eigen.hpp"
-#include "utils/exceptions.hpp"
+#include "exceptions/load.hpp"
 #include "utils/matrix.hpp"
 
 using namespace linear;
