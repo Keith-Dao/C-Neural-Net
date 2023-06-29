@@ -5,31 +5,6 @@
 #include <vector>
 
 namespace exceptions {
-
-#pragma region Eigen
-namespace eigen {
-class InvalidShapeException : public std::exception {
-  virtual const char *what() const throw() {
-    return "An invalid shape was provided.";
-  }
-};
-
-class EmptyMatrixException : public std::exception {
-  std::string variable;
-
-  virtual const char *what() const throw() {
-    std::string s = this->variable + " cannot be empty.";
-    char *result = new char[s.length() + 1];
-    std::strcpy(result, s.c_str());
-    return result;
-  }
-
-public:
-  EmptyMatrixException(std::string variable) : variable(variable){};
-};
-} // namespace eigen
-#pragma endregion Eigen
-
 #pragma region Image loader
 namespace loader {
 class InvalidTrainTestSplitException : public std::exception {

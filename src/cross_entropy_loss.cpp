@@ -1,5 +1,6 @@
 #include "cross_entropy_loss.hpp"
 #include "exceptions/differentiable.hpp"
+#include "exceptions/eigen.hpp"
 #include "utils/exceptions.hpp"
 #include "utils/math.hpp"
 
@@ -66,7 +67,7 @@ double CrossEntropyLoss::forward(const Eigen::MatrixXd &logits,
   }
 
   if (logits.rows() != targets.rows() || logits.cols() != targets.cols()) {
-    throw exceptions::eigen::InvalidShapeException();
+    throw exceptions::eigen::InvalidShapeException(logits, targets);
   }
   this->targets = std::make_shared<Eigen::MatrixXi>(targets);
   this->probabilities =
