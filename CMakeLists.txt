@@ -16,7 +16,10 @@ target_include_directories(${PROJECT_NAME} PRIVATE src)
 target_link_libraries(${PROJECT_NAME} src)
 
 # Testing
-add_subdirectory(test)
+SET(BUILD_TESTS OFF CACHE BOOL "Include tests during build")
+if (${BUILD_TESTS}) 
+    add_subdirectory(test)
+endif()
 
 # Include what you use
 SET(USE_IWYU OFF CACHE BOOL "Use include-what-you-use")
