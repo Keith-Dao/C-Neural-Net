@@ -1,7 +1,7 @@
 #include "exceptions/json.hpp"
+#include "exceptions/utils.hpp"
 #include "fixtures.hpp"
 #include "utils/all.hpp"
-#include "utils/exceptions.hpp"
 #include "utils/string.hpp"
 #include <Eigen/Dense>
 #include <fstream>

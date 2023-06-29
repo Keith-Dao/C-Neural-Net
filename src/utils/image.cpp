@@ -1,5 +1,5 @@
 #include "image.hpp"
-#include "exceptions.hpp"
+#include "../exceptions/utils.hpp"
 #include "math.hpp"
 #include <opencv2/core.hpp>
 #include <opencv2/core/eigen.hpp>

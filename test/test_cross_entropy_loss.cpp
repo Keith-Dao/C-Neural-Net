@@ -3,7 +3,7 @@
 #include "exceptions/eigen.hpp"
 #include "exceptions/load.hpp"
 #include "exceptions/loss.hpp"
-#include "utils/exceptions.hpp"
+#include "exceptions/utils.hpp"
 #include <gtest/gtest.h>
 
 using namespace loss;
