@@ -86,7 +86,7 @@ public:
   /*
     Set the model's layers
   */
-  void setLayers(const std::vector<linear::Linear> &layers);
+  void setLayers(std::vector<linear::Linear> layers);
 #pragma endregion Layers
 
 #pragma region Loss
@@ -98,7 +98,7 @@ public:
   /*
     Set the model's loss.
   */
-  void setLoss(const loss::CrossEntropyLoss &loss);
+  void setLoss(loss::CrossEntropyLoss loss);
 #pragma endregion Loss
 
 #pragma region Total epochs

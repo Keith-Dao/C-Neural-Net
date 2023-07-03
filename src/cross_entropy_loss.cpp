@@ -33,7 +33,7 @@ void CrossEntropyLoss::setReduction(std::string reduction) {
   if (!this->reductions.count(reduction)) {
     throw exceptions::loss::InvalidReductionException();
   }
-  this->reduction = reduction;
+  this->reduction = std::move(reduction);
 }
 #pragma region Reduction
 #pragma endregion Properties

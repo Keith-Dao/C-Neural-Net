@@ -61,7 +61,7 @@ Model::Model(std::vector<linear::Linear> layers, loss::CrossEntropyLoss loss)
 std::vector<std::string> Model::getClasses() const { return this->classes; };
 
 void Model::setClasses(std::vector<std::string> classes) {
-  this->classes = classes;
+  this->classes = std::move(classes);
 }
 #pragma endregion Classes
 
@@ -84,18 +84,20 @@ void Model::setEval(bool eval) {
 
 std::vector<linear::Linear> Model::getLayers() const { return this->layers; }
 
-void Model::setLayers(const std::vector<linear::Linear> &layers) {
+void Model::setLayers(std::vector<linear::Linear> layers) {
   if (layers.empty()) {
     throw exceptions::model::EmptyLayersVectorException();
   }
-  this->layers = layers;
+  this->layers = std::move(layers);
 }
 #pragma endregion Layers
 
 #pragma region Loss
 loss::CrossEntropyLoss Model::getLoss() const { return this->loss; }
 
-void Model::setLoss(const loss::CrossEntropyLoss &loss) { this->loss = loss; }
+void Model::setLoss(loss::CrossEntropyLoss loss) {
+  this->loss = std::move(loss);
+}
 #pragma endregion Loss
 
 #pragma region Total epochs
@@ -118,7 +120,7 @@ Model::getTrainMetrics() const {
 void Model::setTrainMetrics(
     std::unordered_map<std::string, metricHistoryValue> metrics) {
   Model::validateMetrics(metrics);
-  this->trainMetrics = metrics;
+  this->trainMetrics = std::move(metrics);
 }
 
 void Model::setTrainMetrics(std::vector<std::string> metrics) {
@@ -135,7 +137,7 @@ Model::getValidationMetrics() const {
 void Model::setValidationMetrics(
     std::unordered_map<std::string, metricHistoryValue> metrics) {
   Model::validateMetrics(metrics);
-  this->validationMetrics = metrics;
+  this->validationMetrics = std::move(metrics);
 }
 
 void Model::setValidationMetrics(std::vector<std::string> metrics) {

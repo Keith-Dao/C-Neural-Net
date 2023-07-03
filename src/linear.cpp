@@ -54,7 +54,7 @@ void Linear::setWeight(Eigen::MatrixXd weight) {
       this->weight.cols() != weight.cols()) {
     throw exceptions::eigen::InvalidShapeException(this->weight, weight);
   }
-  this->weight = weight;
+  this->weight = std::move(weight);
 }
 #pragma endregion Weight
 
@@ -65,7 +65,7 @@ void Linear::setBias(Eigen::VectorXd bias) {
   if (this->bias.rows() != bias.rows() || this->bias.cols() != bias.cols()) {
     throw exceptions::eigen::InvalidShapeException(this->bias, bias);
   }
-  this->bias = bias;
+  this->bias = std::move(bias);
 }
 #pragma endregion Bias
 
