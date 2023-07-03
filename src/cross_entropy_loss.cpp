@@ -30,7 +30,7 @@ CrossEntropyLoss::CrossEntropyLoss(const std::string &reduction) {
 std::string CrossEntropyLoss::getReduction() const { return this->reduction; }
 
 void CrossEntropyLoss::setReduction(std::string reduction) {
-  if (!this->reductions.count(reduction)) {
+  if (!this->reductions.contains(reduction)) {
     throw exceptions::loss::InvalidReductionException();
   }
   this->reduction = std::move(reduction);

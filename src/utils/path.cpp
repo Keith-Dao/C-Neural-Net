@@ -10,7 +10,7 @@ utils::path::glob(const std::filesystem::path &path,
   for (auto const &entry :
        std::filesystem::recursive_directory_iterator(path)) {
     if (!std::filesystem::is_directory(entry.path()) &&
-        extensionSet.count(entry.path().extension())) {
+        extensionSet.contains(entry.path().extension())) {
       result.push_back(entry.path());
     }
   };
