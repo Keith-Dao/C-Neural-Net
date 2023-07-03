@@ -206,7 +206,7 @@ TEST(Linear, TestWeight_Invalid_Shape) {
 #pragma region Bias
 TEST(Linear, TestBias) {
   Linear layer = getLayer();
-  Eigen::MatrixXd bias = Eigen::VectorXd::Ones(layer.outChannels);
+  Eigen::VectorXd bias = Eigen::VectorXd::Ones(layer.outChannels);
   ASSERT_FALSE(bias.isApprox(layer.getBias()));
   layer.setBias(bias);
   ASSERT_TRUE(bias.isApprox(layer.getBias()));
@@ -214,7 +214,7 @@ TEST(Linear, TestBias) {
 
 TEST(Linear, TestBiasInvalidShape) {
   Linear layer = getLayer();
-  Eigen::MatrixXd bias{{1}};
+  Eigen::VectorXd bias{{1}};
   EXPECT_THROW(layer.setBias(bias), exceptions::eigen::InvalidShapeException);
 }
 #pragma endregion Bias

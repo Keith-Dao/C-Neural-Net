@@ -76,16 +76,16 @@ public:
   using Iterator = DatasetIterator<DatasetBatcher>;
 
   DatasetBatcher(){};
-  DatasetBatcher(const std::filesystem::path &root,
-                 const std::vector<std::filesystem::path> &data,
-                 const preprocessingFunctions &preprocessing,
-                 const std::unordered_map<std::string, int> &classesToNum,
-                 int batchSize, const KeywordArgs kwargs);
+  DatasetBatcher(std::filesystem::path root,
+                 std::vector<std::filesystem::path> data,
+                 preprocessingFunctions preprocessing,
+                 std::unordered_map<std::string, int> classesToNum,
+                 int batchSize, const KeywordArgs &kwargs);
 
-  DatasetBatcher(const std::filesystem::path &root,
-                 const std::vector<std::filesystem::path> &data,
-                 const preprocessingFunctions &preprocessing,
-                 const std::unordered_map<std::string, int> &classesToNum,
+  DatasetBatcher(std::filesystem::path root,
+                 std::vector<std::filesystem::path> data,
+                 preprocessingFunctions preprocessing,
+                 std::unordered_map<std::string, int> classesToNum,
                  int batchSize);
 
 #pragma region Iterators
@@ -133,9 +133,9 @@ public:
 
   ImageLoader(){};
   ImageLoader(const std::string &folderPath,
-              const preprocessingFunctions &preprocessing,
-              std::vector<std::string> fileFormats, float trainTestSplit = 1,
-              bool shuffle = true);
+              preprocessingFunctions preprocessing,
+              const std::vector<std::string> &fileFormats,
+              float trainTestSplit = 1, bool shuffle = true);
 
 #pragma region Properties
 #pragma region Classes

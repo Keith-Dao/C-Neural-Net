@@ -28,7 +28,7 @@ class Linear {
 public:
   int inChannels, outChannels;
   Linear(int inChannels, int outChannels,
-         std::string activation = "NoActivation");
+         const std::string &activation = "NoActivation");
 
 #pragma region Properties
 #pragma region Evaluation mode
@@ -57,11 +57,11 @@ public:
   /*
     Get the layer's bias.
   */
-  Eigen::MatrixXd getBias() const;
+  Eigen::VectorXd getBias() const;
   /*
     Set the layer's bias.
   */
-  void setBias(Eigen::MatrixXd bias);
+  void setBias(Eigen::VectorXd bias);
 #pragma endregion Bias
 
 #pragma region Activation function

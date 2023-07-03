@@ -21,7 +21,7 @@ class CrossEntropyLoss {
   std::shared_ptr<Eigen::MatrixXd> probabilities = nullptr;
 
 public:
-  CrossEntropyLoss(std::string reduction = "mean");
+  CrossEntropyLoss(const std::string &reduction = "mean");
 
 #pragma region Properties
 #pragma region Reduction
