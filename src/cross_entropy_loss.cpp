@@ -20,7 +20,7 @@ std::unordered_map<std::string, std::function<double(Eigen::MatrixXd)>>
 #pragma endregion Reductions
 
 #pragma region Constructor
-CrossEntropyLoss::CrossEntropyLoss(std::string reduction) {
+CrossEntropyLoss::CrossEntropyLoss(const std::string &reduction) {
   this->setReduction(reduction);
 }
 #pragma endregion Constructor

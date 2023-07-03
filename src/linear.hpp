@@ -28,7 +28,7 @@ class Linear {
 public:
   int inChannels, outChannels;
   Linear(int inChannels, int outChannels,
-         std::string activation = "NoActivation");
+         const std::string &activation = "NoActivation");
 
 #pragma region Properties
 #pragma region Evaluation mode

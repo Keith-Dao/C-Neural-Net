@@ -14,13 +14,13 @@ using namespace loader;
 #pragma region Dataset batcher
 #pragma region Constructor
 DatasetBatcher::DatasetBatcher(
-    const std::filesystem::path &root,
-    const std::vector<std::filesystem::path> &data,
-    const preprocessingFunctions &preprocessing,
-    const std::unordered_map<std::string, int> &classesToNum, int batchSize,
-    const KeywordArgs kwargs)
-    : root(root), data(data), preprocessing(preprocessing),
-      classesToNum(classesToNum), batchSize(batchSize),
+    std::filesystem::path root, std::vector<std::filesystem::path> data,
+    preprocessingFunctions preprocessing,
+    std::unordered_map<std::string, int> classesToNum, int batchSize,
+    const KeywordArgs &kwargs)
+    : root(std::move(root)), data(std::move(data)),
+      preprocessing(std::move(preprocessing)),
+      classesToNum(std::move(classesToNum)), batchSize(batchSize),
       dropLast(kwargs.dropLast) {
   if (batchSize < 1) {
     throw exceptions::loader::InvalidBatchSizeException(batchSize);
@@ -32,10 +32,9 @@ DatasetBatcher::DatasetBatcher(
 }
 
 DatasetBatcher::DatasetBatcher(
-    const std::filesystem::path &root,
-    const std::vector<std::filesystem::path> &data,
-    const preprocessingFunctions &preprocessing,
-    const std::unordered_map<std::string, int> &classesToNum, int batchSize)
+    std::filesystem::path root, std::vector<std::filesystem::path> data,
+    preprocessingFunctions preprocessing,
+    std::unordered_map<std::string, int> classesToNum, int batchSize)
     : DatasetBatcher(root, data, preprocessing, classesToNum, batchSize,
                      KeywordArgs()) {}
 #pragma endregion Constructor
@@ -103,10 +102,10 @@ const preprocessingFunctions ImageLoader::standardPreprocessing{
 
 #pragma region Constructor
 ImageLoader::ImageLoader(const std::string &folderPath,
-                         const preprocessingFunctions &preprocessing,
-                         std::vector<std::string> fileFormats,
+                         preprocessingFunctions preprocessing,
+                         const std::vector<std::string> &fileFormats,
                          float trainTestSplit, bool shuffle)
-    : preprocessing(preprocessing) {
+    : preprocessing(std::move(preprocessing)) {
   if (trainTestSplit < 0 || trainTestSplit > 1) {
     throw exceptions::loader::InvalidTrainTestSplitException(trainTestSplit);
   }

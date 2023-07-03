@@ -44,9 +44,9 @@ void Model::KeywordArgs::setValidationMetricsFromMetricTypes(
 
 #pragma region Constructor
 Model::Model(std::vector<linear::Linear> layers, loss::CrossEntropyLoss loss,
-             KeywordArgs kwargs)
-    : layers(layers), loss(loss), totalEpochs(kwargs.totalEpochs),
-      classes(kwargs.classes) {
+             const KeywordArgs &kwargs)
+    : layers(std::move(layers)), loss(std::move(loss)),
+      classes(std::move(kwargs.classes)) {
   this->setTotalEpochs(kwargs.totalEpochs);
   this->setTrainMetrics(kwargs.trainMetrics);
   this->setValidationMetrics(kwargs.validationMetrics);

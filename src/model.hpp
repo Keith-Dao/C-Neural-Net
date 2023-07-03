@@ -50,7 +50,7 @@ public:
   };
 
   Model(std::vector<linear::Linear> layers, loss::CrossEntropyLoss loss,
-        KeywordArgs kwargs);
+        const KeywordArgs &kwargs);
   Model(std::vector<linear::Linear> layers, loss::CrossEntropyLoss loss);
 
 #pragma region Properties

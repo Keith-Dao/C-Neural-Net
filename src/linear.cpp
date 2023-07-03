@@ -17,7 +17,7 @@
 using namespace linear;
 
 #pragma region Constructor
-Linear::Linear(int inChannels, int outChannels, std::string activation)
+Linear::Linear(int inChannels, int outChannels, const std::string &activation)
     : inChannels(inChannels), outChannels(outChannels) {
   if (activation == "NoActivation") {
     this->activationFunction =
