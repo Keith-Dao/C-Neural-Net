@@ -3,7 +3,8 @@
 
 namespace utils::cli {
 /*
-Check if the response is yes. If it not either yes or no, ask again.
+  Ask for a yes/no response. Repeating till a valid response is received and
+  returns whether or not the response was yes.
 */
-bool isYes(std::string response);
+bool getIsYesResponse(const std::string &initialMessage);
 } // namespace utils::cli

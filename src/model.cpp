@@ -566,13 +566,11 @@ void Model::displayHistoryGraphs() const {
     }
   }
 
-  std::string graphedMetrics =
-      utils::string::joinWithDifferentLast(visualizableMetrics, ", ", " and ");
-  std::string showGraph;
-  std::cout << "Would you like to view the history graphs for "
-            << graphedMetrics << "? [y/n]: " << std::flush;
-  std::cin >> showGraph;
-  if (!utils::cli::isYes(showGraph)) {
+  std::string graphedMetrics = utils::string::joinWithDifferentLast(
+                  visualizableMetrics, ", ", " and "),
+              graphQuestion = "Would you like to view the history graphs for " +
+                              graphedMetrics + "? [y/n]: ";
+  if (!utils::cli::getIsYesResponse(graphQuestion)) {
     return;
   }
   for (const std::string &metric : visualizableMetrics) {
