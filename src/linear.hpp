@@ -57,11 +57,11 @@ public:
   /*
     Get the layer's bias.
   */
-  Eigen::MatrixXd getBias() const;
+  Eigen::VectorXd getBias() const;
   /*
     Set the layer's bias.
   */
-  void setBias(Eigen::MatrixXd bias);
+  void setBias(Eigen::VectorXd bias);
 #pragma endregion Bias
 
 #pragma region Activation function

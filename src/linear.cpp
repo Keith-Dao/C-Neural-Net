@@ -6,6 +6,7 @@
 #include "exceptions/load.hpp"
 #include "utils/matrix.hpp"
 #include <Eigen/Dense>
+#include <Eigen/src/Core/Matrix.h>
 #include <algorithm>
 #include <map>
 #include <math.h>
@@ -58,9 +59,9 @@ void Linear::setWeight(Eigen::MatrixXd weight) {
 #pragma endregion Weight
 
 #pragma region Bias
-Eigen::MatrixXd Linear::getBias() const { return this->bias; };
+Eigen::VectorXd Linear::getBias() const { return this->bias; };
 
-void Linear::setBias(Eigen::MatrixXd bias) {
+void Linear::setBias(Eigen::VectorXd bias) {
   if (this->bias.rows() != bias.rows() || this->bias.cols() != bias.cols()) {
     throw exceptions::eigen::InvalidShapeException(this->bias, bias);
   }
