@@ -37,3 +37,10 @@ target_link_libraries(${PROJECT_NAME} ${TABULATE_LIBRARIES})
 # Termcolor
 find_package(termcolor REQUIRED)
 target_link_libraries(${PROJECT_NAME} ${TERMCOLOR_LIBRARIES})
+
+# GNU Readline & ncurses
+find_path(READLINE_HEADER_PATH readline)
+include_directories(${READLINE_HEADER_PATH}/readline)
+find_library(READLINE_LIB_PATH readline)
+link_directories(${READLINE_LIB_PATH})
+target_link_libraries(${PROJECT_NAME} readline ncurses)

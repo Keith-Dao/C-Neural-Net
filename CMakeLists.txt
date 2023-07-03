@@ -15,13 +15,6 @@ add_subdirectory(src)
 target_include_directories(${PROJECT_NAME} PRIVATE src)
 target_link_libraries(${PROJECT_NAME} src)
 
-# GNU Readline
-find_path(READLINE_HEADER_PATH readline)
-include_directories(${READLINE_HEADER_PATH})
-find_library(READLINE_LIB_PATH readline)
-link_directories(${READLINE_LIB_PATH})
-target_link_libraries(${PROJECT_NAME} readline ncurses)
-
 # Testing
 SET(BUILD_TESTS OFF CACHE BOOL "Include tests during build")
 if (${BUILD_TESTS}) 
