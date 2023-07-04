@@ -98,6 +98,17 @@ std::vector<std::string> getFileFormats(const YAML::Node &config) {
   }
   return config["file_formats"].as<std::vector<std::string>>();
 }
+
+/*
+  Get the batch size from the config file.
+*/
+int getBatchSize(const YAML::Node &config) {
+  if (!config["batch_size"].IsDefined() || config["batch_size"].IsNull()) {
+    utils::cli::printWarning("Value of batch_size not found, defaulting to 1.");
+    return 1;
+  }
+  return config["batch_size"].as<int>();
+}
 #pragma endregion Config
 
 #pragma region Clean up
