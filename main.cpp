@@ -1,9 +1,23 @@
+#include "src/cross_entropy_loss.hpp"
+#include "src/linear.hpp"
+#include "src/model.hpp"
 #include "src/utils/cli.hpp"
 #include <iostream>
 #include <readline/history.h>
 #include <readline/readline.h>
 #include <tabulate/table.hpp>
 #include <yaml-cpp/yaml.h>
+
+#pragma region Helper
+namespace utils::yaml {
+/*
+  Checks whether a YAML node has a value.
+*/
+bool hasValue(const YAML::Node &node) {
+  return node.IsDefined() && !node.IsNull();
+}
+} // namespace utils::yaml
+#pragma endregion Helper
 
 #pragma region Args
 struct Args {
@@ -111,6 +125,37 @@ int getBatchSize(const YAML::Node &config) {
 }
 #pragma endregion Config
 
+#pragma region Load model
+/*
+  Loads the model using the file provided in the config, or use the default
+  model if no file is provided.
+*/
+model::Model getModel(const YAML::Node &config) {
+  if (utils::yaml::hasValue(config["model_path"])) {
+    return model::Model::load(config["model_path"].as<std::string>());
+  }
+
+  // Load the default model
+  utils::cli::printWarning(
+      "No model file was provided. Loading untrained model.");
+  std::vector<linear::Linear> layers{linear::Linear(784, 250, "ReLU"),
+                                     linear::Linear(250, 250, "ReLU"),
+                                     linear::Linear(250, 10)};
+  loss::CrossEntropyLoss loss;
+  model::Model::KeywordArgs kwargs;
+  kwargs.setTrainMetricsFromMetricTypes(
+      utils::yaml::hasValue(config["train_metrics"])
+          ? config["train_metrics"].as<std::vector<std::string>>()
+          : std::vector<std::string>());
+  kwargs.setValidationMetricsFromMetricTypes(
+      utils::yaml::hasValue(config["validation_metrics"])
+          ? config["validation_metrics"].as<std::vector<std::string>>()
+          : std::vector<std::string>());
+
+  return model::Model(layers, loss, kwargs);
+}
+#pragma endregion Load model
+
 #pragma region Clean up
 /*
   Free all the initalized memory used for readline's history.
@@ -129,6 +174,7 @@ void cleanUpHistory() {
 int main(int argc, char **argv) {
   Args args = parseArgs(argc, argv);
   YAML::Node config = getConfig(args.configFile);
+  model::Model model = getModel(config);
   using_history();
 
   cleanUpHistory();
