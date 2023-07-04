@@ -92,8 +92,7 @@ YAML::Node getConfig(const std::string &configPath) {
   Get the train validation split from the config file.
 */
 float getTrainValidationSplit(const YAML::Node &config) {
-  if (!config["train_validation_split"].IsDefined() ||
-      config["train_validation_split"].IsNull()) {
+  if (!utils::yaml::hasValue(config["train_validation_split"])) {
     utils::cli::printWarning(
         "No value for train_validation_split was provided. Defaulting to 0.7");
     return 0.7;
@@ -105,7 +104,7 @@ float getTrainValidationSplit(const YAML::Node &config) {
   Get the file formats from the config file.
 */
 std::vector<std::string> getFileFormats(const YAML::Node &config) {
-  if (!config["file_formats"].IsDefined() || config["file_formats"].IsNull()) {
+  if (!utils::yaml::hasValue(config["file_formats"])) {
     utils::cli::printWarning("No value for file_formats was provided. "
                              "Defaulting to only accept .png");
     return {".png"};
@@ -117,7 +116,7 @@ std::vector<std::string> getFileFormats(const YAML::Node &config) {
   Get the batch size from the config file.
 */
 int getBatchSize(const YAML::Node &config) {
-  if (!config["batch_size"].IsDefined() || config["batch_size"].IsNull()) {
+  if (!utils::yaml::hasValue(config["batch_size"])) {
     utils::cli::printWarning("Value of batch_size not found, defaulting to 1.");
     return 1;
   }
