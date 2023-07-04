@@ -7,6 +7,7 @@
 #include <termcolor/termcolor.hpp>
 
 bool utils::cli::getIsYesResponse(const std::string &initialMessage) {
+  rl_unbind_key('\t');
   std::string response;
   auto getResponse = [&](const char *message) {
     char *buffer = readline(message);
@@ -22,6 +23,7 @@ bool utils::cli::getIsYesResponse(const std::string &initialMessage) {
   while (response != "y" && response != "n") {
     getResponse("Please enter either y for yes or no for no: ");
   }
+  rl_bind_key('\t', rl_complete);
   return response == "y";
 }
 
