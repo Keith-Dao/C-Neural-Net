@@ -4,6 +4,7 @@
 #include <iostream>
 #include <readline/history.h>
 #include <readline/readline.h>
+#include <termcolor/termcolor.hpp>
 
 bool utils::cli::getIsYesResponse(const std::string &initialMessage) {
   std::string response;
@@ -22,4 +23,8 @@ bool utils::cli::getIsYesResponse(const std::string &initialMessage) {
     getResponse("Please enter either y for yes or no for no: ");
   }
   return response == "y";
+}
+
+void utils::cli::printWarning(const std::string &message) {
+  std::cout << termcolor::yellow << message << termcolor::reset << std::endl;
 }
