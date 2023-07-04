@@ -1,5 +1,7 @@
 #include "src/utils/cli.hpp"
 #include <iostream>
+#include <readline/history.h>
+#include <readline/readline.h>
 #include <tabulate/table.hpp>
 
 #pragma region Args
@@ -63,7 +65,25 @@ Args parseArgs(int argc, char **argv) {
 }
 #pragma endregion Args
 
+#pragma region Clean up
+/*
+  Free all the initalized memory used for readline's history.
+*/
+void cleanUpHistory() {
+  HISTORY_STATE *history = history_get_history_state();
+  HIST_ENTRY **historyList = history_list();
+  for (int i = 0; i < history->length; i++) {
+    free_history_entry(historyList[i]);
+  }
+  free(history);
+  free(historyList);
+}
+#pragma region Clean up
+
 int main(int argc, char **argv) {
   Args args = parseArgs(argc, argv);
+  using_history();
+
+  cleanUpHistory();
   return 0;
 }
