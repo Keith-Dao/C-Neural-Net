@@ -86,6 +86,18 @@ float getTrainValidationSplit(const YAML::Node &config) {
   }
   return config["train_validation_split"].as<float>();
 }
+
+/*
+  Get the file formats from the config file.
+*/
+std::vector<std::string> getFileFormats(const YAML::Node &config) {
+  if (!config["file_formats"].IsDefined() || config["file_formats"].IsNull()) {
+    utils::cli::printWarning("No value for file_formats was provided. "
+                             "Defaulting to only accept .png");
+    return {".png"};
+  }
+  return config["file_formats"].as<std::vector<std::string>>();
+}
 #pragma endregion Config
 
 #pragma region Clean up
