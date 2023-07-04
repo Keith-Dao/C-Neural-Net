@@ -3,6 +3,7 @@
 #include <readline/history.h>
 #include <readline/readline.h>
 #include <tabulate/table.hpp>
+#include <yaml-cpp/yaml.h>
 
 #pragma region Args
 struct Args {
@@ -65,6 +66,15 @@ Args parseArgs(int argc, char **argv) {
 }
 #pragma endregion Args
 
+#pragma region Config
+/*
+  Get the config values from the config file.
+*/
+YAML::Node getConfig(const std::string &configPath) {
+  return YAML::LoadFile(configPath);
+}
+#pragma endregion Config
+
 #pragma region Clean up
 /*
   Free all the initalized memory used for readline's history.
@@ -82,6 +92,7 @@ void cleanUpHistory() {
 
 int main(int argc, char **argv) {
   Args args = parseArgs(argc, argv);
+  YAML::Node config = getConfig(args.configFile);
   using_history();
 
   cleanUpHistory();
