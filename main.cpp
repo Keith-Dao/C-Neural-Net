@@ -73,6 +73,19 @@ Args parseArgs(int argc, char **argv) {
 YAML::Node getConfig(const std::string &configPath) {
   return YAML::LoadFile(configPath);
 }
+
+/*
+  Get the train validation split from the config file.
+*/
+float getTrainValidationSplit(const YAML::Node &config) {
+  if (!config["train_validation_split"].IsDefined() ||
+      config["train_validation_split"].IsNull()) {
+    utils::cli::printWarning(
+        "No value for train_validation_split was provided. Defaulting to 0.7");
+    return 0.7;
+  }
+  return config["train_validation_split"].as<float>();
+}
 #pragma endregion Config
 
 #pragma region Clean up
