@@ -7,6 +7,7 @@
 #include <memory>
 #include <readline/history.h>
 #include <readline/readline.h>
+#include <stdexcept>
 #include <tabulate/table.hpp>
 #include <yaml-cpp/yaml.h>
 
@@ -122,7 +123,11 @@ int getBatchSize(const YAML::Node &config) {
     utils::cli::printWarning("Value of batch_size not found, defaulting to 1.");
     return 1;
   }
-  return config["batch_size"].as<int>();
+  int batchSize = config["batch_size"].as<int>();
+  if (batchSize <= 0) {
+    throw std::invalid_argument("batch_size must be greater than 0.");
+  }
+  return batchSize;
 }
 #pragma endregion Config
 
