@@ -273,7 +273,6 @@ float Model::getLossWithConfusionMatrix(const Eigen::MatrixXd &input,
                                         Eigen::MatrixXi &confusionMatrix,
                                         const std::vector<int> &labels) {
   Eigen::MatrixXd logits = this->forward(input);
-  std::cout << " here" << logits.rows() << ", " << labels.size() << std::endl;
   metrics::addToConfusionMatrix(
       confusionMatrix, utils::math::logitsToPrediction(logits), labels);
   return this->loss(logits, labels);
@@ -282,7 +281,6 @@ float Model::getLossWithConfusionMatrix(const Eigen::MatrixXd &input,
 float Model::trainStep(const Eigen::MatrixXd &data,
                        const std::vector<int> &labels, double learningRate,
                        Eigen::MatrixXi &confusionMatrix) {
-  std::cout << data.rows() << ", " << labels.size() << std::endl;
   float loss = this->getLossWithConfusionMatrix(data, confusionMatrix, labels);
   Eigen::MatrixXd grad = this->loss.backward();
   for (auto it = this->layers.rbegin(); it != this->layers.rend(); ++it) {
