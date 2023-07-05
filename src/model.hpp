@@ -179,7 +179,7 @@ public:
   /*
     Save the model attributes to the provided path.
   */
-  void save(std::string path) const;
+  void save(const std::string &path) const;
 #pragma endregion Save
 
 #pragma region Forward pass

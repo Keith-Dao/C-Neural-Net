@@ -233,7 +233,7 @@ json Model::toJson() const {
           {"classes", this->classes}};
 }
 
-void Model::save(std::string path) const {
+void Model::save(const std::string &path) const {
   std::filesystem::path savePath(path);
   if (savePath.extension() != ".json") {
     throw exceptions::model::InvalidExtensionException(savePath.extension());
