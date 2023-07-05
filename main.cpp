@@ -3,6 +3,7 @@
 #include "linear.hpp"
 #include "model.hpp"
 #include "utils/cli.hpp"
+#include <filesystem>
 #include <iostream>
 #include <memory>
 #include <readline/history.h>
@@ -221,6 +222,66 @@ bool trainModel(model::Model &model, const YAML::Node &config) {
 }
 #pragma endregion Train
 
+#pragma region Save prompt
+/*
+  Prompt model save.
+*/
+void promptSave(const model::Model &model) {
+  if (not utils::cli::getIsYesResponse(
+          "Would you like to save the model? [y/n]: ")) {
+    return;
+  }
+
+  auto isValidPath = [&](const std::filesystem::path &path) {
+    if (path.extension() != ".json") {
+      utils::cli::printError("File format \"" + path.extension().string() +
+                             "\" is not supported. Only .json is supported.");
+      return false;
+    }
+
+    if (std::filesystem::exists(path)) {
+      return utils::cli::getIsYesResponse(
+          "The current file already exists. Would you like to overwrite it? "
+          "[y/n]: ");
+    }
+    return true;
+  };
+
+  auto promptPath = [](const std::string &prompt) {
+    char *buffer = readline(prompt.c_str());
+    add_history(buffer);
+    std::string response(buffer);
+    free(buffer);
+
+    while (response.back() == ' ') {
+      response.pop_back();
+    }
+    return response;
+  };
+
+  std::string stopCode = "CANCEL",
+              enterPathPrompt =
+                  "Enter a file path with .json as the extension or type " +
+                  stopCode + " to cancel saving: ",
+              response =
+                  promptPath("Where would you like to save the model file? " +
+                             enterPathPrompt);
+  while (response != stopCode && !isValidPath(response)) {
+    response = promptPath(enterPathPrompt);
+  }
+  if (response == stopCode) {
+    std::cout << "Model was not saved." << std::endl;
+    return;
+  }
+
+  std::filesystem::path savePath(response);
+  std::filesystem::create_directories(savePath.parent_path());
+  model.save(savePath);
+  std::cout << "Model successfully saved at "
+            << std::filesystem::canonical(savePath) << "." << std::endl;
+}
+#pragma endregion Save prompt
+
 #pragma region Clean up
 /*
   Free all the initalized memory used for readline's history.
@@ -241,6 +302,7 @@ int main(int argc, char **argv) {
   YAML::Node config = getConfig(args.configFile);
   model::Model model = getModel(config);
   trainModel(model, config);
+  promptSave(model);
   using_history();
 
   cleanUpHistory();
