@@ -12,4 +12,9 @@ bool getIsYesResponse(const std::string &initialMessage);
   Print the given message to std::cout in the warning colours.
 */
 void printWarning(const std::string &message);
+
+/*
+  Print the given message to std::cout in the error colours.
+*/
+void printError(const std::string &message);
 } // namespace utils::cli

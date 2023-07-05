@@ -30,3 +30,7 @@ bool utils::cli::getIsYesResponse(const std::string &initialMessage) {
 void utils::cli::printWarning(const std::string &message) {
   std::cout << termcolor::yellow << message << termcolor::reset << std::endl;
 }
+
+void utils::cli::printError(const std::string &message) {
+  std::cout << termcolor::red << message << termcolor::reset << std::endl;
+}
