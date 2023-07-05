@@ -185,6 +185,42 @@ getImageLoader(const YAML::Node &config, const std::string &dataset) {
 }
 #pragma endregion Image loader
 
+#pragma region Train
+/*
+  Train the model base on the config values.
+*/
+bool trainModel(model::Model &model, const YAML::Node &config) {
+  int epochs;
+  if (!utils::yaml::hasValue(config["epochs"]) ||
+      (epochs = config["epochs"].as<int>()) == 0) {
+    utils::cli::printWarning(
+        "No value for epochs was provided or was 0. Skipping training.");
+    return false;
+  }
+
+  double learningRate;
+  if (!utils::yaml::hasValue(config["learning_rate"])) {
+    utils::cli::printWarning(
+        "Value of learning_rate not found, defaulting to 1e-4.");
+    learningRate = 1e-4;
+  } else {
+    learningRate = config["learning_rate"].as<double>();
+  }
+  if (learningRate <= 0) {
+    throw std::invalid_argument("learning_rate must be greater than 0.");
+  }
+
+  int batchSize = getBatchSize(config);
+
+  std::shared_ptr<loader::ImageLoader> loader = getImageLoader(config, "train");
+  if (loader == nullptr) {
+    return false;
+  }
+  model.train(*loader, learningRate, batchSize, epochs);
+  return true;
+}
+#pragma endregion Train
+
 #pragma region Clean up
 /*
   Free all the initalized memory used for readline's history.
@@ -204,6 +240,7 @@ int main(int argc, char **argv) {
   Args args = parseArgs(argc, argv);
   YAML::Node config = getConfig(args.configFile);
   model::Model model = getModel(config);
+  trainModel(model, config);
   using_history();
 
   cleanUpHistory();
