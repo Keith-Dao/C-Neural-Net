@@ -1,8 +1,10 @@
-#include "src/cross_entropy_loss.hpp"
-#include "src/linear.hpp"
-#include "src/model.hpp"
-#include "src/utils/cli.hpp"
+#include "cross_entropy_loss.hpp"
+#include "image_loader.hpp"
+#include "linear.hpp"
+#include "model.hpp"
+#include "utils/cli.hpp"
 #include <iostream>
+#include <memory>
 #include <readline/history.h>
 #include <readline/readline.h>
 #include <tabulate/table.hpp>
@@ -154,6 +156,29 @@ model::Model getModel(const YAML::Node &config) {
   return model::Model(layers, loss, kwargs);
 }
 #pragma endregion Load model
+
+#pragma region Image loader
+/*
+  Create an image loader.
+*/
+std::shared_ptr<loader::ImageLoader>
+getImageLoader(const YAML::Node &config, const std::string &dataset) {
+  if (!utils::yaml::hasValue(config[dataset + "_path"])) {
+    utils::cli::printWarning("No value for " + dataset +
+                             "_path was provided. Skipping " + dataset +
+                             "ing.");
+    return nullptr;
+  }
+
+  float trainValidationSplit =
+      dataset == "test" ? 0 : getTrainValidationSplit(config);
+  std::vector<std::string> fileFormats = getFileFormats(config);
+  return std::make_shared<loader::ImageLoader>(
+      config[dataset + "_path"].as<std::string>(),
+      loader::ImageLoader::standardPreprocessing, fileFormats,
+      trainValidationSplit);
+}
+#pragma endregion Image loader
 
 #pragma region Clean up
 /*
