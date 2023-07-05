@@ -302,6 +302,7 @@ void Model::train(const loader::ImageLoader &loader, double learningRate,
       float loss = 0;
 
       indicators::show_console_cursor(false);
+      int count = 0;
       ProgressBar bar = utils::indicators::getDefaultProgressBar();
       bar.set_option(indicators::option::PrefixText{
           "Training epoch " + std::to_string(epoch) + "/" +
@@ -311,6 +312,9 @@ void Model::train(const loader::ImageLoader &loader, double learningRate,
       for (const auto &[data, labels] : *trainingData) {
         loss += this->trainStep(data, labels, learningRate, confusionMatrix);
         bar.tick();
+        bar.set_option(
+            option::PostfixText{std::to_string(++count) + "/" +
+                                std::to_string(trainingData->size())});
       }
       loss /= trainingData->size();
       Model::storeMetrics(this->trainMetrics, confusionMatrix, loss);
@@ -349,6 +353,7 @@ Model::test(const std::shared_ptr<loader::DatasetBatcher> batcher,
   this->setEval(true);
 
   // Set up indicator
+  int count = 0;
   indicators::show_console_cursor(false);
   indicators::ProgressBar bar = utils::indicators::getDefaultProgressBar();
   bar.set_option(indicators::option::PrefixText{indicatorDescription});
@@ -361,6 +366,8 @@ Model::test(const std::shared_ptr<loader::DatasetBatcher> batcher,
   for (const auto &[data, labels] : *batcher) {
     loss += this->getLossWithConfusionMatrix(data, confusionMatrix, labels);
     bar.tick();
+    bar.set_option(option::PostfixText{std::to_string(++count) + "/" +
+                                       std::to_string(batcher->size())});
   }
   loss /= batcher->size();
 
