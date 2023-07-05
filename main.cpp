@@ -246,16 +246,19 @@ void promptSave(const model::Model &model) {
     }
     return true;
   };
-
   auto promptPath = [](const std::string &prompt) {
     char *buffer = readline(prompt.c_str());
     add_history(buffer);
     std::string response(buffer);
     free(buffer);
 
-    while (response.back() == ' ') {
-      response.pop_back();
-    }
+    response.erase(response.begin(),
+                   std::find_if(response.begin(), response.end(),
+                                [](char c) { return !std::isspace(c); }));
+    response.erase(std::find_if(response.rbegin(), response.rend(),
+                                [](char c) { return !std::isspace(c); })
+                       .base(),
+                   response.end());
     return response;
   };
 
