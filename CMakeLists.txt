@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.26)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-enable_testing()
+add_compile_options(-O2)
 
 # Project
 project(NeuralNetwork VERSION 1.0)
@@ -18,6 +18,7 @@ target_link_libraries(${PROJECT_NAME} src)
 # Testing
 SET(BUILD_TESTS OFF CACHE BOOL "Include tests during build")
 if (${BUILD_TESTS}) 
+    enable_testing()
     add_subdirectory(test)
 endif()
 
