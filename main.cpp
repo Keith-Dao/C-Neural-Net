@@ -3,6 +3,7 @@
 #include "linear.hpp"
 #include "model.hpp"
 #include "utils/cli.hpp"
+#include "utils/image.hpp"
 #include "utils/string.hpp"
 #include <filesystem>
 #include <iostream>
@@ -314,6 +315,62 @@ void trainAndTest(model::Model &model, const YAML::Node &config) {
 }
 #pragma endregion Train and test
 
+#pragma region Predict
+/*
+  Start the mode that allows users to choose files to predict with the model.
+*/
+void startPrediction(model::Model &model, const YAML::Node &config) {
+  if (model.getClasses().empty()) {
+    utils::cli::printError(
+        "Prediction is not available for untrained models. Please train the "
+        "model first or load a pre-trained model.");
+    return;
+  }
+
+  if (!utils::cli::getIsYesResponse(
+          "Would you like to predict images? [y/n]: ")) {
+    return;
+  }
+
+  bool prevEval = model.getEval();
+  std::vector<std::string> fileFormats = getFileFormats(config);
+  loader::preprocessingFunctions preprocessingFunctions =
+      loader::ImageLoader::standardPreprocessing;
+  std::string stopCode = "QUIT",
+              prompt = "Please enter the path to the image or " + stopCode +
+                       " to exit: ";
+  model.setEval(true);
+
+  while (true) {
+    std::string response = utils::cli::promptPath(prompt);
+    while (response != stopCode && !std::filesystem::exists(response)) {
+      utils::cli::printError("The chosen path does not exist.");
+      response = utils::cli::promptPath(prompt);
+    }
+    if (response == stopCode) {
+      return;
+    }
+
+    std::filesystem::path filepath(response);
+    if (std::find(fileFormats.begin(), fileFormats.end(),
+                  filepath.extension()) == fileFormats.end()) {
+      utils::cli::printError("Invalid file format.");
+      continue;
+    }
+
+    Eigen::MatrixXd data = utils::image::openAsMatrix(filepath);
+    for (const auto &preprocess : preprocessingFunctions) {
+      data = preprocess(data);
+    }
+
+    std::string prediction = model.predict(data).front();
+    std::cout << "Predicted: " << prediction << std::endl;
+  }
+
+  model.setEval(prevEval);
+}
+#pragma endregion Predict
+
 #pragma region Clean up
 /*
   Free all the initalized memory used for readline's history.
@@ -338,6 +395,7 @@ int main(int argc, char **argv) {
   if (!args.skipToPredictionMode) {
     trainAndTest(model, config);
   }
+  startPrediction(model, config);
   cleanUpHistory();
   return 0;
 }
