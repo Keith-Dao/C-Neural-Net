@@ -27,7 +27,7 @@ bool hasValue(const YAML::Node &node) {
 #pragma region Args
 struct Args {
   std::string configFile = "config.yaml";
-  bool prediction = false;
+  bool skipToPredictionMode = false;
 };
 
 /*
@@ -68,7 +68,7 @@ Args parseArgs(int argc, char **argv) {
     if (token == "--help" || token == "-h") {
       displayHelpText();
     } else if (token == "-p" || token == "--prediction-mode") {
-      args.prediction = true;
+      args.skipToPredictionMode = true;
     } else {
       if (configFileProvided) {
         displayHelpText();
@@ -310,6 +310,19 @@ void testModel(model::Model &model, const YAML::Node &config) {
 }
 #pragma endregion Test
 
+#pragma region Train and test
+/*
+  Train and test the model.
+*/
+void trainAndTest(model::Model &model, const YAML::Node &config) {
+  if (trainModel(model, config)) {
+    model.displayHistoryGraphs();
+    promptSave(model);
+  }
+  testModel(model, config);
+}
+#pragma endregion Train and test
+
 #pragma region Clean up
 /*
   Free all the initalized memory used for readline's history.
@@ -331,9 +344,9 @@ int main(int argc, char **argv) {
   model::Model model = getModel(config);
 
   using_history();
-  trainModel(model, config);
-  promptSave(model);
-  testModel(model, config);
+  if (!args.skipToPredictionMode) {
+    trainAndTest(model, config);
+  }
   cleanUpHistory();
   return 0;
 }
