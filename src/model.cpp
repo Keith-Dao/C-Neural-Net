@@ -311,10 +311,10 @@ void Model::train(const loader::ImageLoader &loader, double learningRate,
 
       for (const auto &[data, labels] : *trainingData) {
         loss += this->trainStep(data, labels, learningRate, confusionMatrix);
-        bar.tick();
         bar.set_option(
             option::PostfixText{std::to_string(++count) + "/" +
                                 std::to_string(trainingData->size())});
+        bar.tick();
       }
       loss /= trainingData->size();
       Model::storeMetrics(this->trainMetrics, confusionMatrix, loss);
@@ -365,9 +365,9 @@ Model::test(const std::shared_ptr<loader::DatasetBatcher> batcher,
   float loss = 0;
   for (const auto &[data, labels] : *batcher) {
     loss += this->getLossWithConfusionMatrix(data, confusionMatrix, labels);
-    bar.tick();
     bar.set_option(option::PostfixText{std::to_string(++count) + "/" +
                                        std::to_string(batcher->size())});
+    bar.tick();
   }
   loss /= batcher->size();
 
