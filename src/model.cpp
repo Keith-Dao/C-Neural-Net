@@ -558,6 +558,7 @@ void Model::generateHistoryGraph(const std::string &metric) const {
       utils::string::join(utils::string::split(metric, "_"), " "));
   matplot::ylabel(metricName);
   matplot::title(metricName);
+  matplot::legend({});
 
   matplot::grid(matplot::on);
 }
