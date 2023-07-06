@@ -17,4 +17,9 @@ void printWarning(const std::string &message);
   Print the given message to std::cout in the error colours.
 */
 void printError(const std::string &message);
+
+/*
+  Prompt path from input, while saving any inputs to the input history.
+*/
+std::string promptPath(const std::string &prompt);
 } // namespace utils::cli

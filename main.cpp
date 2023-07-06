@@ -247,25 +247,16 @@ void promptSave(const model::Model &model) {
     }
     return true;
   };
-  auto promptPath = [](const std::string &prompt) {
-    char *buffer = readline(prompt.c_str());
-    add_history(buffer);
-    std::string response(buffer);
-    free(buffer);
-
-    utils::string::trim(response);
-    return response;
-  };
 
   std::string stopCode = "CANCEL",
               enterPathPrompt =
                   "Enter a file path with .json as the extension or type " +
                   stopCode + " to cancel saving: ",
-              response =
-                  promptPath("Where would you like to save the model file? " +
-                             enterPathPrompt);
+              response = utils::cli::promptPath(
+                  "Where would you like to save the model file? " +
+                  enterPathPrompt);
   while (response != stopCode && !isValidPath(response)) {
-    response = promptPath(enterPathPrompt);
+    response = utils::cli::promptPath(enterPathPrompt);
   }
   if (response == stopCode) {
     std::cout << "Model was not saved." << std::endl;

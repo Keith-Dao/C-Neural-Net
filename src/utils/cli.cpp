@@ -1,4 +1,5 @@
 #include "cli.hpp"
+#include "string.hpp"
 #include <cctype>
 #include <cstring>
 #include <iostream>
@@ -33,4 +34,14 @@ void utils::cli::printWarning(const std::string &message) {
 
 void utils::cli::printError(const std::string &message) {
   std::cout << termcolor::red << message << termcolor::reset << std::endl;
+}
+
+std::string utils::cli::promptPath(const std::string &prompt) {
+  char *buffer = readline(prompt.c_str());
+  add_history(buffer);
+  std::string response(buffer);
+  free(buffer);
+
+  utils::string::trim(response);
+  return response;
 }
