@@ -280,6 +280,36 @@ void promptSave(const model::Model &model) {
 }
 #pragma endregion Save prompt
 
+#pragma region Test
+/*
+  Tests the model if a test set is provided.
+*/
+void testModel(model::Model &model, const YAML::Node &config) {
+  std::shared_ptr<loader::ImageLoader> loader = getImageLoader(config, "test");
+  if (loader == nullptr) {
+    return;
+  }
+
+  std::vector<std::string> metrics;
+  if (!utils::yaml::hasValue(config["test_metrics"]) ||
+      (metrics = config["test_metrics"].as<std::vector<std::string>>())
+          .empty()) {
+    utils::cli::printWarning(
+        "No metrics were provided in test_metrics. Skipping testing.");
+    return;
+  }
+  std::unordered_map<std::string, model::metricHistoryValue> metricHistory =
+      model::Model::metricTypesToHistory(metrics);
+
+  int batchSize = getBatchSize(config);
+
+  auto [loss, confusionMatrix] =
+      model.test((*loader)("test", batchSize), "Testing");
+  model::Model::storeMetrics(metricHistory, confusionMatrix, loss);
+  model::Model::printMetrics(metricHistory, loader->getClasses());
+}
+#pragma endregion Test
+
 #pragma region Clean up
 /*
   Free all the initalized memory used for readline's history.
@@ -299,10 +329,11 @@ int main(int argc, char **argv) {
   Args args = parseArgs(argc, argv);
   YAML::Node config = getConfig(args.configFile);
   model::Model model = getModel(config);
+
+  using_history();
   trainModel(model, config);
   promptSave(model);
-  using_history();
-
+  testModel(model, config);
   cleanUpHistory();
   return 0;
 }
