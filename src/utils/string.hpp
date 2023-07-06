@@ -34,4 +34,19 @@ std::string capitalise(std::string word);
 std::string joinWithDifferentLast(std::vector<std::string> words,
                                   const std::string &connector,
                                   const std::string &lastConnector);
+
+/*
+  Trim spaces from the left.
+*/
+void ltrim(std::string &word);
+
+/*
+  Trim spaces from the right.
+*/
+void rtrim(std::string &word);
+
+/*
+  Trim spaces on both sides.
+*/
+void trim(std::string &word);
 } // namespace utils::string

@@ -3,6 +3,7 @@
 #include "linear.hpp"
 #include "model.hpp"
 #include "utils/cli.hpp"
+#include "utils/string.hpp"
 #include <filesystem>
 #include <iostream>
 #include <memory>
@@ -252,13 +253,7 @@ void promptSave(const model::Model &model) {
     std::string response(buffer);
     free(buffer);
 
-    response.erase(response.begin(),
-                   std::find_if(response.begin(), response.end(),
-                                [](char c) { return !std::isspace(c); }));
-    response.erase(std::find_if(response.rbegin(), response.rend(),
-                                [](char c) { return !std::isspace(c); })
-                       .base(),
-                   response.end());
+    utils::string::trim(response);
     return response;
   };
 

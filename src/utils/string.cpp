@@ -1,4 +1,5 @@
 #include "string.hpp"
+#include <algorithm>
 #include <cctype>
 
 std::vector<std::string> utils::string::split(const std::string &s,
@@ -50,4 +51,22 @@ utils::string::joinWithDifferentLast(std::vector<std::string> words,
     return last;
   }
   return utils::string::join(words, connector) + lastConnector + last;
+}
+
+void utils::string::ltrim(std::string &word) {
+  word.erase(word.begin(), std::find_if(word.begin(), word.end(), [](char c) {
+               return !std::isspace(c);
+             }));
+}
+
+void utils::string::rtrim(std::string &word) {
+  word.erase(std::find_if(word.rbegin(), word.rend(),
+                          [](char c) { return !std::isspace(c); })
+                 .base(),
+             word.end());
+}
+
+void utils::string::trim(std::string &word) {
+  utils::string::ltrim(word);
+  utils::string::rtrim(word);
 }
