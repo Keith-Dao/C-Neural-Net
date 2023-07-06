@@ -7,6 +7,11 @@
 #include "utils/string.hpp"
 #include <filesystem>
 #include <iostream>
+#include <matplot/backend/backend_interface.h>
+#include <matplot/backend/gnuplot.h>
+#include <matplot/core/figure_registry.h>
+#include <matplot/matplot.h>
+#include <matplot/util/handle_types.h>
 #include <memory>
 #include <readline/history.h>
 #include <readline/readline.h>
@@ -396,6 +401,11 @@ int main(int argc, char **argv) {
     trainAndTest(model, config);
   }
   startPrediction(model, config);
+  if (matplot::figure()->number() > 1) {
+    // There does not appear to be a way to check how many windows are open.
+    std::cout << "Hit ENTER to close any opened graphs: " << std::flush;
+    std::cin.get();
+  }
   cleanUpHistory();
   return 0;
 }
