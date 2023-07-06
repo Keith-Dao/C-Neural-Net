@@ -565,7 +565,6 @@ void Model::generateHistoryGraph(const std::string &metric) const {
   matplot::hold(matplot::off);
 
   matplot::xlabel("Epoch");
-  matplot::xlim({0, (double)this->totalEpochs + 1});
   if (this->totalEpochs < 10) {
     // Force integer ticks on small x-axis
     matplot::xticks(matplot::iota(0, this->totalEpochs));
