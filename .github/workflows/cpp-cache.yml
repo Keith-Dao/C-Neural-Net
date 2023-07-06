@@ -111,7 +111,7 @@ jobs:
         run: |
           wget -O readline.tar.gz "http://git.savannah.gnu.org/cgit/readline.git/snapshot/readline-8.2.tar.gz" 
           tar -xf readline.tar.gz
-          cd readline-2.8
+          cd readline-8.2
           ./configure --prefix=${{ github.workspace }}/install/dependencies 
           sudo make install
           sudo ldconfig
