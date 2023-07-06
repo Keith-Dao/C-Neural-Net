@@ -542,6 +542,23 @@ void Model::generateHistoryGraph(const std::string &metric) const {
 
   matplot::figure_handle fig = matplot::figure(false);
   matplot::axes_handle axis = fig->current_axes();
+
+  // Set ranges or else warnings will be printed if only one point is plotted.
+  matplot::xrange({0, (double)this->totalEpochs + 1});
+  if (this->totalEpochs == 1) {
+    double min = INT_MAX, max = INT_MIN;
+    for (int i = 0; i < 2; ++i) {
+      std::unordered_map<std::string, metricHistoryValue> metrics =
+          i == 0 ? this->trainMetrics : this->validationMetrics;
+      if (metrics.contains(metric)) {
+        double val = std::get<float>(metrics.at(metric).front());
+        min = std::min(min, val);
+        max = std::max(max, val);
+      }
+    }
+    matplot::yrange({min * .99, max * 1.01});
+  }
+
   this->plotMetric("train", this->trainMetrics, metric, axis);
   matplot::hold(matplot::on);
   this->plotMetric("validation", this->validationMetrics, metric, axis);
