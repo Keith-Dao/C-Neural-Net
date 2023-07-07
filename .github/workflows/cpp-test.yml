@@ -24,6 +24,11 @@ jobs:
           path: ${{ github.workspace }}/install/dependencies
           key: dependencies
 
+      - name: Remove pre-installed readline and ncurses
+        run: |
+          sudo apt-get remove libreadline-dev -y
+          sudo apt-get remove libncurses-dev -y
+
       - name: Install Eigen
         if: steps.cache-dependencies.outputs.cache-hit != 'true'
         run: |
