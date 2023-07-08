@@ -595,6 +595,11 @@ void Model::displayHistoryGraphs() const {
   if (!utils::cli::getIsYesResponse(graphQuestion)) {
     return;
   }
+  if (this->totalEpochs < 1) {
+    utils::cli::printWarning(
+        "The model has no history data. No graphs will be generated.");
+    return;
+  }
   for (const std::string &metric : visualizableMetrics) {
     this->generateHistoryGraph(metric);
   }
