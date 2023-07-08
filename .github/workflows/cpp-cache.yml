@@ -154,37 +154,3 @@ jobs:
           cmake -B build -DCMAKE_INSTALL_PREFIX:PATH=${{ github.workspace }}/install/dependencies
           cd build 
           sudo make install
-
-      - name: Cache GNU readline
-        id: cache-readline
-        uses: actions/cache@v3
-        with:
-          path: ${{ github.workspace }}/install/dependencies
-          key: readline
-
-      - name: Install GNU readline
-        if: steps.cache-readline.outputs.cache-hit != 'true'
-        run: |
-          wget -O readline.tar.gz "http://git.savannah.gnu.org/cgit/readline.git/snapshot/readline-8.2.tar.gz" 
-          tar -xf readline.tar.gz
-          cd readline-8.2
-          ./configure --prefix=${{ github.workspace }}/install/dependencies 
-          sudo make install
-          sudo ldconfig
-
-      - name: Cache ncurses
-        id: cache-ncurses
-        uses: actions/cache@v3
-        with:
-          path: ${{ github.workspace }}/install/dependencies
-          key: ncurses
-
-      - name: Install ncurses
-        if: steps.cache-ncurses.outputs.cache-hit != 'true'
-        run: |
-          wget -O ncurses.tar.gz "https://ftp.gnu.org/gnu/ncurses/ncurses-6.4.tar.gz" 
-          tar -xf ncurses.tar.gz
-          cd ncurses-6.4
-          ./configure --prefix=${{ github.workspace }}/install/dependencies 
-          sudo make install
-          sudo ldconfig
