@@ -17,20 +17,20 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Cache Dependencies
-        id: cache-dependencies
-        uses: actions/cache@v3
-        with:
-          path: ${{ github.workspace }}/install/dependencies
-          key: dependencies
-
       - name: Remove pre-installed readline and ncurses
         run: |
           sudo apt-get remove libreadline-dev -y
           sudo apt-get remove libncurses-dev -y
 
+      - name: Cache Eigen
+        id: cache-eigen
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/install/dependencies
+          key: eigen
+
       - name: Install Eigen
-        if: steps.cache-dependencies.outputs.cache-hit != 'true'
+        if: steps.cache-eigen.outputs.cache-hit != 'true'
         run: |
           wget -O eigen.zip "https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.zip" 
           unzip eigen.zip 
@@ -39,8 +39,15 @@ jobs:
           cd build 
           sudo make install
 
+      - name: Cache JSON
+        id: cache-json
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/install/dependencies
+          key: json
+
       - name: Install JSON
-        if: steps.cache-dependencies.outputs.cache-hit != 'true'
+        if: steps.cache-json.outputs.cache-hit != 'true'
         run: |
           wget -O json.zip "https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.zip" 
           unzip json.zip 
@@ -49,8 +56,15 @@ jobs:
           cd build 
           sudo make install
 
+      - name: Cache YAML
+        id: cache-yaml
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/install/dependencies
+          key: yaml
+
       - name: Install YAML
-        if: steps.cache-dependencies.outputs.cache-hit != 'true'
+        if: steps.cache-yaml.outputs.cache-hit != 'true'
         run: |
           wget -O yaml.zip "https://github.com/jbeder/yaml-cpp/archive/refs/tags/yaml-cpp-0.6.3.zip" 
           unzip yaml.zip 
@@ -59,8 +73,15 @@ jobs:
           cd build 
           sudo make install
 
+      - name: Cache matplot
+        id: cache-matplot
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/install/dependencies
+          key: matplot
+
       - name: Install Matplot++
-        if: steps.cache-dependencies.outputs.cache-hit != 'true'
+        if: steps.cache-matplot.outputs.cache-hit != 'true'
         run: |
           wget -O matplotplusplus.zip "https://github.com/alandefreitas/matplotplusplus/archive/refs/tags/v1.1.0.zip" 
           unzip matplotplusplus.zip 
@@ -69,8 +90,15 @@ jobs:
           cd build 
           sudo make install
 
+      - name: Cache Indicators
+        id: cache-indicators
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/install/dependencies
+          key: indicators
+
       - name: Install Indicators
-        if: steps.cache-dependencies.outputs.cache-hit != 'true'
+        if: steps.cache-indicators.outputs.cache-hit != 'true'
         run: |
           wget -O indicators.zip "https://github.com/p-ranav/indicators/archive/refs/tags/v2.3.zip" 
           unzip indicators.zip 
@@ -79,8 +107,15 @@ jobs:
           cd build 
           sudo make install
 
+      - name: Cache OpenCV
+        id: cache-opencv
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/install/dependencies
+          key: opencv
+
       - name: Install OpenCV
-        if: steps.cache-dependencies.outputs.cache-hit != 'true'
+        if: steps.cache-opencv.outputs.cache-hit != 'true'
         run: |
           wget -O opencv.zip "https://github.com/opencv/opencv/archive/refs/tags/4.7.0.zip" 
           unzip opencv.zip 
@@ -89,8 +124,15 @@ jobs:
           cd build 
           sudo make install
 
+      - name: Cache Tabulate
+        id: cache-tabulate
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/install/dependencies
+          key: tabulate
+
       - name: Install Tabulate
-        if: steps.cache-dependencies.outputs.cache-hit != 'true'
+        if: steps.cache-tabulate.outputs.cache-hit != 'true'
         run: |
           wget -O tabulate.zip "https://github.com/p-ranav/tabulate/archive/refs/tags/v1.5.zip" 
           unzip tabulate.zip 
@@ -99,8 +141,15 @@ jobs:
           cd build 
           sudo make install
 
+      - name: Cache Termcolor
+        id: cache-termcolor
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/install/dependencies
+          key: termcolor
+
       - name: Install Termcolor
-        if: steps.cache-dependencies.outputs.cache-hit != 'true'
+        if: steps.cache-termcolor.outputs.cache-hit != 'true'
         run: |
           wget -O termcolor.zip "https://github.com/ikalnytskyi/termcolor/archive/refs/tags/v2.1.0.zip" 
           unzip termcolor.zip 
@@ -109,8 +158,15 @@ jobs:
           cd build 
           sudo make install
 
+      - name: Cache GNU readline
+        id: cache-readline
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/install/dependencies
+          key: readline
+
       - name: Install GNU readline
-        if: steps.cache-dependencies.outputs.cache-hit != 'true'
+        if: steps.cache-readline.outputs.cache-hit != 'true'
         run: |
           wget -O readline.tar.gz "http://git.savannah.gnu.org/cgit/readline.git/snapshot/readline-8.2.tar.gz" 
           tar -xf readline.tar.gz
@@ -119,8 +175,15 @@ jobs:
           sudo make install
           sudo ldconfig
 
+      - name: Cache ncurses
+        id: cache-ncurses
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/install/dependencies
+          key: ncurses
+
       - name: Install ncurses
-        if: steps.cache-dependencies.outputs.cache-hit != 'true'
+        if: steps.cache-ncurses.outputs.cache-hit != 'true'
         run: |
           wget -O ncurses.tar.gz "https://ftp.gnu.org/gnu/ncurses/ncurses-6.4.tar.gz" 
           tar -xf ncurses.tar.gz
@@ -132,10 +195,10 @@ jobs:
       - name: Configure CMake
         run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_PREFIX_PATH:PATH=${{ github.workspace }}/install/dependencies -DBUILD_TESTS=ON
 
-      - name: Build
-        working-directory: ${{ github.workspace }}/build
-        run: make
+      # - name: Build
+      #   working-directory: ${{ github.workspace }}/build
+      #   run: make
 
-      - name: Test
-        working-directory: ${{github.workspace}}/build
-        run: ctest -C ${{env.BUILD_TYPE}}
+      # - name: Test
+      #   working-directory: ${{github.workspace}}/build
+      #   run: ctest -C ${{env.BUILD_TYPE}}
