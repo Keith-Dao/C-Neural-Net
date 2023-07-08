@@ -12,8 +12,7 @@ add_executable(${PROJECT_NAME} main.cpp)
 
 # Source files
 add_subdirectory(src)
-target_include_directories(${PROJECT_NAME} PRIVATE src)
-target_link_libraries(${PROJECT_NAME} src)
+target_link_libraries(${PROJECT_NAME} nn)
 
 # Testing
 SET(BUILD_TESTS OFF CACHE BOOL "Include tests during build")

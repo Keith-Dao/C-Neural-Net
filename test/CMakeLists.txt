@@ -11,21 +11,13 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-# Eigen
-find_package(Eigen3 REQUIRED NO_MODULE)
-
-# JSON
-find_package(nlohmann_json 3.2.0 REQUIRED)
-
 # Tests
 file(GLOB_RECURSE TEST_FILES test_*.cpp *.hpp)
 add_executable(tests ${TEST_FILES})
 target_link_libraries(
     tests 
-    src
+    nn
     GTest::gtest_main
-    Eigen3::Eigen
-    nlohmann_json::nlohmann_json
 )
 
 include(GoogleTest)

@@ -1,8 +1,54 @@
-project(src VERSION 1.0)
+project(nn VERSION 1.0)
 
-file(GLOB_RECURSE SRC_FILES *.cpp)
-file(GLOB_RECURSE HEADER_FILES *.hpp)
-add_library(${PROJECT_NAME} STATIC ${SRC_FILES} ${HEADER_FILES})
+add_library(${PROJECT_NAME} OBJECT 
+    metrics.cpp
+    utils/string.cpp
+    utils/cli.cpp
+    utils/matrix.cpp
+    utils/path.cpp
+    utils/indicators.cpp
+    utils/math.cpp
+    utils/image.cpp
+    linear.cpp
+    exceptions/eigen.cpp
+    exceptions/json.cpp
+    exceptions/load.cpp
+    exceptions/differentiable.cpp
+    exceptions/metrics.cpp
+    exceptions/utils.cpp
+    exceptions/activation_functions.cpp
+    exceptions/loss.cpp
+    exceptions/image_loader.cpp
+    exceptions/model.cpp
+    activation_functions.cpp
+    image_loader.cpp
+    cross_entropy_loss.cpp
+    model.cpp
+    linear.hpp
+    activation_functions.hpp
+    cross_entropy_loss.hpp
+    utils/matrix.hpp
+    utils/exceptions.hpp
+    utils/indicator.hpp
+    utils/string.hpp
+    utils/cli.hpp
+    utils/math.hpp
+    utils/path.hpp
+    utils/image.hpp
+    metrics.hpp
+    exceptions/activation_functions.hpp
+    exceptions/utils.hpp
+    exceptions/differentiable.hpp
+    exceptions/loss.hpp
+    exceptions/metrics.hpp
+    exceptions/eigen.hpp
+    exceptions/load.hpp
+    exceptions/image_loader.hpp
+    exceptions/json.hpp
+    exceptions/model.hpp
+    image_loader.hpp
+    model.hpp
+)
 
 # Eigen
 find_package(Eigen3 REQUIRED NO_MODULE)

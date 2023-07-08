@@ -1,10 +1,10 @@
-#include "cross_entropy_loss.hpp"
-#include "image_loader.hpp"
-#include "linear.hpp"
-#include "model.hpp"
-#include "utils/cli.hpp"
-#include "utils/image.hpp"
-#include "utils/string.hpp"
+#include "src/cross_entropy_loss.hpp"
+#include "src/image_loader.hpp"
+#include "src/linear.hpp"
+#include "src/model.hpp"
+#include "src/utils/cli.hpp"
+#include "src/utils/image.hpp"
+#include "src/utils/string.hpp"
 #include <filesystem>
 #include <iostream>
 #include <matplot/backend/backend_interface.h>
