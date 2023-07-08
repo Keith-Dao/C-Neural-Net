@@ -9,6 +9,7 @@
 #include "utils/math.hpp"
 #include "utils/string.hpp"
 #include <Eigen/Dense>
+#include <algorithm>
 #include <filesystem>
 #include <functional>
 #include <indicators/cursor_control.hpp>
@@ -233,7 +234,7 @@ json Model::toJson() const {
           {"classes", this->classes}};
 }
 
-void Model::save(std::string path) const {
+void Model::save(const std::string &path) const {
   std::filesystem::path savePath(path);
   if (savePath.extension() != ".json") {
     throw exceptions::model::InvalidExtensionException(savePath.extension());
@@ -273,7 +274,6 @@ float Model::getLossWithConfusionMatrix(const Eigen::MatrixXd &input,
                                         Eigen::MatrixXi &confusionMatrix,
                                         const std::vector<int> &labels) {
   Eigen::MatrixXd logits = this->forward(input);
-  std::cout << " here" << logits.rows() << ", " << labels.size() << std::endl;
   metrics::addToConfusionMatrix(
       confusionMatrix, utils::math::logitsToPrediction(logits), labels);
   return this->loss(logits, labels);
@@ -282,7 +282,6 @@ float Model::getLossWithConfusionMatrix(const Eigen::MatrixXd &input,
 float Model::trainStep(const Eigen::MatrixXd &data,
                        const std::vector<int> &labels, double learningRate,
                        Eigen::MatrixXi &confusionMatrix) {
-  std::cout << data.rows() << ", " << labels.size() << std::endl;
   float loss = this->getLossWithConfusionMatrix(data, confusionMatrix, labels);
   Eigen::MatrixXd grad = this->loss.backward();
   for (auto it = this->layers.rbegin(); it != this->layers.rend(); ++it) {
@@ -304,6 +303,7 @@ void Model::train(const loader::ImageLoader &loader, double learningRate,
       float loss = 0;
 
       indicators::show_console_cursor(false);
+      int count = 0;
       ProgressBar bar = utils::indicators::getDefaultProgressBar();
       bar.set_option(indicators::option::PrefixText{
           "Training epoch " + std::to_string(epoch) + "/" +
@@ -312,6 +312,9 @@ void Model::train(const loader::ImageLoader &loader, double learningRate,
 
       for (const auto &[data, labels] : *trainingData) {
         loss += this->trainStep(data, labels, learningRate, confusionMatrix);
+        bar.set_option(
+            option::PostfixText{std::to_string(++count) + "/" +
+                                std::to_string(trainingData->size())});
         bar.tick();
       }
       loss /= trainingData->size();
@@ -351,6 +354,7 @@ Model::test(const std::shared_ptr<loader::DatasetBatcher> batcher,
   this->setEval(true);
 
   // Set up indicator
+  int count = 0;
   indicators::show_console_cursor(false);
   indicators::ProgressBar bar = utils::indicators::getDefaultProgressBar();
   bar.set_option(indicators::option::PrefixText{indicatorDescription});
@@ -362,6 +366,8 @@ Model::test(const std::shared_ptr<loader::DatasetBatcher> batcher,
   float loss = 0;
   for (const auto &[data, labels] : *batcher) {
     loss += this->getLossWithConfusionMatrix(data, confusionMatrix, labels);
+    bar.set_option(option::PostfixText{std::to_string(++count) + "/" +
+                                       std::to_string(batcher->size())});
     bar.tick();
   }
   loss /= batcher->size();
@@ -537,13 +543,32 @@ void Model::generateHistoryGraph(const std::string &metric) const {
 
   matplot::figure_handle fig = matplot::figure(false);
   matplot::axes_handle axis = fig->current_axes();
+
+  // Set ranges or else warnings will be printed if all points occupy the same
+  // value in a range.
+  matplot::xrange({0, (double)this->totalEpochs + 1});
+  double min = INT_MAX, max = INT_MIN;
+  if (this->trainMetrics.contains(metric)) {
+    for (auto x : this->trainMetrics.at(metric)) {
+      min = std::min(min, (double)std::get<float>(x));
+      max = std::max(max, (double)std::get<float>(x));
+    }
+  }
+  if (this->validationMetrics.contains(metric)) {
+    for (auto x : this->validationMetrics.at(metric)) {
+      min = std::min(min, (double)std::get<float>(x));
+      max = std::max(max, (double)std::get<float>(x));
+    }
+  }
+  double spacing = (max + min) / 2 * 0.01;
+  matplot::yrange({min - spacing, max + spacing});
+
   this->plotMetric("train", this->trainMetrics, metric, axis);
   matplot::hold(matplot::on);
   this->plotMetric("validation", this->validationMetrics, metric, axis);
   matplot::hold(matplot::off);
 
   matplot::xlabel("Epoch");
-  matplot::xlim({0, (double)this->totalEpochs + 1});
   if (this->totalEpochs < 10) {
     // Force integer ticks on small x-axis
     matplot::xticks(matplot::iota(0, this->totalEpochs));
@@ -553,6 +578,7 @@ void Model::generateHistoryGraph(const std::string &metric) const {
       utils::string::join(utils::string::split(metric, "_"), " "));
   matplot::ylabel(metricName);
   matplot::title(metricName);
+  matplot::legend({});
 
   matplot::grid(matplot::on);
 }
@@ -566,13 +592,16 @@ void Model::displayHistoryGraphs() const {
     }
   }
 
-  std::string graphedMetrics =
-      utils::string::joinWithDifferentLast(visualizableMetrics, ", ", " and ");
-  std::string showGraph;
-  std::cout << "Would you like to view the history graphs for "
-            << graphedMetrics << "? [y/n]: " << std::flush;
-  std::cin >> showGraph;
-  if (!utils::cli::isYes(showGraph)) {
+  std::string graphedMetrics = utils::string::joinWithDifferentLast(
+                  visualizableMetrics, ", ", " and "),
+              graphQuestion = "Would you like to view the history graphs for " +
+                              graphedMetrics + "? [y/n]: ";
+  if (!utils::cli::getIsYesResponse(graphQuestion)) {
+    return;
+  }
+  if (this->totalEpochs < 1) {
+    utils::cli::printWarning(
+        "The model has no history data. No graphs will be generated.");
     return;
   }
   for (const std::string &metric : visualizableMetrics) {

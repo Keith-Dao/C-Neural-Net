@@ -326,5 +326,33 @@ TEST(StringUtils, TestJoinWithDifferentLast) {
                                                          lastConnector));
   }
 }
+
+TEST(StringUtils, TestRtrim) {
+  std::vector<std::string> words{"   TEST", "TEST", "TEST   "},
+      expected{"   TEST", "TEST", "TEST"};
+  for (int i = 0; i < words.size(); ++i) {
+    string::rtrim(words[i]);
+    EXPECT_EQ(expected[i], words[i])
+        << "Test " << i << " failed to trim right.";
+  }
+}
+
+TEST(StringUtils, TestLtrim) {
+  std::vector<std::string> words{"   TEST", "TEST", "TEST   "},
+      expected{"TEST", "TEST", "TEST   "};
+  for (int i = 0; i < words.size(); ++i) {
+    string::ltrim(words[i]);
+    EXPECT_EQ(expected[i], words[i]) << "Test " << i << " failed to trim left.";
+  }
+}
+
+TEST(StringUtils, TestTrim) {
+  std::vector<std::string> words{"   TEST", "TEST", "TEST   "};
+  std::string expected = "TEST";
+  for (int i = 0; i < words.size(); ++i) {
+    string::trim(words[i]);
+    EXPECT_EQ(expected, words[i]) << "Test " << i << " failed to trim.";
+  }
+}
 #pragma endregion String
 } // namespace test_utils
